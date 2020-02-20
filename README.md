@@ -8,5 +8,5 @@ This is a single Lua file you are able to add to mods in order to modify P3D fil
 4. (Optional) Make an additional file called `P3DFunctions.lua` in the same lib folder to contain your P3D-related functions.
    * You will also need to do `dofile(GetModPath() .. "/Resources/lib/P3DFunctions.lua")` in `CustomFiles.lua`.
 
-#Examples
+# Examples
 You can find some examples in the Examples folder.
