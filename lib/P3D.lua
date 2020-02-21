@@ -488,7 +488,7 @@ function P3D.P3DChunk:new(Data)
 	local ValueLen
 	Data.ChunkType, ValueLen = P3D.UnpackChunkHeader(Data.Raw)
 	if ValueLen > 12 then
-		Data.ValueStr = Data.Raw:sub(13, Data.ValueLen)
+		Data.ValueStr = Data.Raw:sub(13, ValueLen)
 	else
 		Data.ValueStr = ""
 	end
@@ -545,7 +545,7 @@ function P3D.P3DChunk:Output()
 end
 
 function P3D.P3DChunk:GetName()
-	local name = self.Name or GetP3DString(self.ValueStr)
+	local name = self.Name or P3D.GetString(self.ValueStr)
 	self.Name = name
 	return name
 end
@@ -553,7 +553,7 @@ end
 function P3D.P3DChunk:SetName(NewName)
 	if self.ValueStr:len() < 2 then return end
 	NewName = MakeP3DString(NewName)
-	self.ValueStr = SetP3DString(self.ValueStr, 1, NewName)
+	self.ValueStr = P3D.SetString(self.ValueStr, 1, NewName)
 	self.Name = NewName
 end
 
@@ -660,7 +660,7 @@ function P3D.ShaderP3DChunk:SetTextureParameter(Name, Value)
 	for idx in self:GetChunkIndexes(TEXTURE_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			local newVal, Delta = SetP3DString(ChunkData, 17, Value)
+			local newVal, Delta = P3D.SetString(ChunkData, 17, Value)
 			newVal = AddP3DInt4(newVal, 5, Delta)
 			newVal = AddP3DInt4(newVal, 9, Delta)
 			self:SetChunkAtIndex(idx, newVal)
@@ -675,7 +675,7 @@ function P3D.ShaderP3DChunk:GetTextureParameter(Name)
 	for idx in self:GetChunkIndexes(TEXTURE_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			return GetP3DString(ChunkData, 17)
+			return P3D.GetString(ChunkData, 17)
 		end
 	end
 	return nil
