@@ -12,7 +12,6 @@ dofile(GetModPath() .. "/Resources/lib/P3D.lua")
 dofile(GetModPath() .. "/Resources/lib/P3DFunctions.lua")
 PreLoad = Settings.PreLoadData
 Cache = {}
-
 if PreLoad then
 	Alert("Pre-loading files. Please wait.")
 	local files = {}
