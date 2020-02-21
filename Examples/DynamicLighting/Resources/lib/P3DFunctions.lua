@@ -158,7 +158,7 @@ function SetModelRGBProcessMesh(Original, A, R, G, B)
 	local MeshChunk = P3D.MeshP3DChunk:new{Raw = Original}
 	for idx in MeshChunk:GetChunkIndexes(P3D.Identifiers.Old_Primitive_Group) do
 		local OldPrimitiveGroupChunk = OldPrimitiveGroupP3DChunk:new{Raw = MeshChunk:GetChunkAtIndex(idx)}
-		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(COLOUR_LIST_CHUNK) do
+		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(P3D.Identifiers.Colour_List) do
 			local ColourListChunk = P3D.ColourListP3DChunk:new{Raw = OldPrimitiveGroupChunk:GetChunkAtIndex(idx2)}
 			for i=1,#ColourListChunk.Colours do
 				ColourListChunk.Colours[i].A = A
