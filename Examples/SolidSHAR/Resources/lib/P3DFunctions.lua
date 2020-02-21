@@ -15,6 +15,7 @@ function MakeModelSolid(Original, Path)
 	local RootChunk = P3D.P3DChunk:new{Raw = Original}
 	local modified = false
 	local AddedWrenchAnimation = false
+	local AddedPhoneAnimation = false
 	for idx in RootChunk:GetChunkIndexes(P3D.Identifiers.Locator) do
 		local LocatorChunk = P3D.LocatorP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
 		if LocatorChunk.Type == 9 then
