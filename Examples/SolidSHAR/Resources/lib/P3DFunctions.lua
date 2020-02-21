@@ -11,11 +11,17 @@ local PhoneAnimCollAnimationIDX = PhoneAnimCollP3D:GetChunkIndex(P3D.Identifiers
 local PhoneAnimCollSkeletonIDX = PhoneAnimCollP3D:GetChunkIndex(P3D.Identifiers.Skeleton)
 local PhoneAnimCollAnimCollIDX = PhoneAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Coll)
 
+local CardAnimCollP3D = P3D.P3DChunk:new{Raw = ReadFile(GetModPath() .. "/Resources/p3d/CardAnimColl.p3d")}
+local CardAnimCollAnimationIDX = CardAnimCollP3D:GetChunkIndex(P3D.Identifiers.Animation)
+local CardAnimCollSkeletonIDX = CardAnimCollP3D:GetChunkIndex(P3D.Identifiers.Skeleton)
+local CardAnimCollAnimCollIDX = CardAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Coll)
+
 function MakeModelSolid(Original, Path)
 	local RootChunk = P3D.P3DChunk:new{Raw = Original}
 	local modified = false
 	local AddedWrenchAnimation = false
 	local AddedPhoneAnimation = false
+	local AddedCardAnimation = false
 	for idx in RootChunk:GetChunkIndexes(P3D.Identifiers.Locator) do
 		local LocatorChunk = P3D.LocatorP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
 		if LocatorChunk.Type == 9 then
@@ -66,6 +72,54 @@ function MakeModelSolid(Original, Path)
 				
 				RootChunk:AddChunk(skel:Output())
 				RootChunk:AddChunk(animColl:Output())
+				modified = true
+			elseif Settings.SolidCards and Type == "CollectorCard" then
+				if not AddedCardAnimation then
+					RootChunk:AddChunk(CardAnimCollP3D:GetChunkAtIndex(CardAnimCollAnimationIDX))
+					AddedCardAnimation = true
+				end
+				local skel = P3D.SkeletonP3DChunk:new{Raw = CardAnimCollP3D:GetChunkAtIndex(CardAnimCollSkeletonIDX)}
+				skel.Name = P3D.MakeP3DString(P3D.CleanP3DString(skel.Name).. P3D.CleanP3DString(LocatorChunk.Name))
+				local skelJoint = P3D.SkeletonJointP3DChunk:new{Raw = skel:GetChunkAtIndex(1)}
+				skelJoint.RestPose.M41 = LocatorChunk.Position.X
+				skelJoint.RestPose.M42 = LocatorChunk.Position.Y
+				skelJoint.RestPose.M43 = LocatorChunk.Position.Z
+				skel:SetChunkAtIndex(1, skelJoint:Output())
+				
+				local animColl = P3D.AnimCollP3DChunk:new{Raw = CardAnimCollP3D:GetChunkAtIndex(CardAnimCollAnimCollIDX)}
+				animColl.Name = P3D.MakeP3DString(P3D.CleanP3DString(animColl.Name).. P3D.CleanP3DString(LocatorChunk.Name))
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Old_Frame_Controller) do
+					local OldFrameController = P3D.OldFrameControllerP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					OldFrameController.Name = P3D.MakeP3DString(P3D.CleanP3DString(OldFrameController.Name).. P3D.CleanP3DString(LocatorChunk.Name))
+					if OldFrameController.Name:sub(1, 4) == "PTRN" then
+						OldFrameController.HierarchyName = P3D.MakeP3DString(P3D.CleanP3DString(OldFrameController.HierarchyName).. P3D.CleanP3DString(LocatorChunk.Name))
+					end
+					animColl:SetChunkAtIndex(idx2, OldFrameController:Output())
+				end
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Composite_Drawable) do
+					local CompositeDrawable = P3D.CompositeDrawableP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					CompositeDrawable.Name = P3D.MakeP3DString(P3D.CleanP3DString(CompositeDrawable.Name).. P3D.CleanP3DString(LocatorChunk.Name))
+					CompositeDrawable.SkeletonName = P3D.MakeP3DString(P3D.CleanP3DString(CompositeDrawable.SkeletonName).. P3D.CleanP3DString(LocatorChunk.Name))
+					animColl:SetChunkAtIndex(idx2, CompositeDrawable:Output())
+				end
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Collision_Object) do
+					local CollisionObject = P3D.CollisionObjectP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					CollisionObject.Name = P3D.MakeP3DString(P3D.CleanP3DString(CollisionObject.Name).. P3D.CleanP3DString(LocatorChunk.Name))
+					animColl:SetChunkAtIndex(idx2, CollisionObject:Output())
+				end
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Multi_Controller) do
+					local MultiController = P3D.MultiControllerP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					local MultiControllerTracks = P3D.MultiControllerTracksP3DChunk:new{Raw = MultiController:GetChunkAtIndex(1)}
+					for i=1,#MultiControllerTracks.Tracks do
+						MultiControllerTracks.Tracks[i].Name = P3D.MakeP3DString(P3D.CleanP3DString(MultiControllerTracks.Tracks[i].Name).. P3D.CleanP3DString(LocatorChunk.Name))
+					end
+					MultiController:SetChunkAtIndex(1, MultiControllerTracks:Output())
+					animColl:SetChunkAtIndex(idx2, MultiController:Output())
+				end
+				
+				RootChunk:AddChunk(skel:Output())
+				RootChunk:AddChunk(animColl:Output())
+				RootChunk:RemoveChunkAtIndex(idx)
 				modified = true
 			elseif Settings.SolidWrenches and Type == "Wrench" then
 				if not AddedWrenchAnimation then
