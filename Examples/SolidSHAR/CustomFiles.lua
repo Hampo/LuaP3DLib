@@ -43,7 +43,7 @@ if PreLoad then
 	for i=1,filesN do
 		local filePath = files[i]
 		if WildcardMatch(filePath, "/GameData/Art/l*", true, true) then
-			local file, modified = MakeModelSolid(ReadFile(filePath))
+			local file, modified = MakeModelSolid(ReadFile(filePath), filePath)
 			if modified then
 				count = count + 1
 				Cache[filePath] = file

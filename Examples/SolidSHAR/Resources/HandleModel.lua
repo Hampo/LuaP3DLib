@@ -6,7 +6,7 @@ for k,v in pairs(Cache) do
 	end
 end
 if not PreLoad then
-	local Original = MakeModelSolid(ReadFile(Path))
+	local Original = MakeModelSolid(ReadFile(Path), Path)
 	Cache[Path] = Original
 	Output(Original)
 end
