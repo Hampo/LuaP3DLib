@@ -412,6 +412,35 @@ function P3D.SetVector4(Chunk, Offset, X, Y, Z, W)
 	return Chunk:sub(1, Offset - 1) .. P3D.Vector4ToString16(X, Y, Z, W) .. Chunk:sub(Offset + 16)
 end
 
+function P3D.String64ToMatrix(str, StartPosition)
+	if StartPosition == nil then StartPosition = 1 end
+	
+	return unpack("<ffffffffffffffff", str, StartPosition)
+end
+function P3D.MatrixToString64(M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
+	return pack("<ffffffffffffffff", M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
+end
+function P3D.SetMatrix(Chunk, Offset, M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
+	return Chunk:sub(1, Offset - 1) .. P3D.MatrixToString64(M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44) .. Chunk:sub(Offset + 64)
+end
+function P3D.MatrixIdentity()
+	return {M11=1,M12=0,M13=0,M14=0,M21=0,M22=1,M23=0,M24=0,M31=0,M32=0,M33=1,M34=0,M41=0,M42=0,M43=0,M44=1}
+end
+function P3D.MatrixRotateY(Matrix, angle)
+	angle = math.rad(angle)
+	local cos = math.cos(angle)
+	local sin = math.sin(angle)
+	local x, y, z = Matrix.M41, Matrix.M42, Matrix.M43
+	Matric = P3D.MatrixIdentity()
+	Matrix.M11 = cos
+	Matrix.M13 = sin * -1
+	Matrix.M31 = sin
+	Matrix.M33 = cos
+	Matrix.M41 = x
+	Matrix.M42 = y
+	Matrix.M43 = z
+end
+
 function P3D.GetString(str, StartPosition)
 	if StartPosition == nil then StartPosition = 1 end
 	local output = unpack("<s1", str, StartPosition)
@@ -441,9 +470,7 @@ function P3D.MakeP3DString(str)
 	local strLen = str:len()
 	local diff = strLen % 4
 	if diff > 0 then
-		for i=1,4-diff do
-			str = str .. "\0"
-		end
+		str = str .. string.rep("\0", 4 - diff)
 	end
 	return str
 end
@@ -1230,6 +1257,120 @@ function P3D.CompositeDrawableP3DChunk:Output()
 	return pack("<c4IIs1s1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.SkeletonName) .. chunks
 end
 
+--Composite Drawable Skin List Chunk
+P3D.CompositeDrawableSkinListP3DChunk = P3D.P3DChunk:newChildClass("Composite Drawable Skin List")
+function P3D.CompositeDrawableSkinListP3DChunk:new(Data)
+	local o = P3D.CompositeDrawableSkinListP3DChunk.parentClass.new(self, Data)
+	o.NumElements = unpack("<i", o.ValueStr)
+	return o
+end
+
+function P3D.CompositeDrawableSkinListP3DChunk:create(NumElements)
+	local Len = 12 + 4
+	return P3D.CompositeDrawableSkinListP3DChunk:new{Raw = pack("<c4IIi", P3D.Identifiers.Composite_Drawable_Skin_List, Len, Len, NumElements)}
+end
+
+function P3D.CompositeDrawableSkinListP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4
+	return pack("<c4IIi", self.ChunkType, Len, Len + chunks:len(), #self.Chunks) .. chunks
+end
+
+--Composite Drawable Skin Chunk
+P3D.CompositeDrawableSkinP3DChunk = P3D.P3DChunk:newChildClass("Composite Drawable Skin")
+function P3D.CompositeDrawableSkinP3DChunk:new(Data)
+	local o = P3D.CompositeDrawableSkinP3DChunk.parentClass.new(self, Data)
+	o.Name, o.IsTranslucent = unpack("<s1i", o.ValueStr)
+	return o
+end
+
+function P3D.CompositeDrawableSkinP3DChunk:create(Name,IsTranslucent)
+	local Len = 12 + Name:len() + 1 + 4
+	return P3D.CompositeDrawableSkinP3DChunk:new{Raw = pack("<c4IIs1i", P3D.Identifiers.Composite_Drawable_Skin, Len, Len, Name, IsTranslucent)}
+end
+
+function P3D.CompositeDrawableSkinP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4
+	return pack("<c4IIs1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsTranslucent) .. chunks
+end
+
+--Composite Drawable Prop List Chunk
+P3D.CompositeDrawablePropListP3DChunk = P3D.P3DChunk:newChildClass("Composite Drawable Prop List")
+function P3D.CompositeDrawablePropListP3DChunk:new(Data)
+	local o = P3D.CompositeDrawablePropListP3DChunk.parentClass.new(self, Data)
+	o.NumElements = unpack("<i", o.ValueStr)
+	return o
+end
+
+function P3D.CompositeDrawablePropListP3DChunk:create(NumElements)
+	local Len = 12 + 4
+	return P3D.CompositeDrawablePropListP3DChunk:new{Raw = pack("<c4IIi", P3D.Identifiers.Composite_Drawable_Prop_List, Len, Len, NumElements)}
+end
+
+function P3D.CompositeDrawablePropListP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4
+	return pack("<c4IIi", self.ChunkType, Len, Len + chunks:len(), #self.Chunks) .. chunks
+end
+
+--Composite Drawable Prop Chunk
+P3D.CompositeDrawablePropP3DChunk = P3D.P3DChunk:newChildClass("Composite Drawable Prop")
+function P3D.CompositeDrawablePropP3DChunk:new(Data)
+	local o = P3D.CompositeDrawablePropP3DChunk.parentClass.new(self, Data)
+	o.Name, o.IsTranslucent, o.SkeletonJointID = unpack("<s1ii", o.ValueStr)
+	return o
+end
+
+function P3D.CompositeDrawablePropP3DChunk:create(Name,IsTranslucent,SkeletonJointID)
+	local Len = 12 + Name:len() + 1 + 4 + 4
+	return P3D.CompositeDrawablePropP3DChunk:new{Raw = pack("<c4IIs1ii", P3D.Identifiers.Composite_Drawable_Prop, Len, Len, Name, IsTranslucent, SkeletonJointID)}
+end
+
+function P3D.CompositeDrawablePropP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4
+	return pack("<c4IIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsTranslucent, self.SkeletonJointID) .. chunks
+end
+
+--Composite Drawable Effect List Chunk
+P3D.CompositeDrawableEffectListP3DChunk = P3D.P3DChunk:newChildClass("Composite Drawable Effect List")
+function P3D.CompositeDrawableEffectListP3DChunk:new(Data)
+	local o = P3D.CompositeDrawableEffectListP3DChunk.parentClass.new(self, Data)
+	o.NumElements = unpack("<i", o.ValueStr)
+	return o
+end
+
+function P3D.CompositeDrawableEffectListP3DChunk:create(NumElements)
+	local Len = 12 + 4
+	return P3D.CompositeDrawableEffectListP3DChunk:new{Raw = pack("<c4IIi", P3D.Identifiers.Composite_Drawable_Effect_List, Len, Len, NumElements)}
+end
+
+function P3D.CompositeDrawableEffectListP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4
+	return pack("<c4IIi", self.ChunkType, Len, Len + chunks:len(), #self.Chunks) .. chunks
+end
+
+--Composite Drawable Effect Chunk
+P3D.CompositeDrawableEffectP3DChunk = P3D.P3DChunk:newChildClass("Composite Drawable Effect")
+function P3D.CompositeDrawableEffectP3DChunk:new(Data)
+	local o = P3D.CompositeDrawableEffectP3DChunk.parentClass.new(self, Data)
+	o.Name, o.IsTranslucent, o.SkeletonJointID = unpack("<s1ii", o.ValueStr)
+	return o
+end
+
+function P3D.CompositeDrawableEffectP3DChunk:create(Name,IsTranslucent,SkeletonJointID)
+	local Len = 12 + Name:len() + 1 + 4 + 4
+	return P3D.CompositeDrawableEffectP3DChunk:new{Raw = pack("<c4IIs1ii", P3D.Identifiers.Composite_Drawable_Effect, Len, Len, Name, IsTranslucent, SkeletonJointID)}
+end
+
+function P3D.CompositeDrawableEffectP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4
+	return pack("<c4IIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsTranslucent, self.SkeletonJointID) .. chunks
+end
+
 --Collision Effect Chunk
 P3D.CollisionEffectP3DChunk = P3D.P3DChunk:newChildClass("Collision Effect")
 function P3D.CollisionEffectP3DChunk:new(Data)
@@ -1316,7 +1457,7 @@ function P3D.LocatorP3DChunk:new(Data)
 	o.Name, o.Type, o.DataLen = unpack("<s1ii", o.ValueStr)
 	local idx = o.Name:len() + 1 + 4 + 4 + 1
 	o.Position = {X=0,Y=0,Z=0}
-	o.Data, o.Position.X, o.Position.Y, o.Position.Z = unpack("<c" .. o.DataLen * 4 .. "fff", o.ValueStr, idx)
+	o.Data, o.Position.X, o.Position.Y, o.Position.Z, o.NumTriggers = unpack("<c" .. o.DataLen * 4 .. "fffi", o.ValueStr, idx)
 	return o
 end
 
@@ -1354,7 +1495,7 @@ end
 function P3D.LocatorP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Data:len() + 12
-	return pack("<c4IIs1iic" .. self.DataLen .."fff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Type, self.DataLen, self.Data, self.Position.X, self.Position.Y, self.Position.Z) .. chunks
+	return pack("<c4IIs1iic" .. self.DataLen .."fffi", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Type, self.DataLen, self.Data, self.Position.X, self.Position.Y, self.Position.Z, self.NumTriggers) .. chunks
 end
 
 --Skeleton Chunk
@@ -1388,7 +1529,7 @@ end
 P3D.SkeletonJointP3DChunk = P3D.P3DChunk:newChildClass("Skeleton Joint")
 function P3D.SkeletonJointP3DChunk:new(Data)
 	local o = P3D.SkeletonJointP3DChunk.parentClass.new(self, Data)
-	o.RestPose = {M11=0,M12=0,M13=0,M14=0,M21=0,M22=0,M23=0,M24=0,M31=0,M32=0,M33=0,M34=0,M41=0,M42=0,M43=0,M44=0}
+	o.RestPose = P3D.MatrixIdentity()
 	o.Name, o.Parent, o.DOF, o.FreeAxis, o.PrimaryAxis, o.SecondaryAxis, o.TwistAxis, o.RestPose.M11, o.RestPose.M12, o.RestPose.M13, o.RestPose.M14, o.RestPose.M21, o.RestPose.M22, o.RestPose.M23, o.RestPose.M34, o.RestPose.M31, o.RestPose.M32, o.RestPose.M33, o.RestPose.M34, o.RestPose.M41, o.RestPose.M42, o.RestPose.M43, o.RestPose.M44 = unpack("<s1iiiiiiffffffffffffffff", o.ValueStr)
 	return o
 end
@@ -1518,4 +1659,147 @@ function P3D.AnimationP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + self.AnimationType:len() + 4 + 4 + 4
 	return pack("<c4IIis1c4ffi", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.AnimationType, self.NumFrames, self.FrameRate, self.Cyclic) .. chunks
+end
+
+--Particle System 2 Chunk
+P3D.ParticleSystem2P3DChunk = P3D.P3DChunk:newChildClass("Particle System 2")
+function P3D.ParticleSystem2P3DChunk:new(Data)
+	local o = P3D.ParticleSystem2P3DChunk.parentClass.new(self, Data)
+	o.Version, o.Name, o.Unknown = unpack("<is1s1", o.ValueStr)
+	return o
+end
+
+function P3D.ParticleSystem2P3DChunk:create(Version,Name,Unknown)
+	local Len = 12 + 4 + Name:len() + 1 + Unknown:len() + 1
+	return P3D.ParticleSystem2P3DChunk:new{Raw = pack("<c4IIis1s1", P3D.Identifiers.Particle_System_2, Len, Len, Version, Name, Unknown)}
+end
+
+function P3D.ParticleSystem2P3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4 + self.Name:len() + 1 + self.Unknown:len() + 1
+	return pack("<c4IIis1s1", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.Unknown) .. chunks
+end
+
+--Particle System Factory Chunk
+P3D.ParticleSystemFactoryP3DChunk = P3D.P3DChunk:newChildClass("Particle System Factory")
+function P3D.ParticleSystemFactoryP3DChunk:new(Data)
+	local o = P3D.ParticleSystemFactoryP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Name, o.FrameRate, o.NumAnimFrames, o.NumOLFrames, o.CycleAnim, o.EnableSorting, o.NumEmitters = unpack("<is1fiihhi", o.ValueStr)
+	return o
+end
+
+function P3D.ParticleSystemFactoryP3DChunk:create(Version,Name,FrameRate,NumAnimFrames,NumOLFrames,CycleAnim,EnableSorting,NumEmitters)
+	local Len = 12 + 4 + Name:len() + 1 + 4 + 4 + 4 + 2 + 2 + 4
+	return P3D.ParticleSystemFactoryP3DChunk:new{Raw = pack("<c4IIis1fiihhi", P3D.Identifiers.Particle_System_Factory, Len, Len, Version, Name, FrameRate, NumAnimFrames, NumOLFrames, CycleAnim, EnableSorting, NumEmitters)}
+end
+
+function P3D.ParticleSystemFactoryP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4 + 4 + 2 + 2 + 4
+	return pack("<c4IIis1fiihhi", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.FrameRate, self.NumAnimFrames, self.NumOLFrames, self.CycleAnim, self.EnableSorting, self.NumEmitters) .. chunks
+end
+
+--Instance List Chunk
+P3D.InstanceListP3DChunk = P3D.P3DChunk:newChildClass("Instance List")
+function P3D.InstanceListP3DChunk:new(Data)
+	local o = P3D.InstanceListP3DChunk.parentClass.new(self, Data)
+	o.Name = unpack("<s1", o.ValueStr)
+	o.Data = o.ValueStr:sub(o.Name:len() + 1)
+	return o
+end
+
+function P3D.InstanceListP3DChunk:create(Name,Data)
+	local Len = 12 + Name:len() + 1 + Data:len()
+	return P3D.InstanceListP3DChunk:new{Raw = pack("<c4IIs1i", P3D.Identifiers.Instance_List, Len, Len, Name) .. Data}
+end
+
+function P3D.InstanceListP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + self.Data:len()
+	return pack("<c4IIs1", self.ChunkType, Len, Len + chunks:len(), self.Name) .. self.Data .. chunks
+end
+
+--Scenegraph Chunk
+P3D.ScenegraphP3DChunk = P3D.P3DChunk:newChildClass("Scenegraph")
+function P3D.ScenegraphP3DChunk:new(Data)
+	local o = P3D.ScenegraphP3DChunk.parentClass.new(self, Data)
+	o.Name = unpack("<s1", o.ValueStr)
+	o.Data = o.ValueStr:sub(o.Name:len() + 1)
+	return o
+end
+
+function P3D.ScenegraphP3DChunk:create(Name,Data)
+	local Len = 12 + Name:len() + 1 + Data:len()
+	return P3D.ScenegraphP3DChunk:new{Raw = pack("<c4IIs1", P3D.Identifiers.Scenegraph, Len, Len, Name) .. Data}
+end
+
+function P3D.ScenegraphP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + self.Data:len()
+	return pack("<c4IIs1", self.ChunkType, Len, Len + chunks:len(), self.Name) .. self.Data .. chunks
+end
+
+--Old Scenegraph Root Chunk
+P3D.OldScenegraphRootP3DChunk = P3D.P3DChunk:newChildClass("Old Scenegraph Root")
+function P3D.OldScenegraphRootP3DChunk:new(Data)
+	local o = P3D.OldScenegraphRootP3DChunk.parentClass.new(self, Data)
+	return o
+end
+
+--Old Scenegraph Branch Chunk
+P3D.OldScenegraphBranchP3DChunk = P3D.P3DChunk:newChildClass("Old Scenegraph Branch")
+function P3D.OldScenegraphBranchP3DChunk:new(Data)
+	local o = P3D.OldScenegraphBranchP3DChunk.parentClass.new(self, Data)
+	o.Name, o.NumChildren = unpack("<s1i", o.ValueStr)
+	return o
+end
+
+function P3D.OldScenegraphBranchP3DChunk:create(Name,NumChildren)
+	local Len = 12 + Name:len() + 1 + 4
+	return P3D.OldScenegraphBranchP3DChunk:new{Raw = pack("<c4IIs1i", P3D.Identifiers.Old_Scenegraph_Branch, Len, Len, Name, NumChildren)}
+end
+
+function P3D.OldScenegraphBranchP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4
+	return pack("<c4IIs1i", self.ChunkType, Len, Len + chunks:len(), self.Name, #self.Chunks) .. chunks
+end
+
+--Old Scenegraph Transform Chunk
+P3D.OldScenegraphTransformP3DChunk = P3D.P3DChunk:newChildClass("Old Scenegraph Transform")
+function P3D.OldScenegraphTransformP3DChunk:new(Data)
+	local o = P3D.OldScenegraphTransformP3DChunk.parentClass.new(self, Data)
+	o.Transform = P3D.MatrixIdentity()
+	o.Name, o.NumChildren, o.Transform.M11, o.Transform.M12, o.Transform.M13, o.Transform.M14, o.Transform.M21, o.Transform.M22, o.Transform.M23, o.Transform.M34, o.Transform.M31, o.Transform.M32, o.Transform.M33, o.Transform.M34, o.Transform.M41, o.Transform.M42, o.Transform.M43, o.Transform.M44 = unpack("<s1iffffffffffffffff", o.ValueStr)
+	return o
+end
+
+function P3D.OldScenegraphTransformP3DChunk:create(Name,NumChildren,Transform)
+	local Len = 12 + Name:len() + 1 + 4 + 64
+	return P3D.OldScenegraphTransformP3DChunk:new{Raw = pack("<c4IIs1iffffffffffffffff", P3D.Identifiers.Old_Scenegraph_Transform, Len, Len, Name, NumChildren, Transform.M11, Transform.M12, Transform.M13, Transform.M14, Transform.M21, Transform.M22, Transform.M23, Transform.M34, Transform.M31, Transform.M32, Transform.M33, Transform.M34, Transform.M41, Transform.M42, Transform.M43, Transform.M44)}
+end
+
+function P3D.OldScenegraphTransformP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 64
+	return pack("<c4IIs1iffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, #self.Chunks, self.Transform.M11, self.Transform.M12, self.Transform.M13, self.Transform.M14, self.Transform.M21, self.Transform.M22, self.Transform.M23, self.Transform.M34, self.Transform.M31, self.Transform.M32, self.Transform.M33, self.Transform.M34, self.Transform.M41, self.Transform.M42, self.Transform.M43, self.Transform.M44) .. chunks
+end
+
+--Old Scenegraph Drawable Chunk
+P3D.OldScenegraphDrawableP3DChunk = P3D.P3DChunk:newChildClass("Old Scenegraph Drawable")
+function P3D.OldScenegraphDrawableP3DChunk:new(Data)
+	local o = P3D.OldScenegraphDrawableP3DChunk.parentClass.new(self, Data)
+	o.Name, o.DrawableName, o.IsTranslucent = unpack("<s1s1i", o.ValueStr)
+	return o
+end
+
+function P3D.OldScenegraphDrawableP3DChunk:create(Name,DrawableName,IsTranslucent)
+	local Len = 12 + Name:len() + 1 + DrawableName:len() + 1 + 4
+	return P3D.OldScenegraphDrawableP3DChunk:new{Raw = pack("<c4IIs1s1i", P3D.Identifiers.Old_Scenegraph_Drawable, Len, Len, Name, DrawableName, IsTranslucent)}
+end
+
+function P3D.OldScenegraphDrawableP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + self.DrawableName:len() + 1 + 4
+	return pack("<c4IIs1s1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.DrawableName, self.IsTranslucent) .. chunks
 end
