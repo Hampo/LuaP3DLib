@@ -1514,7 +1514,7 @@ end
 function P3D.SkeletonP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
-	return pack("<c4IIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.NumJoints) .. chunks
+	return pack("<c4IIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, #self.Chunks) .. chunks
 end
 
 function P3D.SkeletonP3DChunk:RemoveChunkAtIndex(idx)
@@ -1580,7 +1580,38 @@ end
 function P3D.CollisionObjectP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.MaterialName:len() + 1 + 4 + 4
-	return pack("<c4IIs1is1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, self.NumSubObject, self.NumOwner) .. chunks
+	return pack("<c4IIs1is1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, #self.Chunks - self.NumOwner, self.NumOwner) .. chunks
+end
+
+function P3D.CollisionObjectP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	P3D.CollisionObjectP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == P3D.Identifiers.Collision_Volume_Owner then
+		self.NumOwner = self.NumOwner - 1
+	end
+end
+
+--Collision Volume Chunk
+P3D.CollisionVolumeP3DChunk = P3D.P3DChunk:newChildClass("Collision Volume")
+function P3D.CollisionVolumeP3DChunk:new(Data)
+	local o = P3D.CollisionVolumeP3DChunk.parentClass.new(self, Data)
+	o.ObjectReferenceIndex, o.OwnerIndex, o.NumSubVolume = unpack("<iii", o.ValueStr)
+	return o
+end
+
+function P3D.CollisionVolumeP3DChunk:create(ObjectReferenceIndex,OwnerIndex,NumSubVolume)
+	local Len = 12 + 4 + 4 + 4
+	return P3D.CollisionVolumeP3DChunk:new{Raw = pack("<c4IIiii", P3D.Identifiers.Collision_Volume, Len, Len, ObjectReferenceIndex, OwnerIndex, NumSubVolume)}
+end
+
+function P3D.CollisionVolumeP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4
+	local subVolumes = 0
+	for i=1,#self.ChunkTypes do
+		if self.ChunkTypes[i] == P3D.Identifiers.Collision_Volume then subVolumes = subVolumes + 1 end
+	end
+	return pack("<c4IIiii", self.ChunkType, Len, Len + chunks:len(), self.ObjectReferenceIndex, self.OwnerIndex, subVolumes) .. chunks
 end
 
 --Multi Controller Chunk
@@ -1802,4 +1833,79 @@ function P3D.OldScenegraphDrawableP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + self.DrawableName:len() + 1 + 4
 	return pack("<c4IIs1s1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.DrawableName, self.IsTranslucent) .. chunks
+end
+
+--Animation Group List Chunk
+P3D.AnimationGroupListP3DChunk = P3D.P3DChunk:newChildClass("Animation Group List")
+function P3D.AnimationGroupListP3DChunk:new(Data)
+	local o = P3D.AnimationGroupListP3DChunk.parentClass.new(self, Data)
+	o.Version, o.NumGroups = unpack("<ii", o.ValueStr)
+	return o
+end
+
+function P3D.AnimationGroupListP3DChunk:create(Version,NumGroups)
+	local Len = 12 + 4 + 4
+	return P3D.AnimationGroupListP3DChunk:new{Raw = pack("<c4IIii", P3D.Identifiers.Animation_Group_List, Len, Len, Version, NumGroups)}
+end
+
+function P3D.AnimationGroupListP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4 + 4
+	return pack("<c4IIii", self.ChunkType, Len, Len + chunks:len(), self.Version, #self.Chunks) .. chunks
+end
+
+--Animation Group Chunk
+P3D.AnimationGroupP3DChunk = P3D.P3DChunk:newChildClass("Animation Group")
+function P3D.AnimationGroupP3DChunk:new(Data)
+	local o = P3D.AnimationGroupP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Name, o.GroupId, o.NumChannels = unpack("<is1ii", o.ValueStr)
+	return o
+end
+
+function P3D.AnimationGroupP3DChunk:create(Version,Name,GroupId,NumChannels)
+	local Len = 12 + 4 + Name:len() + 1 + 4 + 4
+	return P3D.AnimationGroupP3DChunk:new{Raw = pack("<c4IIis1ii", P3D.Identifiers.Animation_Group, Len, Len, Version, Name, GroupId, NumChannels)}
+end
+
+function P3D.AnimationGroupP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4
+	return pack("<c4IIis1ii", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.GroupId, self.NumChannels) .. chunks
+end
+
+--Compressed Quaternion Channel Chunk
+P3D.CompressedQuaternionChannelP3DChunk = P3D.P3DChunk:newChildClass("Compressed Quaternion Channel")
+function P3D.CompressedQuaternionChannelP3DChunk:new(Data)
+	local o = P3D.CompressedQuaternionChannelP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Param, o.NumFrames = unpack("<ic4i", o.ValueStr)
+	local idx = 1 + 4 + 4 + 4
+	o.Frames = table.pack(unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx))
+	o.Frames[#o.Frames] = nil
+	idx = idx + o.NumFrames * 2
+	o.Values = {}
+	for i=1,o.NumFrames do
+		local value = {X=0,Y=0,Z=0,W=0}
+		value.W, value.X, value.Y, value.Z = unpack("<hhhh", o.ValueStr, idx)
+		value.X = value.X / 32767
+		value.Y = value.Y / 32767
+		value.Z = value.Z / 32767
+		value.W = value.W / 32767
+		o.Values[#o.Values + 1] = value
+		idx = idx + 8
+	end
+	return o
+end
+
+--TODO: Create
+
+function P3D.CompressedQuaternionChannelP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local FramesN = #self.Frames
+	local values = {}
+	for i=1,FramesN do
+		local value = self.Values[i]
+		values[#values + 1] = pack("hhhh", math.floor(value.W * 32767), math.floor(value.X * 32767), math.floor(value.Y * 32767), math.floor(value.X * 32767))
+	end
+	local Len = 12 + 4 + 4 + 4 + FramesN * 2 + FramesN * 8
+	return pack("<c4IIic4i" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames)) .. table.concat(values) .. chunks
 end
