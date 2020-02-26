@@ -557,7 +557,7 @@ function P3D.P3DChunk:RemoveChunkAtIndex(idx)
 end
 
 function P3D.P3DChunk:GetChunkAtIndex(idx)
-	return self.Chunks[idx]
+	return self.Chunks[idx], self.ChunkTypes[idx]
 end
 
 function P3D.P3DChunk:SetChunkAtIndex(idx, ChunkData)
@@ -575,6 +575,12 @@ function P3D.P3DChunk:AddChunk(ChunkData)
 	local ChunkID = ChunkData:sub(1, 4)
 	self.ChunkTypes[#self.ChunkTypes + 1] = ChunkID
 	self.Chunks[#self.Chunks + 1] = ChunkData
+end
+
+function P3D.P3DChunk:AddChildChunks(RootChunk)
+	for idx in RootChunk:GetChunkIndexes() do
+		self:AddChunk(RootChunk:GetChunkAtIndex(idx))
+	end
 end
 
 function P3D.P3DChunk:Output()
@@ -1466,6 +1472,24 @@ end
 --	return nil
 --end
 
+function P3D.LocatorP3DChunk:createType9(Name, Position, Type, UnknownStr1, UnknownStr2, Unknown1, Unknown2)
+	local dataTbl = {UnknownStr1}
+	for i=1,4 - UnknownStr1:len() % 4 do
+		dataTbl[#dataTbl + 1] = "\0"
+	end
+	dataTbl[#dataTbl + 1] = UnknownStr2
+	for i=1,4 - UnknownStr2:len() % 4 do
+		dataTbl[#dataTbl + 1] = "\0"
+	end
+	dataTbl[#dataTbl + 1] = Type
+	for i=1,4 - Type:len() % 4 do
+		dataTbl[#dataTbl + 1] = "\0"
+	end
+	local data = table.concat(dataTbl)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + data:len() + 4 + 4 + 12 + 4
+	return P3D.LocatorP3DChunk:new{Raw = pack("<c4IIs1iic" .. data:len() .. "iifffi", P3D.Identifiers.Locator, Len, Len, Name, 9, data:len() / 4 + 2, data, Unknown1, Unknown2, Position.X, Position.Y, Position.Z, 0)}
+end
+
 function P3D.LocatorP3DChunk:GetType9Data()
 	local data, Unknown1, Unknown2 = unpack("<c" .. (self.DataLen - 2) * 4 .. "ii", self.ValueStr, self.Name:len() + 1 + 4 + 4 + 1)
 	local UnknownStr1, UnknownStr2, Type
@@ -1494,8 +1518,8 @@ end
 
 function P3D.LocatorP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
-	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Data:len() + 12
-	return pack("<c4IIs1iic" .. self.DataLen .."fffi", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Type, self.DataLen, self.Data, self.Position.X, self.Position.Y, self.Position.Z, self.NumTriggers) .. chunks
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Data:len() + 12 + 4
+	return pack("<c4IIs1iic" .. self.DataLen * 4 .."fffi", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Type, self.DataLen, self.Data, self.Position.X, self.Position.Y, self.Position.Z, self.NumTriggers) .. chunks
 end
 
 --Skeleton Chunk

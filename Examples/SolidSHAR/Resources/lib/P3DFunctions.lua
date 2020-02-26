@@ -21,23 +21,57 @@ local CardAnimCollParticleSystemFactoryIDX = CardAnimCollP3D:GetChunkIndex(P3D.I
 local CardAnimCollAnimCollIDX = CardAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Coll)
 
 local CoinAnimCollP3D = P3D.P3DChunk:new{Raw = ReadFile(GetModPath() .. "/Resources/p3d/CoinAnimColl.p3d")}
-local CoinAnimDynaPhysIDX = CoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Dyna_Phys)
 local CoinAnimCollAnimationIDX = CoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Animation)
 local CoinAnimCollSkeletonIDX = CoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Skeleton)
 local CoinAnimCollAnimCollIDX = CoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Coll)
 
+local OldCoinAnimCollP3D = P3D.P3DChunk:new{Raw = ReadFile(GetModPath() .. "/Resources/p3d/OldCoinAnimColl.p3d")}
+local OldCoinAnimCollAnimationIDX = OldCoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Animation)
+local OldCoinAnimCollSkeletonIDX = OldCoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Skeleton)
+local OldCoinAnimCollAnimCollIDX = OldCoinAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Coll)
+
+local ShopAnimCollP3D = P3D.P3DChunk:new{Raw = ReadFile(GetModPath() .. "/Resources/p3d/ShopAnimColl.p3d")}
+local ShopAnimCollAnimationIDX = ShopAnimCollP3D:GetChunkIndex(P3D.Identifiers.Animation)
+local ShopAnimCollSkeletonIDX = ShopAnimCollP3D:GetChunkIndex(P3D.Identifiers.Skeleton)
+local ShopAnimCollParticleSystemIDX = ShopAnimCollP3D:GetChunkIndex(P3D.Identifiers.Particle_System_2)
+local ShopAnimCollParticleSystemFactoryIDX = ShopAnimCollP3D:GetChunkIndex(P3D.Identifiers.Particle_System_Factory)
+local ShopAnimCollAnimCollIDX = ShopAnimCollP3D:GetChunkIndex(P3D.Identifiers.Anim_Coll)
+
+local function RotationYaw(yaw)
+	local result = {X=0,Y=0,Z=0,W=0}
+	local halfYaw = yaw * 0.5
+	
+	local sinYaw = math.sin(halfYaw)
+	local cosYaw = math.cos(halfYaw)
+	
+	result.X = 0
+	result.Y = sinYaw
+	result.Z = 0
+	result.W = cosYaw * -1
+	return result
+end
+
+local pi2 = math.pi * 2
 function MakeModelSolid(Original, Path)
+	local level = Path:match("l0(%d)") or Path:match("l(%d)") or Path:match("level0(%d)") or Path:match("level(%d)")
+	level = level and tonumber(level) or 1
 	local RootChunk = P3D.P3DChunk:new{Raw = Original}
 	local modified = false
 	local AddedWrenchAnimation = false
 	local AddedPhoneAnimation = false
 	local AddedCardAnimation = false
 	local AddedCoinAnimation = false
+	local AddedShopAnimation = false
 	local WrenchID = 1
 	local PhoneID = 1
 	local CardID = 1
 	local CoinID = 1
-	local CoinAnimDynaPhys = nil
+	local OldCoinID = 1
+	local ShopID = 1
+	
+	local OldCoinAnimation = nil
+	local OldCoinSkeleton = nil
+	local OldCoinAnimColl = nil
 	for idx in RootChunk:GetChunkIndexes(P3D.Identifiers.Locator) do
 		local LocatorChunk = P3D.LocatorP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
 		if LocatorChunk.Type == 9 then
@@ -224,9 +258,157 @@ function MakeModelSolid(Original, Path)
 				RootChunk:RemoveChunkAtIndex(idx)
 				modified = true
 				WrenchID = WrenchID + 1
+			elseif Settings.SolidShops and Type == "PurchaseSkin" then
+				if not AddedShopAnimation then
+					RootChunk:AddChunk(ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollAnimationIDX))
+					AddedShopAnimation = true
+				end
+				local skel = P3D.SkeletonP3DChunk:new{Raw = ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollSkeletonIDX)}
+				skel.Name = P3D.MakeP3DString(P3D.CleanP3DString(skel.Name).. ShopID)
+				local skelJoint = P3D.SkeletonJointP3DChunk:new{Raw = skel:GetChunkAtIndex(1)}
+				skelJoint.RestPose.M41 = LocatorChunk.Position.X
+				skelJoint.RestPose.M42 = LocatorChunk.Position.Y
+				skelJoint.RestPose.M43 = LocatorChunk.Position.Z
+				skel:SetChunkAtIndex(1, skelJoint:Output())
+				
+				local particleSystem = P3D.ParticleSystem2P3DChunk:new{Raw = ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollParticleSystemIDX)}
+				particleSystem.Name = P3D.MakeP3DString(P3D.CleanP3DString(particleSystem.Name).. ShopID)
+				particleSystem.Unknown = P3D.MakeP3DString(P3D.CleanP3DString(particleSystem.Unknown).. ShopID)
+				
+				local particleSystemFactory = P3D.ParticleSystemFactoryP3DChunk:new{Raw = ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollParticleSystemFactoryIDX)}
+				particleSystemFactory.Name = P3D.MakeP3DString(P3D.CleanP3DString(particleSystemFactory.Name).. ShopID)
+				
+				local animColl = P3D.AnimCollP3DChunk:new{Raw = ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollAnimCollIDX)}
+				animColl.Name = P3D.MakeP3DString(P3D.CleanP3DString(animColl.Name).. ShopID)
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Old_Frame_Controller) do
+					local OldFrameController = P3D.OldFrameControllerP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					OldFrameController.Name = P3D.MakeP3DString(P3D.CleanP3DString(OldFrameController.Name).. ShopID)
+					if OldFrameController.Name:sub(1, 4) == "PTRN" or OldFrameController.Name:sub(1, 3) == "EFX" then
+						OldFrameController.HierarchyName = P3D.MakeP3DString(P3D.CleanP3DString(OldFrameController.HierarchyName).. ShopID)
+					end
+					animColl:SetChunkAtIndex(idx2, OldFrameController:Output())
+				end
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Composite_Drawable) do
+					local CompositeDrawable = P3D.CompositeDrawableP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					CompositeDrawable.Name = P3D.MakeP3DString(P3D.CleanP3DString(CompositeDrawable.Name).. ShopID)
+					CompositeDrawable.SkeletonName = P3D.MakeP3DString(P3D.CleanP3DString(CompositeDrawable.SkeletonName).. ShopID)
+					for idx3 in CompositeDrawable:GetChunkIndexes(P3D.Identifiers.Composite_Drawable_Effect_List) do
+						local EffectList = P3D.CompositeDrawableEffectListP3DChunk:new{Raw = CompositeDrawable:GetChunkAtIndex(idx3)}
+						for idx4 in EffectList:GetChunkIndexes(P3D.Identifiers.Composite_Drawable_Effect) do
+							local Effect = P3D.CompositeDrawableEffectP3DChunk:new{Raw = EffectList:GetChunkAtIndex(idx4)}
+							Effect.Name = P3D.MakeP3DString(P3D.CleanP3DString(Effect.Name).. ShopID)
+							EffectList:SetChunkAtIndex(idx4, Effect:Output())
+						end
+						CompositeDrawable:SetChunkAtIndex(idx3, EffectList:Output())
+					end
+					animColl:SetChunkAtIndex(idx2, CompositeDrawable:Output())
+				end
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Collision_Object) do
+					local CollisionObject = P3D.CollisionObjectP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					CollisionObject.Name = P3D.MakeP3DString(P3D.CleanP3DString(CollisionObject.Name).. ShopID)
+					animColl:SetChunkAtIndex(idx2, CollisionObject:Output())
+				end
+				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Multi_Controller) do
+					local MultiController = P3D.MultiControllerP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
+					local MultiControllerTracks = P3D.MultiControllerTracksP3DChunk:new{Raw = MultiController:GetChunkAtIndex(1)}
+					for i=1,#MultiControllerTracks.Tracks do
+						MultiControllerTracks.Tracks[i].Name = P3D.MakeP3DString(P3D.CleanP3DString(MultiControllerTracks.Tracks[i].Name).. ShopID)
+					end
+					MultiController:SetChunkAtIndex(1, MultiControllerTracks:Output())
+					animColl:SetChunkAtIndex(idx2, MultiController:Output())
+				end
+				
+				RootChunk:AddChunk(skel:Output())
+				RootChunk:AddChunk(particleSystemFactory:Output())
+				RootChunk:AddChunk(particleSystem:Output())
+				RootChunk:AddChunk(animColl:Output())
+				RootChunk:RemoveChunkAtIndex(idx)
+				modified = true
+				ShopID = ShopID + 1
 			end
 		elseif LocatorChunk.Type == 14 and Settings.SolidCoins then
-			if CoinID < 20 then
+			if Settings.SolidCoinsForceOld or IsOldVersion then
+				local new = OldCoinAnimation == nil
+				if new then
+					OldCoinAnimation = P3D.AnimationP3DChunk:new{Raw = OldCoinAnimCollP3D:GetChunkAtIndex(OldCoinAnimCollAnimationIDX)}
+					OldCoinSkeleton = P3D.SkeletonP3DChunk:new{Raw = OldCoinAnimCollP3D:GetChunkAtIndex(OldCoinAnimCollSkeletonIDX)}
+					OldCoinAnimColl = P3D.AnimCollP3DChunk:new{Raw = OldCoinAnimCollP3D:GetChunkAtIndex(OldCoinAnimCollAnimCollIDX)}
+				end
+				
+				local AnimationGroupListIDX = OldCoinAnimation:GetChunkIndex(P3D.Identifiers.Animation_Group_List)
+				local AnimationGroupList = P3D.AnimationGroupListP3DChunk:new{Raw = OldCoinAnimation:GetChunkAtIndex(AnimationGroupListIDX)}
+				local AnimationGroupIDX = AnimationGroupList:GetChunkIndex(P3D.Identifiers.Animation_Group)
+				local AnimationGroup = P3D.AnimationGroupP3DChunk:new{Raw = AnimationGroupList:GetChunkAtIndex(AnimationGroupIDX)}
+				AnimationGroup.Name = P3D.MakeP3DString("solidOldCoin_" .. OldCoinID)
+				AnimationGroup.GroupId = OldCoinID
+				local QuaternionIDX = AnimationGroup:GetChunkIndex(P3D.Identifiers.Compressed_Quaternion_Channel)
+				local Quaternion = P3D.CompressedQuaternionChannelP3DChunk:new{Raw = AnimationGroup:GetChunkAtIndex(QuaternionIDX)}
+				local start = math.random() * pi2
+				Quaternion.Values[1] = RotationYaw(start)
+				Quaternion.Values[2] = RotationYaw(pi2 / 3 * 2 + start)
+				Quaternion.Values[3] = RotationYaw(pi2 / 3 + start)
+				Quaternion.Values[4] = Quaternion.Values[1]
+				AnimationGroup:SetChunkAtIndex(QuaternionIDX, Quaternion:Output())
+				if new then
+					AnimationGroupList:SetChunkAtIndex(AnimationGroupIDX, AnimationGroup:Output())
+				else
+					AnimationGroupList:AddChunk(AnimationGroup:Output())
+				end
+				OldCoinAnimation:SetChunkAtIndex(AnimationGroupListIDX, AnimationGroupList:Output())
+				
+				local SkeletonJointIDX = OldCoinSkeleton:GetChunkIndex(P3D.Identifiers.Skeleton_Joint)
+				local SkeletonJoint = P3D.SkeletonJointP3DChunk:new{Raw = OldCoinSkeleton:GetChunkAtIndex(SkeletonJointIDX)}
+				SkeletonJoint.Name = P3D.MakeP3DString("solidOldCoin_" .. OldCoinID)
+				P3D.MatrixRotateY(SkeletonJoint.RestPose, math.deg(start))
+				SkeletonJoint.RestPose.M41 = LocatorChunk.Position.X
+				SkeletonJoint.RestPose.M42 = LocatorChunk.Position.Y
+				SkeletonJoint.RestPose.M43 = LocatorChunk.Position.Z
+				if new then
+					OldCoinSkeleton:SetChunkAtIndex(SkeletonJointIDX, SkeletonJoint:Output())
+					SkeletonJoint.Name = P3D.MakeP3DString("solidOldCoin")
+					SkeletonJoint.RestPose = P3D.MatrixIdentity()
+					OldCoinSkeleton:SetChunkAtIndex(1, SkeletonJoint:Output())
+				else
+					OldCoinSkeleton:AddChunk(SkeletonJoint:Output())
+				end
+				
+				
+				local CompDrawableIDX = OldCoinAnimColl:GetChunkIndex(P3D.Identifiers.Composite_Drawable)
+				local CompDrawable = P3D.CompositeDrawableP3DChunk:new{Raw = OldCoinAnimColl:GetChunkAtIndex(CompDrawableIDX)}
+				local CompDrawablePropListIDX = CompDrawable:GetChunkIndex(P3D.Identifiers.Composite_Drawable_Prop_List)
+				local CompDrawablePropList = P3D.CompositeDrawablePropListP3DChunk:new{Raw = CompDrawable:GetChunkAtIndex(CompDrawablePropListIDX)}
+				local CompDrawablePropIDX = CompDrawablePropList:GetChunkIndex(P3D.Identifiers.Composite_Drawable_Prop)
+				local CompDrawableProp = P3D.CompositeDrawablePropP3DChunk:new{Raw = CompDrawablePropList:GetChunkAtIndex(CompDrawablePropIDX)}
+				CompDrawableProp.Name = P3D.MakeP3DString(CoinMesh[level])
+				CompDrawableProp.SkeletonJointID = OldCoinID
+				if new then
+					CompDrawablePropList:SetChunkAtIndex(CompDrawablePropIDX, CompDrawableProp:Output())
+				else
+					CompDrawablePropList:AddChunk(CompDrawableProp:Output())
+				end
+				CompDrawable:SetChunkAtIndex(CompDrawablePropListIDX, CompDrawablePropList:Output())
+				OldCoinAnimColl:SetChunkAtIndex(CompDrawableIDX, CompDrawable:Output())
+					
+				local CollisionObjectIDX = OldCoinAnimColl:GetChunkIndex(P3D.Identifiers.Collision_Object)
+				local CollisionObject = P3D.CollisionObjectP3DChunk:new{Raw = OldCoinAnimColl:GetChunkAtIndex(CollisionObjectIDX)}
+				local CollisionVolumeIDX = CollisionObject:GetChunkIndex(P3D.Identifiers.Collision_Volume)
+				local CollisionVolume = P3D.CollisionVolumeP3DChunk:new{Raw = CollisionObject:GetChunkAtIndex(CollisionVolumeIDX)}
+				
+				local SubCollisionVolume = P3D.CollisionVolumeP3DChunk:new{Raw = CollisionVolume:GetChunkAtIndex(2)}
+				SubCollisionVolume.ObjectReferenceIndex = OldCoinID
+				SubCollisionVolume.OwnerIndex = OldCoinID - 1
+				if new then
+					CollisionVolume:SetChunkAtIndex(2, SubCollisionVolume:Output())
+				else
+					CollisionVolume:AddChunk(SubCollisionVolume:Output())
+				end
+				
+				CollisionObject:SetChunkAtIndex(CollisionVolumeIDX, CollisionVolume:Output())
+				OldCoinAnimColl:SetChunkAtIndex(CollisionObjectIDX, CollisionObject:Output())
+				
+				OldCoinID = OldCoinID + 1
+				RootChunk:RemoveChunkAtIndex(idx)
+			else
 				if not AddedCoinAnimation then
 					RootChunk:AddChunk(CoinAnimCollP3D:GetChunkAtIndex(CoinAnimCollAnimationIDX))
 					AddedCoinAnimation = true
@@ -234,7 +416,7 @@ function MakeModelSolid(Original, Path)
 				local skel = P3D.SkeletonP3DChunk:new{Raw = CoinAnimCollP3D:GetChunkAtIndex(CoinAnimCollSkeletonIDX)}
 				skel.Name = P3D.MakeP3DString(P3D.CleanP3DString(skel.Name).. CoinID)
 				local skelJoint = P3D.SkeletonJointP3DChunk:new{Raw = skel:GetChunkAtIndex(1)}
-				P3D.MatrixRotateY(skelJoint.RestPose, math.random(0, 179))
+				P3D.MatrixRotateY(skelJoint.RestPose, math.random(0, 359))
 				skelJoint.RestPose.M41 = LocatorChunk.Position.X
 				skelJoint.RestPose.M42 = LocatorChunk.Position.Y
 				skelJoint.RestPose.M43 = LocatorChunk.Position.Z
@@ -254,6 +436,11 @@ function MakeModelSolid(Original, Path)
 					local CompositeDrawable = P3D.CompositeDrawableP3DChunk:new{Raw = animColl:GetChunkAtIndex(idx2)}
 					CompositeDrawable.Name = P3D.MakeP3DString(P3D.CleanP3DString(CompositeDrawable.Name).. CoinID)
 					CompositeDrawable.SkeletonName = P3D.MakeP3DString(P3D.CleanP3DString(CompositeDrawable.SkeletonName).. CoinID)
+					local CompositeDrawablePropList = P3D.CompositeDrawablePropListP3DChunk:new{Raw = CompositeDrawable:GetChunkAtIndex(2)}
+					local CompositeDrawableProp = P3D.CompositeDrawablePropP3DChunk:new{Raw = CompositeDrawablePropList:GetChunkAtIndex(1)}
+					CompositeDrawableProp.Name = P3D.MakeP3DString(CoinMesh[level])
+					CompositeDrawablePropList:SetChunkAtIndex(1, CompositeDrawableProp:Output())
+					CompositeDrawable:SetChunkAtIndex(2, CompositeDrawablePropList:Output())
 					animColl:SetChunkAtIndex(idx2, CompositeDrawable:Output())
 				end
 				for idx2 in animColl:GetChunkIndexes(P3D.Identifiers.Collision_Object) do
@@ -276,52 +463,19 @@ function MakeModelSolid(Original, Path)
 				RootChunk:RemoveChunkAtIndex(idx)
 				modified = true
 				CoinID = CoinID + 1
-			else
-				local new = CoinAnimDynaPhys == nil
-				if new then CoinAnimDynaPhys = P3D.AnimDynaPhysP3DChunk:new{Raw = CoinAnimCollP3D:GetChunkAtIndex(CoinAnimDynaPhysIDX)} end
-				local instanceIDX = CoinAnimDynaPhys:GetChunkIndex(P3D.Identifiers.Instance_List)
-				local InstanceList = P3D.InstanceListP3DChunk:new{Raw = CoinAnimDynaPhys:GetChunkAtIndex(instanceIDX)}
-				
-				local scenegraphIDX = InstanceList:GetChunkIndex(P3D.Identifiers.Scenegraph)
-				local Scenegraph = P3D.ScenegraphP3DChunk:new{Raw = InstanceList:GetChunkAtIndex(scenegraphIDX)}
-				
-				local oldScenegraphRootIDX = Scenegraph:GetChunkIndex(P3D.Identifiers.Old_Scenegraph_Root)
-				local OldScenegraphRoot = P3D.OldScenegraphRootP3DChunk:new{Raw = Scenegraph:GetChunkAtIndex(oldScenegraphRootIDX)}
-				
-				local oldScenegraphBranchIDX = OldScenegraphRoot:GetChunkIndex(P3D.Identifiers.Old_Scenegraph_Branch)
-				local OldScenegraphBranch = P3D.OldScenegraphBranchP3DChunk:new{Raw = OldScenegraphRoot:GetChunkAtIndex(oldScenegraphBranchIDX)}
-				
-				local oldScenegraphTransformIDX = OldScenegraphBranch:GetChunkIndex(P3D.Identifiers.Old_Scenegraph_Transform)
-				local OldScenegraphTransform = P3D.OldScenegraphTransformP3DChunk:new{Raw = OldScenegraphBranch:GetChunkAtIndex(oldScenegraphTransformIDX)}
-				
-				local oldScenegraphTransform2IDX = OldScenegraphTransform:GetChunkIndex(P3D.Identifiers.Old_Scenegraph_Transform)
-				local OldScenegraphTransform2 = P3D.OldScenegraphTransformP3DChunk:new{Raw = OldScenegraphTransform:GetChunkAtIndex(oldScenegraphTransform2IDX)}
-				P3D.MatrixRotateY(OldScenegraphTransform2.Transform, math.random(0, 179))
-				OldScenegraphTransform2.Transform.M41 = LocatorChunk.Position.X
-				OldScenegraphTransform2.Transform.M42 = LocatorChunk.Position.Y
-				OldScenegraphTransform2.Transform.M43 = LocatorChunk.Position.Z
-				
-				if new then
-					OldScenegraphTransform:SetChunkAtIndex(oldScenegraphTransform2IDX, OldScenegraphTransform2:Output())
-				else
-					OldScenegraphTransform:AddChunk(OldScenegraphTransform2:Output())
-				end
-				OldScenegraphBranch:SetChunkAtIndex(oldScenegraphTransformIDX, OldScenegraphTransform:Output())
-				OldScenegraphRoot:SetChunkAtIndex(oldScenegraphBranchIDX, OldScenegraphBranch:Output())
-				Scenegraph:SetChunkAtIndex(oldScenegraphRootIDX, OldScenegraphRoot:Output())
-				InstanceList:SetChunkAtIndex(scenegraphIDX, Scenegraph:Output())
-				CoinAnimDynaPhys:SetChunkAtIndex(instanceIDX, InstanceList:Output())
-				RootChunk:RemoveChunkAtIndex(idx)
-			end
+			end			
 		end
 	end
-	if CoinAnimDynaPhys ~= nil then
-		RootChunk:AddChunk(CoinAnimDynaPhys:Output())
+	if OldCoinAnimColl ~= nil then
+		RootChunk:AddChunk(OldCoinAnimation:Output())
+		RootChunk:AddChunk(OldCoinSkeleton:Output())
+		RootChunk:AddChunk(OldCoinAnimColl:Output())
 		modified = true
 	end
 	for idx in RootChunk:GetChunkIndexes(P3D.Identifiers.Dyna_Phys) do
 		local DynaPhysChunk = P3D.DynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(idx)}
 		DynaPhysChunk.ChunkType = P3D.Identifiers.Inst_Stat_Phys
+		DynaPhysChunk.Name = P3D.MakeP3DString(P3D.CleanP3DString(DynaPhysChunk.Name) .. "Solid")
 		if (not Settings.L6Z4Glass or not Path:match("l6z4")) and (not Settings.L5R2Glass or not Path:match("l5r2")) and (not Settings.L4Z4Glass or not Path:match("l4z4")) then
 			for idx2 in DynaPhysChunk:GetChunkIndexes(P3D.Identifiers.Physics_Object) do
 				DynaPhysChunk:RemoveChunkAtIndex(idx2)
