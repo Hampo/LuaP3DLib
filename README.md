@@ -17,7 +17,7 @@ Notes=P3D Class System - P3D Functions
 [Author]
 Name=EnAppelsin
 Website=https://github.com/EnAppelsin
-Notes=Original idea - P3D Functions
+Notes=Original P3D Lua idea - P3D Functions
 
 [Author]
 Name=Lucas Cardellini
