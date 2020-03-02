@@ -1,312 +1,312 @@
 P3D = {}
 P3D.BlankHeader = "P3D\255\012\000\000\000\000\000\000\000"
 P3D.Identifiers = {
-	Texture = "\x00\x90\x01\x00",
-	Texture_Glyph_List = "\x01\x20\x02\x00",
-	Image = "\x01\x90\x01\x00",
-	Image_Data = "\x02\x90\x01\x00",
-	Light_Group = "\x80\x23\x00\x00",
-	Shader = "\x00\x10\x01\x00",
-	Scenegraph = "\x00\x01\x12\x00",
-	Camera = "\x00\x22\x00\x00",
-	Mesh = "\x00\x00\x01\x00",
-	Export_Info = "\x30\x70\x00\x00",
-	Light = "\x00\x30\x01\x00",
-	Game_Attr = "\x00\x20\x01\x00",
-	Particle_System = "\x0C\x58\x01\x00",
-	Particle_System_Factory = "\x00\x58\x01\x00",
-	Frontend_Project = "\x00\x80\x01\x00",
-	Sprite = "\x05\x90\x01\x00",
-	Texture_Font = "\x00\x20\x02\x00",
-	Expression_Group = "\x01\x10\x02\x00",
-	Expression_Mixer = "\x02\x10\x02\x00",
+	ATC = "\x02\x06\x00\x03",
+	Anim = "\x0C\x00\xF0\x03",
+	Anim_Coll = "\x08\x00\xF0\x03",
+	Anim_Dyna_Phys = "\x0E\x00\xF0\x03",
+	Anim_Dyna_Phys_Wrapper = "\x0F\x00\xF0\x03",
+	Anim_Obj_Wrapper = "\x10\x00\xF0\x03",
+	Animated_Object = "\x01\x00\x02\x00",
+	Animated_Object_Animation = "\x02\x00\x02\x00",
+	Animated_Object_Factory = "\x00\x00\x02\x00",
 	Animation = "\x00\x10\x12\x00",
-	Skeleton = "\x00\x45\x00\x00",
-	Skeleton_2 = "\x00\x30\x02\x00",
-	Frame_Controller = "\x01\x12\x12\x00",
-	Old_Frame_Controller = "\x00\x12\x12\x00",
-	Multi_Controller = "\xA0\x48\x00\x00",
-	Multi_Controller_2 = "\x02\x12\x12\x00",
-	Composite_Drawable = "\x12\x45\x00\x00",
-	Composite_Drawable_Skin_List = "\x13\x45\x00\x00",
-	Composite_Drawable_Prop_List = "\x14\x45\x00\x00",
-	Composite_Drawable_Effect_List = "\x17\x45\x00\x00",
-	Composite_Drawable_2 = "\x00\x30\x12\x00",
-	Skin = "\x01\x00\x01\x00",
-	Locator_3 = "\x00\x40\x01\x00",
-	Frontend_Text_Bible = "\x0D\x80\x01\x00",
-	Frontend_Language = "\x0E\x80\x01\x00",
+	Animation_Channel_Count = "\x07\x10\x12\x00",
+	Animation_Group = "\x01\x10\x12\x00",
+	Animation_Group_List = "\x02\x10\x12\x00",
+	Animation_Header = "\x06\x10\x12\x00",
+	Animation_Size = "\x04\x10\x12\x00",
+	Animation_Sync_Frame = "\x02\x14\x12\x00",
 	Billboard_Quad_Group = "\x06\x70\x01\x00",
-	Old_Billboard_Quad_Group = "\x02\x70\x01\x00",
-	History = "\x00\x70\x00\x00",
-	Mesh_Stats = "\x1D\x00\x01\x00",
-	Physics_Object = "\x00\x10\x01\x07",
-	Collision_Object = "\x00\x00\x01\x07",
-	Collision_Volume_Owner = "\x21\x00\x01\x07",
-	Collision_Volume_Owner_Name = "\x22\x00\x01\x07",
-	Collision_Volume = "\x01\x00\x01\x07",
-	Collision_Axis_Aligned_Bounding_Box = "\x06\x00\x01\x07",
-	Collision_Oriented_Bounding_Box = "\x04\x00\x01\x07",
-	Collision_Vector = "\x07\x00\x01\x07",
-	Collision_Sphere = "\x02\x00\x01\x07",
-	Collision_Wall = "\x05\x00\x01\x07",
-	Collision_Object_Attribute = "\x23\x00\x01\x07",
-	Old_Primitive_Group = "\x02\x00\x01\x00",
+	Black_Magic = "\x25\x10\x00\x00",
+	Boolean_Channel = "\x08\x11\x12\x00",
 	Bounding_Box = "\x03\x00\x01\x00",
 	Bounding_Sphere = "\x04\x00\x01\x00",
-	Render_Status = "\x17\x00\x01\x00",
-	Vertex_Shader = "\x11\x00\x01\x00",
-	Position_List = "\x05\x00\x01\x00",
-	Packed_Normal_List = "\x10\x00\x01\x00",
-	Normal_List = "\x06\x00\x01\x00",
-	UV_List = "\x07\x00\x01\x00",
-	Index_List = "\x0A\x00\x01\x00",
-	Matrix_List = "\x0B\x00\x01\x00",
-	Weight_List = "\x0C\x00\x01\x00",
-	Matrix_Palette = "\x0D\x00\x01\x00",
-	Old_Scenegraph_Root = "\x01\x01\x12\x00",
-	Old_Scenegraph_Branch = "\x02\x01\x12\x00",
-	Old_Scenegraph_Transform = "\x03\x01\x12\x00",
-	Old_Scenegraph_Drawable = "\x07\x01\x12\x00",
-	Old_Scenegraph_Sort_Order = "\x0A\x01\x12\x00",
-	Shader_Texture_Parameter = "\x02\x10\x01\x00",
-	Shader_Integer_Parameter = "\x03\x10\x01\x00",
-	Shader_Float_Parameter = "\x04\x10\x01\x00",
-	Shader_Colour_Parameter = "\x05\x10\x01\x00",
-	Skeleton_Joint = "\x01\x45\x00\x00",
-	Skeleton_Joint_Mirror_Map = "\x03\x45\x00\x00",
-	Skeleton_Joint_Bone_Preserve = "\x04\x45\x00\x00",
-	Old_Billboard_Quad = "\x01\x70\x01\x00",
-	Old_Billboard_Display_Info = "\x03\x70\x01\x00",
-	Old_Billboard_Perspective_Info = "\x04\x70\x01\x00",
-	Physics_Joint = "\x20\x10\x01\x07",
-	Physics_Vector = "\x02\x10\x01\x07",
-	Physics_Inertia_Matrix = "\x01\x10\x01\x07",
-	Composite_Drawable_Prop = "\x16\x45\x00\x00",
-	Composite_Drawable_Sort_Order = "\x19\x45\x00\x00",
-	Export_Info_Named_String = "\x31\x70\x00\x00",
-	Export_Info_Named_Integer = "\x32\x70\x00\x00",
-	Primitive_Group = "\x20\x00\x01\x00",
-	Colour_List = "\x08\x00\x01\x00",
-	Game_Attribute_Integer_Parameter = "\x01\x20\x01\x00",
-	Sort_Order = "\x00\x20\x12\x00",
-	Animated_Object = "\x01\x00\x02\x00",
-	State_Prop_Data_V1 = "\x00\x00\x02\x08",
-	State_Prop_State_Data_V1 = "\x01\x00\x02\x08",
-	State_Prop_Visibilities_Data = "\x02\x00\x02\x08",
-	State_Prop_Frame_Controller_Data = "\x03\x00\x02\x08",
-	Old_Particle_Instancing_Info = "\x0B\x58\x01\x00",
-	Old_Sprite_Emitter = "\x06\x58\x01\x00",
-	Old_Base_Emitter = "\x05\x58\x01\x00",
-	Old_Particle_Animation = "\x08\x58\x01\x00",
-	Old_Emitter_Animation = "\x09\x58\x01\x00",
-	Old_Generator_Animation = "\x0A\x58\x01\x00",
-	Animation_Size = "\x04\x10\x12\x00",
-	Animation_Group_List = "\x02\x10\x12\x00",
-	Animation_Group = "\x01\x10\x12\x00",
-	Integer_Channel = "\x0E\x11\x12\x00",
-	Float_1_Channel = "\x00\x11\x12\x00",
-	Colour_Channel = "\x09\x11\x12\x00",
-	Float_2_Channel = "\x01\x11\x12\x00",
-	Boolean_Channel = "\x08\x11\x12\x00",
+	Breakable_Object = "\x00\x10\x00\x03",
+	Camera = "\x00\x22\x00\x00",
 	Channel_Interpolation_Mode = "\x10\x11\x12\x00",
-	Composite_Drawable_Effect = "\x18\x45\x00\x00",
-	State_Prop_Event_Data = "\x04\x00\x02\x08",
-	State_Prop_Callback_Data = "\x05\x00\x02\x08",
-	Multi_Controller_Tracks = "\xA1\x48\x00\x00",
-	Inst_Particle_System = "\x01\x10\x00\x03",
-	Frontend_Page = "\x02\x80\x01\x00",
-	Frontend_Layer = "\x03\x80\x01\x00",
-	Frontend_Polygon = "\x09\x80\x01\x00",
-	Frontend_Image_Resource = "\x00\x81\x01\x00",
-	Frontend_Pure3D_Resource = "\x01\x81\x01\x00",
-	Frontend_Screen = "\x01\x80\x01\x00",
-	Frontend_Text_Bible_Resource = "\x05\x81\x01\x00",
-	Frontend_Text_Style_Resource = "\x04\x81\x01\x00",
-	Frontend_Pure3D_Object = "\x08\x80\x01\x00",
-	Frontend_Group = "\x04\x80\x01\x00",
-	Frontend_Multi_Text = "\x07\x80\x01\x00",
-	Frontend_Multi_Sprite = "\x06\x80\x01\x00",
-	Frontend_String_Text_Bible = "\x0B\x80\x01\x00",
-	Frontend_String_Hard_Coded = "\x0C\x80\x01\x00",
-	Composite_Drawable_Skin = "\x15\x45\x00\x00",
-	Old_Vertex_Anim_Key_Frame = "\x04\x13\x12\x00",
-	Old_Vector_Offset_List = "\x01\x13\x12\x00",
-	Vector_2D_OF_Channel = "\x03\x11\x12\x00",
-	Vector_3D_OF_Channel = "\x04\x11\x12\x00",
-	Quaternion_Channel = "\x05\x11\x12\x00",
+	Collision_Axis_Aligned_Bounding_Box = "\x06\x00\x01\x07",
 	Collision_Cylinder = "\x03\x00\x01\x07",
-	Light_Position = "\x02\x30\x01\x00",
-	Light_Direction = "\x01\x30\x01\x00",
-	Light_Shadow = "\x04\x30\x01\x00",
+	Collision_Effect = "\x00\x06\x00\x03",
+	Collision_Object = "\x00\x00\x01\x07",
+	Collision_Object_Attribute = "\x23\x00\x01\x07",
+	Collision_Oriented_Bounding_Box = "\x04\x00\x01\x07",
+	Collision_Sphere = "\x02\x00\x01\x07",
+	Collision_Vector = "\x07\x00\x01\x07",
+	Collision_Volume = "\x01\x00\x01\x07",
+	Collision_Volume_Owner = "\x21\x00\x01\x07",
+	Collision_Volume_Owner_Name = "\x22\x00\x01\x07",
+	Collision_Wall = "\x05\x00\x01\x07",
+	Colour_Channel = "\x09\x11\x12\x00",
+	Colour_List = "\x08\x00\x01\x00",
+	Composite_Drawable = "\x12\x45\x00\x00",
+	Composite_Drawable_2 = "\x00\x30\x12\x00",
+	Composite_Drawable_Effect = "\x18\x45\x00\x00",
+	Composite_Drawable_Effect_List = "\x17\x45\x00\x00",
+	Composite_Drawable_Primitive = "\x01\x30\x12\x00",
+	Composite_Drawable_Prop = "\x16\x45\x00\x00",
+	Composite_Drawable_Prop_List = "\x14\x45\x00\x00",
+	Composite_Drawable_Skin = "\x15\x45\x00\x00",
+	Composite_Drawable_Skin_List = "\x13\x45\x00\x00",
+	Composite_Drawable_Sort_Order = "\x19\x45\x00\x00",
+	Compressed_Quaternion_Channel = "\x11\x11\x12\x00",
+	Dyna_Phys = "\x02\x00\xF0\x03",
 	Entity_Channel = "\x07\x11\x12\x00",
-	Set = "\x10\x01\x00\x03",
-	Static_Entity = "\x00\x00\xF0\x03",
-	Locator = "\x05\x00\x00\x03",
-	Trigger_Volume = "\x06\x00\x00\x03",
-	Locator_Matrix = "\x0C\x00\x00\x03",
-	Intersect = "\x03\x00\xF0\x03",
+	Export_Info = "\x30\x70\x00\x00",
+	Export_Info_Named_Integer = "\x32\x70\x00\x00",
+	Export_Info_Named_String = "\x31\x70\x00\x00",
+	Expression = "\x00\x10\x02\x00",
+	Expression_Group = "\x01\x10\x02\x00",
+	Expression_Mixer = "\x02\x10\x02\x00",
 	Fence = "\x07\x00\xF0\x03",
 	Fence_2 = "\x00\x00\x00\x03",
-	Breakable_Object = "\x00\x10\x00\x03",
-	Anim = "\x0C\x00\xF0\x03",
-	Static_Phys = "\x01\x00\xF0\x03",
-	Anim_Dyna_Phys = "\x0E\x00\xF0\x03",
-	Path = "\x0B\x00\x00\x03",
-	Particle_System_2 = "\x01\x58\x01\x00",
-	Anim_Coll = "\x08\x00\xF0\x03",
-	Inst_Stat_Phys = "\x0A\x00\xF0\x03",
-	Dyna_Phys = "\x02\x00\xF0\x03",
-	Root = "\x50\x33\x44\xFF",
-	World_Sphere = "\x0B\x00\xF0\x03",
+	Float_1_Channel = "\x00\x11\x12\x00",
+	Float_2_Channel = "\x01\x11\x12\x00",
 	Follow_Camera_Data = "\x00\x01\x00\x03",
-	Intersection = "\x04\x00\x00\x03",
-	Road = "\x03\x00\x00\x03",
-	Tree = "\x04\x00\xF0\x03",
-	Instance_List = "\x08\x00\x00\x03",
-	Collision_Effect = "\x00\x06\x00\x03",
-	Vector_1D_OF_Channel = "\x02\x11\x12\x00",
-	Compressed_Quaternion_Channel = "\x11\x11\x12\x00",
-	Old_Scenegraph_Visibility = "\x04\x01\x12\x00",
-	Old_Scenegraph_Light_Group = "\x09\x01\x12\x00",
-	Old_Expression_Offsets = "\x18\x00\x01\x00",
-	Old_Offset_List = "\x0E\x00\x01\x00",
-	Expression = "\x00\x10\x02\x00",
-	Anim_Obj_Wrapper = "\x10\x00\xF0\x03",
-	Anim_Dyna_Phys_Wrapper = "\x0F\x00\xF0\x03",
-	ATC = "\x02\x06\x00\x03",
-	Primitive_Group_Memory_Image_Vertex_Description = "\x14\x00\x01\x00",
-	Primitive_Group_Memory_Image_Vertex = "\x12\x00\x01\x00",
-	Primitive_Group_Memory_Image_Index = "\x13\x00\x01\x00",
-	Inst_Stat_Entity = "\x09\x00\xF0\x03",
-	Composite_Drawable_Primitive = "\x01\x30\x12\x00",
-	Vertex_Compression_Hint = "\x21\x00\x01\x00",
-	Spline = "\x07\x00\x00\x03",
-	Skeleton_Joint_2 = "\x01\x30\x02\x00",
-	Skeleton_Partition = "\x02\x30\x02\x00",
-	Skeleton_Limb = "\x03\x30\x02\x00",
-	Scenegraph_Root = "\x0B\x01\x12\x00",
-	Scenegraph_Branch = "\x0C\x01\x12\x00",
-	Scenegraph_Transform = "\x0D\x01\x12\x00",
-	Scenegraph_Drawable = "\x0F\x01\x12\x00",
-	Sprite_Particle_Emitter = "\x00\x59\x01\x00",
-	Particle_Point_Generator = "\x00\x5B\x01\x00",
-	Animation_Header = "\x06\x10\x12\x00",
-	Animation_Channel_Count = "\x07\x10\x12\x00",
-	Animation_Sync_Frame = "\x02\x14\x12\x00",
-	Locator_Counts = "\x23\x10\x00\x00",
-	Black_Magic = "\x25\x10\x00\x00",
-	Locator_2 = "\x03\x10\x00\x00",
-	Trigger_Volume_2 = "\x04\x10\x00\x00",
-	Road_2 = "\x05\x10\x00\x00",
-	Intersect_Mesh = "\x08\x10\x00\x00",
-	Intersect_Mesh_2 = "\x09\x10\x00\x00",
-	Unknown_4520 = "\x20\x45\x00\x00",
-	Unknown_1011 = "\x11\x10\x00\x00",
-	Unknown_1010 = "\x10\x10\x00\x00",
+	Frame_Controller = "\x01\x12\x12\x00",
+	Frontend_Group = "\x04\x80\x01\x00",
+	Frontend_Image_Resource = "\x00\x81\x01\x00",
+	Frontend_Language = "\x0E\x80\x01\x00",
+	Frontend_Layer = "\x03\x80\x01\x00",
+	Frontend_Multi_Sprite = "\x06\x80\x01\x00",
+	Frontend_Multi_Text = "\x07\x80\x01\x00",
+	Frontend_Page = "\x02\x80\x01\x00",
+	Frontend_Polygon = "\x09\x80\x01\x00",
+	Frontend_Project = "\x00\x80\x01\x00",
+	Frontend_Pure3D_Object = "\x08\x80\x01\x00",
+	Frontend_Pure3D_Resource = "\x01\x81\x01\x00",
+	Frontend_Screen = "\x01\x80\x01\x00",
+	Frontend_String_Hard_Coded = "\x0C\x80\x01\x00",
+	Frontend_String_Text_Bible = "\x0B\x80\x01\x00",
+	Frontend_Text_Bible = "\x0D\x80\x01\x00",
+	Frontend_Text_Bible_Resource = "\x05\x81\x01\x00",
+	Frontend_Text_Style_Resource = "\x04\x81\x01\x00",
+	Game_Attr = "\x00\x20\x01\x00",
+	Game_Attribute_Integer_Parameter = "\x01\x20\x01\x00",
 	Grid = "\x00\x10\x00\x00",
 	Grid_Cell = "\x01\x10\x00\x00",
+	History = "\x00\x70\x00\x00",
+	Image = "\x01\x90\x01\x00",
+	Image_2 = "\x10\x35\x00\x00",
+	Image_Data = "\x02\x90\x01\x00",
+	Image_Data_2 = "\x11\x35\x00\x00",
+	Index_List = "\x0A\x00\x01\x00",
+	Inst_Particle_System = "\x01\x10\x00\x03",
+	Inst_Stat_Entity = "\x09\x00\xF0\x03",
+	Inst_Stat_Phys = "\x0A\x00\xF0\x03",
+	Instance_List = "\x08\x00\x00\x03",
+	Integer_Channel = "\x0E\x11\x12\x00",
+	Intersect = "\x03\x00\xF0\x03",
+	Intersect_Mesh = "\x08\x10\x00\x00",
+	Intersect_Mesh_2 = "\x09\x10\x00\x00",
+	Intersection = "\x04\x00\x00\x03",
+	Lens_Flare = "\x0D\x00\xF0\x03",
+	Light = "\x00\x30\x01\x00",
+	Light_Direction = "\x01\x30\x01\x00",
+	Light_Group = "\x80\x23\x00\x00",
+	Light_Position = "\x02\x30\x01\x00",
+	Light_Shadow = "\x04\x30\x01\x00",
+	Locator = "\x05\x00\x00\x03",
+	Locator_2 = "\x03\x10\x00\x00",
+	Locator_3 = "\x00\x40\x01\x00",
+	Locator_Counts = "\x23\x10\x00\x00",
+	Locator_Matrix = "\x0C\x00\x00\x03",
+	Matrix_List = "\x0B\x00\x01\x00",
+	Matrix_Palette = "\x0D\x00\x01\x00",
+	Mesh = "\x00\x00\x01\x00",
+	Mesh_Stats = "\x1D\x00\x01\x00",
+	Multi_Controller = "\xA0\x48\x00\x00",
+	Multi_Controller_2 = "\x02\x12\x12\x00",
+	Multi_Controller_Tracks = "\xA1\x48\x00\x00",
+	Normal_List = "\x06\x00\x01\x00",
+	Old_Base_Emitter = "\x05\x58\x01\x00",
+	Old_Billboard_Display_Info = "\x03\x70\x01\x00",
+	Old_Billboard_Perspective_Info = "\x04\x70\x01\x00",
+	Old_Billboard_Quad = "\x01\x70\x01\x00",
+	Old_Billboard_Quad_Group = "\x02\x70\x01\x00",
+	Old_Emitter_Animation = "\x09\x58\x01\x00",
+	Old_Expression_Offsets = "\x18\x00\x01\x00",
+	Old_Frame_Controller = "\x00\x12\x12\x00",
+	Old_Generator_Animation = "\x0A\x58\x01\x00",
+	Old_Offset_List = "\x0E\x00\x01\x00",
+	Old_Particle_Animation = "\x08\x58\x01\x00",
+	Old_Particle_Instancing_Info = "\x0B\x58\x01\x00",
+	Old_Primitive_Group = "\x02\x00\x01\x00",
+	Old_Scenegraph_Branch = "\x02\x01\x12\x00",
+	Old_Scenegraph_Drawable = "\x07\x01\x12\x00",
+	Old_Scenegraph_Light_Group = "\x09\x01\x12\x00",
+	Old_Scenegraph_Root = "\x01\x01\x12\x00",
+	Old_Scenegraph_Sort_Order = "\x0A\x01\x12\x00",
+	Old_Scenegraph_Transform = "\x03\x01\x12\x00",
+	Old_Scenegraph_Visibility = "\x04\x01\x12\x00",
+	Old_Sprite_Emitter = "\x06\x58\x01\x00",
+	Old_Vector_Offset_List = "\x01\x13\x12\x00",
+	Old_Vertex_Anim_Key_Frame = "\x04\x13\x12\x00",
+	Packed_Normal_List = "\x10\x00\x01\x00",
+	Particle_Point_Generator = "\x00\x5B\x01\x00",
+	Particle_System = "\x00\x50\x01\x00",
+	Particle_System = "\x0C\x58\x01\x00",
+	Particle_System_2 = "\x01\x58\x01\x00",
+	Particle_System_Factory = "\x00\x58\x01\x00",
+	Path = "\x0B\x00\x00\x03",
+	Ph = "\x11\xC1\x00\x00",
+	Ph_Axis_Aligned_Bounding_Box = "\x07\xC0\x00\x00",
+	Ph_Cylinder = "\x04\xC0\x00\x00",
+	Ph_Inertia_Matrix = "\x01\xC0\x00\x00",
+	Ph_Oriented_Bounding_Box = "\x05\xC0\x00\x00",
+	Ph_Sphere = "\x03\xC0\x00\x00",
+	Ph_Vector = "\x10\xC0\x00\x00",
+	Ph_Volume = "\x02\xC0\x00\x00",
+	Physics_Inertia_Matrix = "\x01\x10\x01\x07",
+	Physics_Joint = "\x20\x10\x01\x07",
+	Physics_Object = "\x00\x10\x01\x07",
+	Physics_Vector = "\x02\x10\x01\x07",
+	Position_List = "\x05\x00\x01\x00",
+	Primitive_Group = "\x20\x00\x01\x00",
+	Primitive_Group_Memory_Image_Index = "\x13\x00\x01\x00",
+	Primitive_Group_Memory_Image_Vertex = "\x12\x00\x01\x00",
+	Primitive_Group_Memory_Image_Vertex_Description = "\x14\x00\x01\x00",
+	Quaternion_Channel = "\x05\x11\x12\x00",
+	Render_Status = "\x17\x00\x01\x00",
+	Road = "\x03\x00\x00\x03",
+	Road_2 = "\x05\x10\x00\x00",
+	Road_Data_Segment = "\x09\x00\x00\x03",
+	Road_Segment = "\x02\x00\x00\x03",
+	Root = "\x50\x33\x44\xFF",
+	Scenegraph = "\x00\x01\x12\x00",
+	Scenegraph_Branch = "\x0C\x01\x12\x00",
+	Scenegraph_Drawable = "\x0F\x01\x12\x00",
+	Scenegraph_Root = "\x0B\x01\x12\x00",
+	Scenegraph_Transform = "\x0D\x01\x12\x00",
+	Set = "\x10\x01\x00\x03",
+	Shader = "\x00\x10\x01\x00",
+	Shader_Colour_Parameter = "\x05\x10\x01\x00",
+	Shader_Float_Parameter = "\x04\x10\x01\x00",
+	Shader_Integer_Parameter = "\x03\x10\x01\x00",
+	Shader_Texture_Parameter = "\x02\x10\x01\x00",
+	Skeleton = "\x00\x45\x00\x00",
+	Skeleton_2 = "\x00\x30\x02\x00",
+	Skeleton_Joint = "\x01\x45\x00\x00",
+	Skeleton_Joint_2 = "\x01\x30\x02\x00",
+	Skeleton_Joint_Bone_Preserve = "\x04\x45\x00\x00",
+	Skeleton_Joint_Mirror_Map = "\x03\x45\x00\x00",
+	Skeleton_Limb = "\x03\x30\x02\x00",
+	Skeleton_Partition = "\x02\x30\x02\x00",
+	Skin = "\x01\x00\x01\x00",
+	Sort_Order = "\x00\x20\x12\x00",
+	Spline = "\x07\x00\x00\x03",
+	Sprite = "\x05\x90\x01\x00",
+	Sprite_Particle_Emitter = "\x00\x59\x01\x00",
+	State_Prop_Callback_Data = "\x05\x00\x02\x08",
+	State_Prop_Data_V1 = "\x00\x00\x02\x08",
+	State_Prop_Event_Data = "\x04\x00\x02\x08",
+	State_Prop_Frame_Controller_Data = "\x03\x00\x02\x08",
+	State_Prop_State_Data_V1 = "\x01\x00\x02\x08",
+	State_Prop_Visibilities_Data = "\x02\x00\x02\x08",
+	Static_Entity = "\x00\x00\xF0\x03",
+	Static_Phys = "\x01\x00\xF0\x03",
+	Surface_Type_List = "\x0E\x00\x00\x03",
+	Texture = "\x00\x90\x01\x00",
+	Texture_2 = "\x00\x35\x00\x00",
+	Texture_Animation = "\x20\x35\x00\x00",
+	Texture_Font = "\x00\x20\x02\x00",
+	Texture_Glyph_List = "\x01\x20\x02\x00",
+	Tree = "\x04\x00\xF0\x03",
+	Tree_Node = "\x05\x00\xF0\x03",
+	Tree_Node_2 = "\x06\x00\xF0\x03",
+	Trigger_Volume = "\x06\x00\x00\x03",
+	Trigger_Volume_2 = "\x04\x10\x00\x00",
+	UV_List = "\x07\x00\x01\x00",
+	Unknown1013 = "\x13\x10\x00\x00",
+	Unknown1014 = "\x14\x10\x00\x00",
 	Unknown1021 = "\x21\x10\x00\x00",
 	Unknown1022 = "\x22\x10\x00\x00",
 	Unknown1024 = "\x24\x10\x00\x00",
-	Unknown17000 = "\x00\x70\x01\x00",
-	Tree_Node = "\x05\x00\xF0\x03",
-	Tree_Node_2 = "\x06\x00\xF0\x03",
-	Surface_Type_List = "\x0E\x00\x00\x03",
-	Lens_Flare = "\x0D\x00\xF0\x03",
-	Road_Data_Segment = "\x09\x00\x00\x03",
-	Road_Segment = "\x02\x00\x00\x03",
-	Animated_Object_Factory = "\x00\x00\x02\x00",
-	Animated_Object_Animation = "\x02\x00\x02\x00",
-	Unknown300000A = "\x0A\x00\x00\x03",
 	Unknown121203 = "\x03\x12\x12\x00",
+	Unknown121204 = "\x04\x12\x12\x00",
+	Unknown13003 = "\x03\x30\x01\x00"
 	Unknown13008 = "\x08\x30\x01\x00",
-	Ph = "\x11\xC1\x00\x00",
-	Ph_Vector = "\x10\xC0\x00\x00",
-	Ph_Inertia_Matrix = "\x01\xC0\x00\x00",
-	Ph_Volume = "\x02\xC0\x00\x00",
-	Ph_Sphere = "\x03\xC0\x00\x00",
-	Ph_Axis_Aligned_Bounding_Box = "\x07\xC0\x00\x00",
-	Ph_Oriented_Bounding_Box = "\x05\xC0\x00\x00",
-	Unknown4700 = "\x00\x47\x00\x00",
-	Unknown4201 = "\x01\x42\x00\x00",
-	Unknown4702 = "\x02\x47\x00\x00",
-	Unknown4805 = "\x05\x48\x00\x00",
-	Unknown4803 = "\x03\x48\x00\x00",
-	Unknown4804 = "\x04\x48\x00\x00",
-	Unknown4801 = "\x01\x48\x00\x00",
-	Unknown4802 = "\x02\x48\x00\x00",
-	Unknown1014 = "\x14\x10\x00\x00",
-	Unknown1013 = "\x13\x10\x00\x00",
-	Texture_2 = "\x00\x35\x00\x00",
-	Image_2 = "\x10\x35\x00\x00",
-	Image_Data_2 = "\x11\x35\x00\x00",
-	Unknown4290 = "\x90\x42\x00\x00",
-	Unknown4291 = "\x91\x42\x00\x00",
-	Particle_System = "\x00\x50\x01\x00",
-	Unknown15402 = "\x02\x54\x01\x00",
-	Unknown15401 = "\x01\x54\x01\x00",
-	Unknown15400 = "\x00\x54\x01\x00",
-	Unknown15214 = "\x14\x52\x01\x00",
+	Unknown15101 = "\x01\x51\x01\x00",
+	Unknown15102 = "\x02\x51\x01\x00",
+	Unknown15103 = "\x03\x51\x01\x00",
+	Unknown15140 = "\x40\x51\x01\x00",
 	Unknown15200 = "\x00\x52\x01\x00",
+	Unknown15210 = "\x10\x52\x01\x00",
+	Unknown15211 = "\x11\x52\x01\x00",
+	Unknown15212 = "\x12\x52\x01\x00",
+	Unknown15213 = "\x13\x52\x01\x00",
+	Unknown15214 = "\x14\x52\x01\x00",
+	Unknown15215 = "\x15\x52\x01\x00",
+	Unknown15216 = "\x16\x52\x01\x00",
 	Unknown15217 = "\x17\x52\x01\x00",
 	Unknown15218 = "\x18\x52\x01\x00",
-	Unknown4216 = "\x16\x42\x00\x00",
 	Unknown15219 = "\x19\x52\x01\x00",
 	Unknown1521A = "\x1A\x52\x01\x00",
 	Unknown1521B = "\x1B\x52\x01\x00",
 	Unknown1521C = "\x1C\x52\x01\x00",
 	Unknown1521D = "\x1D\x52\x01\x00",
-	Unknown15227 = "\x27\x52\x01\x00",
-	Unknown15228 = "\x28\x52\x01\x00",
-	Unknown15140 = "\x40\x51\x01\x00",
-	Unknown15101 = "\x01\x51\x01\x00",
-	Unknown15102 = "\x02\x51\x01\x00",
-	Unknown15103 = "\x03\x51\x01\x00",
+	Unknown1521E = "\x1E\x52\x01\x00",
+	Unknown1521F = "\x1F\x52\x01\x00",
 	Unknown15220 = "\x20\x52\x01\x00",
+	Unknown15221 = "\x21\x52\x01\x00",
+	Unknown15222 = "\x22\x52\x01\x00",
 	Unknown15223 = "\x23\x52\x01\x00",
-	Unknown15502 = "\x02\x55\x01\x00",
-	Unknown15501 = "\x01\x55\x01\x00",
-	Unknown15210 = "\x10\x52\x01\x00",
-	Unknown15211 = "\x11\x52\x01\x00",
-	Unknown15212 = "\x12\x52\x01\x00",
-	Unknown15213 = "\x13\x52\x01\x00",
-	Unknown15215 = "\x15\x52\x01\x00",
-	Unknown15216 = "\x16\x52\x01\x00",
 	Unknown15224 = "\x24\x52\x01\x00",
 	Unknown15225 = "\x25\x52\x01\x00",
 	Unknown15226 = "\x26\x52\x01\x00",
+	Unknown15227 = "\x27\x52\x01\x00",
+	Unknown15228 = "\x28\x52\x01\x00",
 	Unknown15229 = "\x29\x52\x01\x00",
-	Unknown1521E = "\x1E\x52\x01\x00",
-	Unknown1521F = "\x1F\x52\x01\x00",
-	Unknown15221 = "\x21\x52\x01\x00",
-	Unknown15222 = "\x22\x52\x01\x00",
+	Unknown15400 = "\x00\x54\x01\x00",
+	Unknown15401 = "\x01\x54\x01\x00",
+	Unknown15402 = "\x02\x54\x01\x00",
+	Unknown15501 = "\x01\x55\x01\x00",
+	Unknown15502 = "\x02\x55\x01\x00",
 	Unknown15F00 = "\x00\x5F\x01\x00",
-	Unknown4A01 = "\x01\x4A\x00\x00",
-	Unknown4A82 = "\x82\x4A\x00\x00",
-	Unknown4A20 = "\x20\x4A\x00\x00",
-	Unknown4A10 = "\x10\x4A\x00\x00",
-	Unknown4A11 = "\x11\x4A\x00\x00",
-	Unknown9150 = "\x50\x91\x00\x00",
+	Unknown17000 = "\x00\x70\x01\x00",
+	Unknown17005 = "\x05\x70\x01\x00",
+	Unknown17007 = "\x07\x70\x01\x00",
+	Unknown17009 = "\x09\x70\x01\x00",
+	Unknown1700A = "\x0A\x70\x01\x00",
+	Unknown1700D = "\x0D\x70\x01\x00",
+	Unknown18102 = "\x02\x81\x01\x00",
+	Unknown300000A = "\x0A\x00\x00\x03",
+	Unknown3521 = "\x21\x35\x00\x00",
+	Unknown4201 = "\x01\x42\x00\x00",
+	Unknown4216 = "\x16\x42\x00\x00",
+	Unknown4290 = "\x90\x42\x00\x00",
+	Unknown4291 = "\x91\x42\x00\x00",
+	Unknown42A0 = "\xA0\x42\x00\x00",
+	Unknown4700 = "\x00\x47\x00\x00",
+	Unknown4702 = "\x02\x47\x00\x00",
+	Unknown4800 = "\x00\x48\x00\x00",
+	Unknown4801 = "\x01\x48\x00\x00",
+	Unknown4802 = "\x02\x48\x00\x00",
+	Unknown4803 = "\x03\x48\x00\x00",
+	Unknown4804 = "\x04\x48\x00\x00",
+	Unknown4805 = "\x05\x48\x00\x00",
 	Unknown4900 = "\x00\x49\x00\x00",
 	Unknown4901 = "\x01\x49\x00\x00",
 	Unknown4902 = "\x02\x49\x00\x00",
 	Unknown4903 = "\x03\x49\x00\x00",
 	Unknown4904 = "\x04\x49\x00\x00",
 	Unknown4905 = "\x05\x49\x00\x00",
-	Unknown4800 = "\x00\x48\x00\x00",
-	Ph_Cylinder = "\x04\xC0\x00\x00",
-	Texture_Animation = "\x20\x35\x00\x00",
-	Unknown3521 = "\x21\x35\x00\x00",
-	Unknown42A0 = "\xA0\x42\x00\x00",
-	Unknown18102 = "\x02\x81\x01\x00",
-	Unknown17007 = "\x07\x70\x01\x00",
-	Unknown17005 = "\x05\x70\x01\x00",
-	Unknown17009 = "\x09\x70\x01\x00",
-	Unknown1700A = "\x0A\x70\x01\x00",
-	Unknown1700D = "\x0D\x70\x01\x00",
-	Unknown121204 = "\x04\x12\x12\x00",
-	Unknown13003 = "\x03\x30\x01\x00"
+	Unknown4A01 = "\x01\x4A\x00\x00",
+	Unknown4A10 = "\x10\x4A\x00\x00",
+	Unknown4A11 = "\x11\x4A\x00\x00",
+	Unknown4A20 = "\x20\x4A\x00\x00",
+	Unknown4A82 = "\x82\x4A\x00\x00",
+	Unknown9150 = "\x50\x91\x00\x00",
+	Unknown_1010 = "\x10\x10\x00\x00",
+	Unknown_1011 = "\x11\x10\x00\x00",
+	Unknown_4520 = "\x20\x45\x00\x00",
+	Vector_1D_OF_Channel = "\x02\x11\x12\x00",
+	Vector_2D_OF_Channel = "\x03\x11\x12\x00",
+	Vector_3D_OF_Channel = "\x04\x11\x12\x00",
+	Vertex_Compression_Hint = "\x21\x00\x01\x00",
+	Vertex_Shader = "\x11\x00\x01\x00",
+	Weight_List = "\x0C\x00\x01\x00",
+	World_Sphere = "\x0B\x00\xF0\x03",
 }
 local pack = string.pack
 local unpack = string.unpack
@@ -508,6 +508,101 @@ function P3D.FindSubchunk(Chunk, ID, StartPosition, EndPosition)
 	return P3D.FindSubchunks(Chunk, ID, StartPosition, EndPosition)()
 end
 
+-- Decompress a compressed *block* within a P3D
+function P3D.DecompressBlock(Source, Destination, DestinationPos, Length)
+	local Written = 0
+	local SourceIndex = 1
+	while (Written < Length) do
+		local Unknown = String1ToInt(Source:sub(SourceIndex, SourceIndex))
+		SourceIndex = SourceIndex + 1
+		if (Unknown <= 15) then
+			if (Unknown == 0) then
+				if (String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
+					local Unknown2 = 0
+					repeat
+						SourceIndex = SourceIndex + 1
+						Unknown2 = String1ToInt(Source:sub(SourceIndex, SourceIndex))
+						Unknown = Unknown + 255
+					until (Unknown2 ~= 0)
+				end
+				Unknown = Unknown + String1ToInt(Source:sub(SourceIndex, SourceIndex))
+				SourceIndex = SourceIndex + 1
+				Destination = Destination .. Source:sub(SourceIndex, SourceIndex + 14)
+				DestinationPos = DestinationPos + 15
+				SourceIndex = SourceIndex + 15
+				Written = Written + 15
+			end
+			repeat
+				Destination = Destination .. Source:sub(SourceIndex, SourceIndex)
+				SourceIndex = SourceIndex + 1
+				DestinationPos = DestinationPos + 1
+				Written = Written + 1
+				Unknown = Unknown - 1
+			until (Unknown <= 0);
+		else
+			local Unknown2 = Unknown % 16
+			if (Unknown2 == 0) then
+				local Unknown3 = 15
+				if (String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
+					local Unknown4;
+					repeat
+						SourceIndex = SourceIndex + 1
+						Unknown4 = String1ToInt(Source:sub(SourceIndex, SourceIndex))
+						Unknown3 = Unknown3 + 255;
+					until (Unknown4 ~= 0)
+				end
+				Unknown2 = Unknown2 + String1ToInt(Source:sub(SourceIndex, SourceIndex)) + Unknown3				
+				SourceIndex = SourceIndex + 1
+			end
+			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * String1ToInt(Source:sub(SourceIndex, SourceIndex))))
+			local Unknown5 = math.floor(Unknown2 / 4);
+			SourceIndex = SourceIndex + 1			
+			repeat
+				Destination = Destination .. Destination:sub(Unknown6, Unknown6)
+				Destination = Destination .. Destination:sub(Unknown6 + 1, Unknown6 + 1)
+				Destination = Destination .. Destination:sub(Unknown6 + 2, Unknown6 + 2)
+				Destination = Destination .. Destination:sub(Unknown6 + 3, Unknown6 + 3)
+				Unknown6 = Unknown6 + 4
+				DestinationPos = DestinationPos + 4
+				Unknown5 = Unknown5 - 1;
+			until Unknown5 <= 0;
+			local Unknown7 = Unknown2 % 4;
+			while (Unknown7 > 0) do
+				Destination = Destination .. Destination:sub(Unknown6, Unknown6)
+				DestinationPos = DestinationPos + 1
+				Unknown6 = Unknown6 + 1
+				Unknown7 = Unknown7 - 1
+			end
+			Written = Written + Unknown2
+		end
+	end
+	return Destination, DestinationPos
+end
+
+-- Decompress a compressed P3D, returns the original P3D if not compressed
+function P3D.Decompress(File)
+	if File:sub(1, 4) == "P3DZ" then
+		local UncompressedLength = GetP3DInt4(File, 5)
+		local DecompressedLength = 0
+		local pos = 9
+		local Uncompressed = ""
+		local UncompressedPos = 1
+		while DecompressedLength < UncompressedLength do
+			local CompressedLength = GetP3DInt4(File, pos)
+			pos = pos + 4
+			local UncompressedBlock = GetP3DInt4(File, pos)
+			pos = pos + 4
+			local Data = File:sub(pos, pos + CompressedLength)
+			pos = pos + CompressedLength
+			Uncompressed, UncompressedPos = DecompressBlock(Data, Uncompressed, UncompressedPos, UncompressedBlock)
+			DecompressedLength = DecompressedLength + UncompressedBlock
+		end
+		return Uncompressed
+	else
+		return File
+	end
+end
+
 -- Class data start
 P3D.P3DChunk = {Raw, ChunkTypes = {}, Chunks = {}}
 
@@ -522,6 +617,7 @@ function P3D.P3DChunk:new(Data)
 		self.__index = self
 		return Data
 	end
+	Data.Raw = P3D.Decompress(Data.Raw)
 	Data.ChunkTypes = {}
 	Data.Chunks = {}
 	local ValueLen
@@ -569,17 +665,23 @@ function P3D.P3DChunk:SetChunkAtIndex(idx, ChunkData)
 	self.Chunks[idx] = ChunkData
 end
 
-function P3D.P3DChunk:AddChunk(ChunkData)
+function P3D.P3DChunk:AddChunk(ChunkData, idx)
 	local ChunkLen = ChunkData:len()
 	if ChunkLen < 12 then return end
 	local ChunkID = ChunkData:sub(1, 4)
-	self.ChunkTypes[#self.ChunkTypes + 1] = ChunkID
-	self.Chunks[#self.Chunks + 1] = ChunkData
+	if idx then
+		table.insert(self.ChunkTypes, idx, ChunkID)
+		table.insert(self.Chunks, idx, ChunkData)
+	else
+		self.ChunkTypes[#self.ChunkTypes + 1] = ChunkID
+		self.Chunks[#self.Chunks + 1] = ChunkData
+	end
 end
 
 function P3D.P3DChunk:AddChildChunks(RootChunk)
+	local i = #self.ChunkTypes + 1
 	for idx in RootChunk:GetChunkIndexes() do
-		self:AddChunk(RootChunk:GetChunkAtIndex(idx))
+		self:AddChunk(RootChunk:GetChunkAtIndex(idx), i)
 	end
 end
 
@@ -1467,11 +1569,6 @@ function P3D.LocatorP3DChunk:new(Data)
 	return o
 end
 
---function P3D.LocatorP3DChunk:create()
-	--TODO: Locators are awful
---	return nil
---end
-
 function P3D.LocatorP3DChunk:createType9(Name, Position, Type, UnknownStr1, UnknownStr2, Unknown1, Unknown2)
 	local dataTbl = {UnknownStr1}
 	for i=1,4 - UnknownStr1:len() % 4 do
@@ -1586,6 +1683,33 @@ function P3D.OldFrameControllerP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4 + self.HierarchyName:len() + 1 + self.AnimationName:len() + 1
 	return pack("<c4IIis1c4fs1s1", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.Type, self.FrameOffset, self.HierarchyName, self.AnimationName) .. chunks
+end
+
+--Physics Object Chunk
+P3D.PhysicsObjectP3DChunk = P3D.P3DChunk:newChildClass("Physics Object")
+function P3D.PhysicsObjectP3DChunk:new(Data)
+	local o = P3D.PhysicsObjectP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.MaterialName, o.NumJoints, o.Volume, o.RestingSensitivity = unpack("<s1is1iff", o.ValueStr)
+	return o
+end
+
+function P3D.PhysicsObjectP3DChunk:create(Name,Version,MaterialName,NumJoints,Volume,RestingSensitivity)
+	local Len = 12 + Name:len() + 1 + 4 + MaterialName:len() + 1 + 4 + 4 + 4
+	return P3D.PhysicsObjectP3DChunk:new{Raw = pack("<c4IIs1is1iff", P3D.Identifiers.Physics_Object, Len, Len, Name, Version, MaterialName, NumJoints, Volume, RestingSensitivity)}
+end
+
+function P3D.PhysicsObjectP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.MaterialName:len() + 1 + 4 + 4 + 4
+	return pack("<c4IIs1is1iff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, self.NumJoints, self.Volume, self.RestingSensitivity) .. chunks
+end
+
+function P3D.CollisionObjectP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	P3D.CollisionObjectP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == P3D.Identifiers.Physics_Joint then
+		self.NumJoints = self.NumJoints - 1
+	end
 end
 
 --Collision Object Chunk
@@ -1932,4 +2056,24 @@ function P3D.CompressedQuaternionChannelP3DChunk:Output()
 	end
 	local Len = 12 + 4 + 4 + 4 + FramesN * 2 + FramesN * 8
 	return pack("<c4IIic4i" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames)) .. table.concat(values) .. chunks
+end
+
+--Follow Camera Data Chunk
+P3D.FollowCameraDataP3DChunk = P3D.P3DChunk:newChildClass("Follow Camera Data")
+function P3D.FollowCameraDataP3DChunk:new(Data)
+	local o = P3D.FollowCameraDataP3DChunk.parentClass.new(self, Data)
+	o.Look = {X=0,Y=0,Z=0}
+	o.Index, o.Unknown, o.Angle, o.Distance, o.Look.X, o.Look.Y, o.Look.Z = unpack("<iffffff", o.ValueStr)
+	return o
+end
+
+function P3D.FollowCameraDataP3DChunk:create(Index,Unknown,Angle,Distance,Look)
+	local Len = 12 + 4 + 4 + 4 + 4 + 12
+	return P3D.FollowCameraDataP3DChunk:new{Raw = pack("<c4IIiffffff", P3D.Identifiers.Follow_Camera_Data, Len, Len, Index, Unknown, Angle, Distance, Look.X, Look.Y, Look.Z)}
+end
+
+function P3D.FollowCameraDataP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4 + 4 + 12
+	return pack("<c4IIiffffff", self.ChunkType, Len, Len + chunks:len(), self.Index, self.Unknown, self.Angle, self.Distance, self.Look.X, self.Look.Y, self.Look.Z) .. chunks
 end
