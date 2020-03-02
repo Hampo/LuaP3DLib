@@ -1704,9 +1704,9 @@ function P3D.PhysicsObjectP3DChunk:Output()
 	return pack("<c4IIs1is1iff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, self.NumJoints, self.Volume, self.RestingSensitivity) .. chunks
 end
 
-function P3D.CollisionObjectP3DChunk:RemoveChunkAtIndex(idx)
+function P3D.PhysicsObjectP3DChunk:RemoveChunkAtIndex(idx)
 	local ID = self.ChunkTypes[idx]
-	P3D.CollisionObjectP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	P3D.PhysicsObjectP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
 	if ID == P3D.Identifiers.Physics_Joint then
 		self.NumJoints = self.NumJoints - 1
 	end
