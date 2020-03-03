@@ -567,12 +567,12 @@ function P3D.DecompressBlock(Source, Destination, DestinationPos, Length)
 						Unknown3 = Unknown3 + 255;
 					until (Unknown4 ~= 0)
 				end
-				Unknown2 = Unknown2 + P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) + Unknown3				
+				Unknown2 = Unknown2 + P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) + Unknown3
 				SourceIndex = SourceIndex + 1
 			end
 			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))))
 			local Unknown5 = math.floor(Unknown2 / 4);
-			SourceIndex = SourceIndex + 1			
+			SourceIndex = SourceIndex + 1
 			repeat
 				Destination = Destination .. Destination:sub(Unknown6, Unknown6)
 				Destination = Destination .. Destination:sub(Unknown6 + 1, Unknown6 + 1)
@@ -2218,7 +2218,7 @@ function P3D.FrontendLanguageP3DChunk:new(Data)
 	local o = P3D.FrontendLanguageP3DChunk.parentClass.new(self, Data)
 	o.Name, o.Language, o.NumEntries, o.Modulo, o.BufferSize = unpack("<s1c1iii", o.ValueStr)
 	local idx = 1 + o.Name:len() + 1 + 1 + 4 + 4 + 4
-	o.Hashes = table.pack(unpack("<" .. string.rep("c4", o.NumEntries), o.ValueStr, idx))
+	o.Hashes = table.pack(unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx))
 	o.Hashes[#o.Hashes] = nil
 	idx = idx + 4 * o.NumEntries
 	o.Offsets = table.pack(unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx))
@@ -2228,10 +2228,21 @@ function P3D.FrontendLanguageP3DChunk:new(Data)
 	return o
 end
 
-function P3D.FrontendLanguageP3DChunk:AddValue(Hash, String)
-	if Hash:len() > 4 then return end
+function P3D.FrontendLanguageP3DChunk:GetNameHash(Name)
+	local Hash = 0
+	local chars = table.pack(unpack("<" .. string.rep("B", #Name), Name))
+	chars[#chars] = nil
+	for i=1,#chars do
+		local c = chars[i]
+		Hash = (c + (Hash << 6)) % self.Modulo
+	end
+	return Hash
+end
+
+function P3D.FrontendLanguageP3DChunk:AddValue(Name, String)
+	if Name:len() == 0 then return end
 	if String:sub(-2) ~= "\0\0" then String = String .. "\0\0" end
-	self.Hashes[#self.Hashes + 1] = P3D.MakeP3DString(Hash)
+	self.Hashes[#self.Hashes + 1] = self:GetNameHash(Name)
 	local Offset = self.Offsets[#self.Offsets]
 	local tmp = self.Buffer:sub(Offset)
 	self.Offsets[#self.Offsets + 1] = Offset + tmp:len() - 1
@@ -2246,7 +2257,7 @@ function P3D.FrontendLanguageP3DChunk:Output()
 	local Len = 12 + self.Name:len() + 1 + 1 + 4 + 4 + 4 + 4 * EntriesN + 4 * EntriesN + BufferSize
 	local output = {}
 	output[1] = pack("<c4IIs1c1iii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Language, EntriesN, self.Modulo, BufferSize)
-	output[2] = pack("<" .. string.rep("c4", EntriesN), table.unpack(self.Hashes))
+	output[2] = pack("<" .. string.rep("I", EntriesN), table.unpack(self.Hashes))
 	output[3] = pack("<" .. string.rep("I", EntriesN), table.unpack(self.Offsets))
 	output[4] = pack("<c" .. BufferSize, self.Buffer)
 	output[5] = chunks
