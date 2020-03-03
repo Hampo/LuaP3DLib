@@ -529,19 +529,19 @@ function P3D.DecompressBlock(Source, Destination, DestinationPos, Length)
 	local Written = 0
 	local SourceIndex = 1
 	while (Written < Length) do
-		local Unknown = String1ToInt(Source:sub(SourceIndex, SourceIndex))
+		local Unknown = P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
 		SourceIndex = SourceIndex + 1
 		if (Unknown <= 15) then
 			if (Unknown == 0) then
-				if (String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
+				if (P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
 					local Unknown2 = 0
 					repeat
 						SourceIndex = SourceIndex + 1
-						Unknown2 = String1ToInt(Source:sub(SourceIndex, SourceIndex))
+						Unknown2 = P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
 						Unknown = Unknown + 255
 					until (Unknown2 ~= 0)
 				end
-				Unknown = Unknown + String1ToInt(Source:sub(SourceIndex, SourceIndex))
+				Unknown = Unknown + P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
 				SourceIndex = SourceIndex + 1
 				Destination = Destination .. Source:sub(SourceIndex, SourceIndex + 14)
 				DestinationPos = DestinationPos + 15
@@ -559,18 +559,18 @@ function P3D.DecompressBlock(Source, Destination, DestinationPos, Length)
 			local Unknown2 = Unknown % 16
 			if (Unknown2 == 0) then
 				local Unknown3 = 15
-				if (String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
+				if (P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
 					local Unknown4;
 					repeat
 						SourceIndex = SourceIndex + 1
-						Unknown4 = String1ToInt(Source:sub(SourceIndex, SourceIndex))
+						Unknown4 = P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
 						Unknown3 = Unknown3 + 255;
 					until (Unknown4 ~= 0)
 				end
-				Unknown2 = Unknown2 + String1ToInt(Source:sub(SourceIndex, SourceIndex)) + Unknown3				
+				Unknown2 = Unknown2 + P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) + Unknown3				
 				SourceIndex = SourceIndex + 1
 			end
-			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * String1ToInt(Source:sub(SourceIndex, SourceIndex))))
+			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))))
 			local Unknown5 = math.floor(Unknown2 / 4);
 			SourceIndex = SourceIndex + 1			
 			repeat
@@ -598,15 +598,15 @@ end
 -- Decompress a compressed P3D, returns the original P3D if not compressed
 function P3D.Decompress(File)
 	if File:sub(1, 4) == "P3DZ" then
-		local UncompressedLength = GetP3DInt4(File, 5)
+		local UncompressedLength = P3D.String4ToInt(File, 5)
 		local DecompressedLength = 0
 		local pos = 9
 		local Uncompressed = ""
 		local UncompressedPos = 1
 		while DecompressedLength < UncompressedLength do
-			local CompressedLength = GetP3DInt4(File, pos)
+			local CompressedLength = P3D.String4ToInt(File, pos)
 			pos = pos + 4
-			local UncompressedBlock = GetP3DInt4(File, pos)
+			local UncompressedBlock = P3D.String4ToInt(File, pos)
 			pos = pos + 4
 			local Data = File:sub(pos, pos + CompressedLength)
 			pos = pos + CompressedLength
