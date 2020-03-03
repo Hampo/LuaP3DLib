@@ -350,6 +350,10 @@ end
 function P3D.SetInt4(Chunk, Offset, NewValue)
 	return Chunk:sub(1, Offset - 1) .. P3D.IntToString4(NewValue) .. Chunk:sub(Offset + 4)
 end
+function P3D.AddInt4(Chunk, Offset, NewValue)
+	local orig = P3D.String4ToInt(Chunk, Offset)
+	return P3D.SetInt4(Chunk, Offset, orig + NewValue)
+end
 
 function P3D.String4ToFloat(str, StartPosition)
 	if StartPosition == nil then StartPosition = 1 end
@@ -803,7 +807,7 @@ function P3D.ShaderP3DChunk:SetIntParameter(Name, Value)
 	for idx in self:GetChunkIndexes(INTEGER_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			ChunkData = SetP3DInt4(ChunkData, 17, Value)
+			ChunkData = P3D.SetInt4(ChunkData, 17, Value)
 			self:SetChunkAtIndex(idx, ChunkData)
 			return
 		end
@@ -816,7 +820,7 @@ function P3D.ShaderP3DChunk:GetIntParameter(Name)
 	for idx in self:GetChunkIndexes(INTEGER_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			return GetP3DInt4(ChunkData, 17)
+			return P3D.String4ToInt(ChunkData, 17)
 		end
 	end
 	return nil
@@ -830,8 +834,8 @@ function P3D.ShaderP3DChunk:SetTextureParameter(Name, Value)
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
 			local newVal, Delta = P3D.SetString(ChunkData, 17, Value)
-			newVal = AddP3DInt4(newVal, 5, Delta)
-			newVal = AddP3DInt4(newVal, 9, Delta)
+			newVal = P3D.AddInt4(newVal, 5, Delta)
+			newVal = P3D.AddInt4(newVal, 9, Delta)
 			self:SetChunkAtIndex(idx, newVal)
 			return
 		end
@@ -856,7 +860,7 @@ function P3D.ShaderP3DChunk:SetColourParameter(Name, A, R, G, B)
 	for idx in self:GetChunkIndexes(COLOUR_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			ChunkData = ChunkData:sub(1, 16) .. ARGBToString4(A, R, G, B)
+			ChunkData = ChunkData:sub(1, 16) .. P3D.ARGBToString4(A, R, G, B)
 			self:SetChunkAtIndex(idx, ChunkData)
 			return
 		end
@@ -869,7 +873,7 @@ function P3D.ShaderP3DChunk:GetColourParameter(Name)
 	for idx in self:GetChunkIndexes(COLOUR_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			return GetP3DARGB(ChunkData, 17)
+			return P3D.String4ToARGB(ChunkData, 17)
 		end
 	end
 	return nil
@@ -881,7 +885,7 @@ function P3D.ShaderP3DChunk:SetFloatParameter(Name, Value)
 	for idx in self:GetChunkIndexes(FLOAT_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			ChunkData = SetP3DFloat(ChunkData, 17, Value)
+			ChunkData = P3D.SetFloat(ChunkData, 17, Value)
 			self:SetChunkAtIndex(idx, ChunkData)
 			return
 		end
@@ -894,7 +898,7 @@ function P3D.ShaderP3DChunk:GetFloatParameter(Name)
 	for idx in self:GetChunkIndexes(FLOAT_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
-			return GetP3DFloat(ChunkData, 17)
+			return P3D.String4ToFloat(ChunkData, 17)
 		end
 	end
 	return nil
@@ -2241,9 +2245,10 @@ end
 
 function P3D.FrontendLanguageP3DChunk:AddValue(Name, String)
 	if Name:len() == 0 then return end
+	String = P3D.AsciiToUTF16(String)
 	if String:sub(-2) ~= "\0\0" then String = String .. "\0\0" end
 	self.Hashes[#self.Hashes + 1] = self:GetNameHash(Name)
-	local Offset = self.Offsets[#self.Offsets]
+	local Offset = self.Offsets[#self.Offsets] + 1
 	local tmp = self.Buffer:sub(Offset)
 	self.Offsets[#self.Offsets + 1] = Offset + tmp:len() - 1
 	self.Buffer = self.Buffer .. String
