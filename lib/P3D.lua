@@ -488,6 +488,22 @@ function P3D.CleanP3DString(str)
 	return str:sub(1, l)
 end
 
+function P3D.UTF16ToAscii(Str)
+	local Out = {}
+	for i=1,#Str,2 do
+		Out[#Out + 1] = Str:sub(i, i)
+	end
+	return table.concat(Out)
+end
+
+function P3D.AsciiToUTF16(String)
+	local Out = {}
+	for i = 1, #String do
+		Out[#Out + 1] = String:sub(i,i) .. "\0"
+	end
+	return table.concat(Out)
+end
+
 function P3D.FindSubchunks(Chunk, ID, StartPosition, EndPosition)
 	if StartPosition == nil then StartPosition = 1 end
 	if EndPosition == nil then EndPosition = Chunk:len() end
@@ -673,9 +689,11 @@ function P3D.P3DChunk:AddChunk(ChunkData, idx)
 		table.insert(self.ChunkTypes, idx, ChunkID)
 		table.insert(self.Chunks, idx, ChunkData)
 	else
-		self.ChunkTypes[#self.ChunkTypes + 1] = ChunkID
-		self.Chunks[#self.Chunks + 1] = ChunkData
+		idx = #self.ChunkTypes + 1
+		self.ChunkTypes[idx] = ChunkID
+		self.Chunks[idx] = ChunkData
 	end
+	return idx, ChunkID
 end
 
 function P3D.P3DChunk:AddChildChunks(RootChunk)
@@ -699,7 +717,7 @@ end
 
 function P3D.P3DChunk:SetName(NewName)
 	if self.ValueStr:len() < 2 then return end
-	NewName = MakeP3DString(NewName)
+	NewName = P3D.MakeP3DString(NewName)
 	self.ValueStr = P3D.SetString(self.ValueStr, 1, NewName)
 	self.Name = NewName
 end
@@ -1334,7 +1352,7 @@ end
 
 function P3D.SkinP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
-	local Len = 12 + Name:len() + 1 + 4 + SkeletonName:len() + 1 + 4
+	local Len = 12 + self.Name:len() + 1 + 4 + self.SkeletonName:len() + 1 + 4
 	return pack("<c4IIs1is1i", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.SkeletonName, self.NumPrimitiveGroups) .. chunks
 end
 
@@ -2076,4 +2094,162 @@ function P3D.FollowCameraDataP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + 4 + 4 + 4 + 4 + 12
 	return pack("<c4IIiffffff", self.ChunkType, Len, Len + chunks:len(), self.Index, self.Unknown, self.Angle, self.Distance, self.Look.X, self.Look.Y, self.Look.Z) .. chunks
+end
+
+--Sprite Chunk
+P3D.SpriteP3DChunk = P3D.P3DChunk:newChildClass("Sprite")
+function P3D.SpriteP3DChunk:new(Data)
+	local o = P3D.SpriteP3DChunk.parentClass.new(self, Data)
+	o.Name, o.NativeX, o.NativeY, o.Shader, o.ImageWidth, o.ImageHeight, o.ImageCount, o.BlitBorder = unpack("<s1iis1iiii", o.ValueStr)
+	return o
+end
+
+function P3D.SpriteP3DChunk:create(Name,NativeX,NativeY,Shader,ImageWidth,ImageHeight,ImageCount,BlitBorder)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + Shader:len() + 1 + 4 + 4 + 4 + 4
+	return P3D.SpriteP3DChunk:new{Raw = pack("<c4IIs1iis1iiii", P3D.Identifiers.Sprite, Len, Len, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight, ImageCount, BlitBorder)}
+end
+
+function P3D.SpriteP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Shader:len() + 1 + 4 + 4 + 4 + 4
+	return pack("<c4IIs1iis1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NativeX, self.NativeY, self.Shader, self.ImageWidth, self.ImageHeight, self.ImageCount, self.BlitBorder) .. chunks
+end
+
+function P3D.SpriteP3DChunk:RemoveChunkAtIndex(idx)
+	local ID = self.ChunkTypes[idx]
+	P3D.SpriteP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
+	if ID == P3D.Identifiers.Image then
+		self.ImageCount = self.ImageCount - 1
+	end
+end
+
+function P3D.SpriteP3DChunk:AddChunk(ChunkData, idx)
+	local _, ID = P3D.SpriteP3DChunk.parentClass.AddChunk(self, ChunkData, idx)
+	if ID == P3D.Identifiers.Image then
+		self.ImageCount = self.ImageCount + 1
+	end
+end
+
+--Image Chunk
+P3D.ImageP3DChunk = P3D.P3DChunk:newChildClass("Image")
+P3D.ImageP3DChunk.Formats = {
+	Raw = 0,
+	PNG = 1,
+	TGA = 2,
+	BMP = 3,
+	IPU = 4,
+	DXT = 5,
+	DXT1 = 6,
+	DXT2 = 7,
+	DXT3 = 8,
+	DXT4 = 9,
+	DXT5 = 10,
+	PS24Bit = 11,
+	PS28Bit = 12,
+	PS216Bit = 13,
+	PS232Bit = 14,
+	GC4Bit = 15,
+	GC8Bit = 16,
+	GC16Bit = 17,
+	GC32Bit = 18,
+	GCDXT1 = 19,
+	Other = 20,
+	Invalid = 21,
+	PSP4Bit = 25,
+}
+function P3D.ImageP3DChunk:new(Data)
+	local o = P3D.ImageP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.Width, o.Height, o.Bpp, o.Palettized, o.HasAlpha, o.Format = unpack("<s1iiiiiii", o.ValueStr)
+	return o
+end
+
+function P3D.ImageP3DChunk:create(Name,Version,Width,Height,Bpp,Palettized,HasAlpha,Format)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
+	return P3D.ImageP3DChunk:new{Raw = pack("<c4IIs1iiiiiii", P3D.Identifiers.Image, Len, Len, Name, Version, Width, Height, Bpp, Palettized, HasAlpha, Format)}
+end
+
+function P3D.ImageP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
+	return pack("<c4IIs1iiiiiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Width, self.Height, self.Bpp, self.Palettized, self.HasAlpha, self.Format) .. chunks
+end
+
+--Image Data Chunk
+P3D.ImageDataP3DChunk = P3D.P3DChunk:newChildClass("Image Data")
+function P3D.ImageDataP3DChunk:new(Data)
+	local o = P3D.ImageDataP3DChunk.parentClass.new(self, Data)
+	o.ImageDataSize = unpack("<i", o.ValueStr)
+	o.ImageData = unpack("<c" .. o.ImageDataSize, o.ValueStr, 5)
+	return o
+end
+
+function P3D.ImageDataP3DChunk:create(ImageData)
+	local ImageDataSize = ImageData:len()
+	local Len = 12 + 4 + ImageDataSize
+	return P3D.ImageDataP3DChunk:new{Raw = pack("<c4IIic" .. ImageDataSize, P3D.Identifiers.Image_Data, Len, Len, ImageDataSize, ImageData)}
+end
+
+function P3D.ImageDataP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local ImageDataSize = self.ImageData:len()
+	local Len = 12 + 4 + ImageDataSize
+	return pack("<c4IIic" .. ImageDataSize, self.ChunkType, Len, Len + chunks:len(), ImageDataSize, self.ImageData) .. chunks
+end
+
+--Frontend Text Bible Chunk
+P3D.FrontendTextBibleP3DChunk = P3D.P3DChunk:newChildClass("Frontend Text Bible")
+function P3D.FrontendTextBibleP3DChunk:new(Data)
+	local o = P3D.FrontendTextBibleP3DChunk.parentClass.new(self, Data)
+	o.Name, o.NumLanguages, o.Languages = unpack("<s1is1", o.ValueStr)
+	return o
+end
+
+--TODO: Handle create and addition/removal of languages
+
+function P3D.FrontendTextBibleP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.Languages:len() + 1
+	return pack("<c4IIs1is1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NumLanguages, self.Languages) .. chunks
+end
+
+--Frontend Language Chunk
+P3D.FrontendLanguageP3DChunk = P3D.P3DChunk:newChildClass("Frontend Language")
+function P3D.FrontendLanguageP3DChunk:new(Data)
+	local o = P3D.FrontendLanguageP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Language, o.NumEntries, o.Modulo, o.BufferSize = unpack("<s1c1iii", o.ValueStr)
+	local idx = 1 + o.Name:len() + 1 + 1 + 4 + 4 + 4
+	o.Hashes = table.pack(unpack("<" .. string.rep("c4", o.NumEntries), o.ValueStr, idx))
+	o.Hashes[#o.Hashes] = nil
+	idx = idx + 4 * o.NumEntries
+	o.Offsets = table.pack(unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx))
+	o.Offsets[#o.Offsets] = nil
+	idx = idx + 4 * o.NumEntries
+	o.Buffer = unpack("<c" .. o.BufferSize, o.ValueStr, idx)
+	return o
+end
+
+function P3D.FrontendLanguageP3DChunk:AddValue(Hash, String)
+	if Hash:len() > 4 then return end
+	if String:sub(-2) ~= "\0\0" then String = String .. "\0\0" end
+	self.Hashes[#self.Hashes + 1] = P3D.MakeP3DString(Hash)
+	local Offset = self.Offsets[#self.Offsets]
+	local tmp = self.Buffer:sub(Offset)
+	self.Offsets[#self.Offsets + 1] = Offset + tmp:len() - 1
+	self.Buffer = self.Buffer .. String
+end
+--TODO: Handle create, handle remove, handle insert, handle edit
+
+function P3D.FrontendLanguageP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local EntriesN = #self.Hashes
+	local BufferSize = self.Buffer:len()
+	local Len = 12 + self.Name:len() + 1 + 1 + 4 + 4 + 4 + 4 * EntriesN + 4 * EntriesN + BufferSize
+	local output = {}
+	output[1] = pack("<c4IIs1c1iii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Language, EntriesN, self.Modulo, BufferSize)
+	output[2] = pack("<" .. string.rep("c4", EntriesN), table.unpack(self.Hashes))
+	output[3] = pack("<" .. string.rep("I", EntriesN), table.unpack(self.Offsets))
+	output[4] = pack("<c" .. BufferSize, self.Buffer)
+	output[5] = chunks
+	return table.concat(output)
+	--return pack("<c4IIs1c1iii" .. string.rep("I", EntriesN * 2) .. "c" .. BufferSize, self.ChunkType, Len, Len + chunks:len(), self.Name, self.Language, EntriesN, self.Modulo, BufferSize, table.unpack(self.Hashes), table.unpack(self.Offsets), self.Buffer) .. chunks
 end
