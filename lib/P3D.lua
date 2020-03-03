@@ -614,7 +614,7 @@ function P3D.Decompress(File)
 			pos = pos + 4
 			local Data = File:sub(pos, pos + CompressedLength)
 			pos = pos + CompressedLength
-			Uncompressed, UncompressedPos = DecompressBlock(Data, Uncompressed, UncompressedPos, UncompressedBlock)
+			Uncompressed, UncompressedPos = P3D.DecompressBlock(Data, Uncompressed, UncompressedPos, UncompressedBlock)
 			DecompressedLength = DecompressedLength + UncompressedBlock
 		end
 		return Uncompressed
