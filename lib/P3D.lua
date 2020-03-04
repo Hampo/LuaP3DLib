@@ -473,7 +473,7 @@ end
 function P3D.MakeFourCC(str)
 	str = str:sub(1, 4)
 	local strLen = str:len()
-	str = str .. string.rep("\0", 4 - strLen % 4)
+	str = str .. string.rep("\0", 4 - strLen)
 	return str
 end
 
