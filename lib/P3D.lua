@@ -675,7 +675,7 @@ end
 
 function P3D.P3DChunk:AddChunk(ChunkData, idx)
 	local ChunkLen = ChunkData:len()
-	local ChunkID = ChunkData:sub(1, 4)
+	local ChunkID = P3D.String4ToInt(ChunkData)
 	if idx then
 		table.insert(self.ChunkTypes, idx, ChunkID)
 		table.insert(self.Chunks, idx, ChunkData)

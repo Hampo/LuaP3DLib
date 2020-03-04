@@ -78,7 +78,8 @@ function MakeModelSolid(Original, Path)
 			local Type = LocatorChunk:GetType9Data()
 			if Type == "SummonVehiclePhone" then
 				if not AddedPhoneAnimation then
-					RootChunk:AddChunk(PhoneAnimCollP3D:GetChunkAtIndex(PhoneAnimCollAnimationIDX))
+					local Chunk = PhoneAnimCollP3D:GetChunkAtIndex(PhoneAnimCollAnimationIDX)
+					RootChunk:AddChunk(Chunk)
 					AddedPhoneAnimation = true
 				end
 				local skel = P3D.SkeletonP3DChunk:new{Raw = PhoneAnimCollP3D:GetChunkAtIndex(PhoneAnimCollSkeletonIDX)}
@@ -126,7 +127,8 @@ function MakeModelSolid(Original, Path)
 				PhoneID = PhoneID + 1
 			elseif Settings.SolidCards and Type == "CollectorCard" then
 				if not AddedCardAnimation then
-					RootChunk:AddChunk(CardAnimCollP3D:GetChunkAtIndex(CardAnimCollAnimationIDX))
+					local Chunk = CardAnimCollP3D:GetChunkAtIndex(CardAnimCollAnimationIDX)
+					RootChunk:AddChunk(Chunk)
 					AddedCardAnimation = true
 				end
 				local skel = P3D.SkeletonP3DChunk:new{Raw = CardAnimCollP3D:GetChunkAtIndex(CardAnimCollSkeletonIDX)}
@@ -193,7 +195,8 @@ function MakeModelSolid(Original, Path)
 				CardID = CardID + 1
 			elseif Settings.SolidWrenches and Type == "Wrench" then
 				if not AddedWrenchAnimation then
-					RootChunk:AddChunk(WrenchAnimCollP3D:GetChunkAtIndex(WrenchAnimCollAnimationIDX))
+					local Chunk = WrenchAnimCollP3D:GetChunkAtIndex(WrenchAnimCollAnimationIDX)
+					RootChunk:AddChunk(Chunk)
 					AddedWrenchAnimation = true
 				end
 				local skel = P3D.SkeletonP3DChunk:new{Raw = WrenchAnimCollP3D:GetChunkAtIndex(WrenchAnimCollSkeletonIDX)}
@@ -260,7 +263,8 @@ function MakeModelSolid(Original, Path)
 				WrenchID = WrenchID + 1
 			elseif Settings.SolidShops and Type == "PurchaseSkin" then
 				if not AddedShopAnimation then
-					RootChunk:AddChunk(ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollAnimationIDX))
+					local Chunk = ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollAnimationIDX)
+					RootChunk:AddChunk(Chunk)
 					AddedShopAnimation = true
 				end
 				local skel = P3D.SkeletonP3DChunk:new{Raw = ShopAnimCollP3D:GetChunkAtIndex(ShopAnimCollSkeletonIDX)}
@@ -410,7 +414,8 @@ function MakeModelSolid(Original, Path)
 				RootChunk:RemoveChunkAtIndex(idx)
 			else
 				if not AddedCoinAnimation then
-					RootChunk:AddChunk(CoinAnimCollP3D:GetChunkAtIndex(CoinAnimCollAnimationIDX))
+					local Chunk = CoinAnimCollP3D:GetChunkAtIndex(CoinAnimCollAnimationIDX)
+					RootChunk:AddChunk(Chunk)
 					AddedCoinAnimation = true
 				end
 				local skel = P3D.SkeletonP3DChunk:new{Raw = CoinAnimCollP3D:GetChunkAtIndex(CoinAnimCollSkeletonIDX)}
