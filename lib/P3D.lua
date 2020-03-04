@@ -470,6 +470,13 @@ function P3D.RemoveString(str, Start, End)
 	return str:sub(1, Start - 1) .. str:sub(End)
 end
 
+function P3D.MakeFourCC(str)
+	str = str:sub(1, 4)
+	local strLen = str:len()
+	str = str .. string.rep("\0", 4 - strLen % 4)
+	return str
+end
+
 function P3D.MakeP3DString(str)
 	local strLen = str:len()
 	local diff = strLen % 4
@@ -490,22 +497,6 @@ function P3D.CleanP3DString(str)
 		end
 	end
 	return str:sub(1, l)
-end
-
-function P3D.UTF16ToAscii(Str)
-	local Out = {}
-	for i=1,#Str,2 do
-		Out[#Out + 1] = Str:sub(i, i)
-	end
-	return table.concat(Out)
-end
-
-function P3D.AsciiToUTF16(String)
-	local Out = {}
-	for i = 1, #String do
-		Out[#Out + 1] = String:sub(i,i) .. "\0"
-	end
-	return table.concat(Out)
 end
 
 function P3D.FindSubchunks(Chunk, ID, StartPosition, EndPosition)
@@ -529,66 +520,68 @@ function P3D.FindSubchunk(Chunk, ID, StartPosition, EndPosition)
 end
 
 -- Decompress a compressed *block* within a P3D
-function P3D.DecompressBlock(Source, Destination, DestinationPos, Length)
+function P3D.DecompressBlock(Source, Length, SourceIndex)
 	local Written = 0
-	local SourceIndex = 1
-	while (Written < Length) do
-		local Unknown = P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
+	if SourceIndex == nil then SourceIndex = 1 end
+	local DestTbl = {}
+	local DestinationPos = 1
+	while Written < Length do
+		local Unknown = P3D.String1ToInt(Source, SourceIndex)
 		SourceIndex = SourceIndex + 1
-		if (Unknown <= 15) then
-			if (Unknown == 0) then
-				if (P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
+		if Unknown <= 15 then
+			if Unknown == 0 then
+				if P3D.String1ToInt(Source, SourceIndex) == 0 then
 					local Unknown2 = 0
 					repeat
 						SourceIndex = SourceIndex + 1
-						Unknown2 = P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
+						Unknown2 = P3D.String1ToInt(Source, SourceIndex)
 						Unknown = Unknown + 255
-					until (Unknown2 ~= 0)
+					until Unknown2 ~= 0
 				end
-				Unknown = Unknown + P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
+				Unknown = Unknown + P3D.String1ToInt(Source, SourceIndex)
 				SourceIndex = SourceIndex + 1
-				Destination = Destination .. Source:sub(SourceIndex, SourceIndex + 14)
+				DestTbl[#DestTbl + 1], DestTbl[#DestTbl + 2], DestTbl[#DestTbl + 3], DestTbl[#DestTbl + 4], DestTbl[#DestTbl + 5], DestTbl[#DestTbl + 6], DestTbl[#DestTbl + 7], DestTbl[#DestTbl + 8], DestTbl[#DestTbl + 9], DestTbl[#DestTbl + 10], DestTbl[#DestTbl + 11], DestTbl[#DestTbl + 12], DestTbl[#DestTbl + 13], DestTbl[#DestTbl + 14], DestTbl[#DestTbl + 15] = unpack("<c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1", Source, SourceIndex)
 				DestinationPos = DestinationPos + 15
 				SourceIndex = SourceIndex + 15
 				Written = Written + 15
 			end
 			repeat
-				Destination = Destination .. Source:sub(SourceIndex, SourceIndex)
+				DestTbl[#DestTbl + 1] = Source:sub(SourceIndex, SourceIndex)
 				SourceIndex = SourceIndex + 1
 				DestinationPos = DestinationPos + 1
 				Written = Written + 1
 				Unknown = Unknown - 1
-			until (Unknown <= 0);
+			until Unknown <= 0
 		else
 			local Unknown2 = Unknown % 16
-			if (Unknown2 == 0) then
+			if Unknown2 == 0 then
 				local Unknown3 = 15
-				if (P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) == 0) then
-					local Unknown4;
+				if P3D.String1ToInt(Source, SourceIndex) == 0 then
+					local Unknown4
 					repeat
 						SourceIndex = SourceIndex + 1
-						Unknown4 = P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))
-						Unknown3 = Unknown3 + 255;
-					until (Unknown4 ~= 0)
+						Unknown4 = P3D.String1ToInt(Source, SourceIndex)
+						Unknown3 = Unknown3 + 255
+					until Unknown4 ~= 0
 				end
-				Unknown2 = Unknown2 + P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex)) + Unknown3
+				Unknown2 = Unknown2 + P3D.String1ToInt(Source, SourceIndex) + Unknown3
 				SourceIndex = SourceIndex + 1
 			end
-			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * P3D.String1ToInt(Source:sub(SourceIndex, SourceIndex))))
-			local Unknown5 = math.floor(Unknown2 / 4);
+			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * P3D.String1ToInt(Source, SourceIndex)))
+			local Unknown5 = math.floor(Unknown2 / 4)
 			SourceIndex = SourceIndex + 1
 			repeat
-				Destination = Destination .. Destination:sub(Unknown6, Unknown6)
-				Destination = Destination .. Destination:sub(Unknown6 + 1, Unknown6 + 1)
-				Destination = Destination .. Destination:sub(Unknown6 + 2, Unknown6 + 2)
-				Destination = Destination .. Destination:sub(Unknown6 + 3, Unknown6 + 3)
+				DestTbl[#DestTbl + 1] = DestTbl[Unknown6]
+				DestTbl[#DestTbl + 1] = DestTbl[Unknown6 + 1]
+				DestTbl[#DestTbl + 1] = DestTbl[Unknown6 + 2]
+				DestTbl[#DestTbl + 1] = DestTbl[Unknown6 + 3]
 				Unknown6 = Unknown6 + 4
 				DestinationPos = DestinationPos + 4
-				Unknown5 = Unknown5 - 1;
-			until Unknown5 <= 0;
-			local Unknown7 = Unknown2 % 4;
-			while (Unknown7 > 0) do
-				Destination = Destination .. Destination:sub(Unknown6, Unknown6)
+				Unknown5 = Unknown5 - 1
+			until Unknown5 <= 0
+			local Unknown7 = Unknown2 % 4
+			while Unknown7 > 0 do
+				DestTbl[#DestTbl + 1] = DestTbl[Unknown6]
 				DestinationPos = DestinationPos + 1
 				Unknown6 = Unknown6 + 1
 				Unknown7 = Unknown7 - 1
@@ -596,7 +589,7 @@ function P3D.DecompressBlock(Source, Destination, DestinationPos, Length)
 			Written = Written + Unknown2
 		end
 	end
-	return Destination, DestinationPos
+	return table.concat(DestTbl), DestinationPos
 end
 
 -- Decompress a compressed P3D, returns the original P3D if not compressed
@@ -605,19 +598,15 @@ function P3D.Decompress(File)
 		local UncompressedLength = P3D.String4ToInt(File, 5)
 		local DecompressedLength = 0
 		local pos = 9
-		local Uncompressed = ""
-		local UncompressedPos = 1
+		local UncompressedTbl = {}
+		local CompressedLength, UncompressedBlock
 		while DecompressedLength < UncompressedLength do
-			local CompressedLength = P3D.String4ToInt(File, pos)
-			pos = pos + 4
-			local UncompressedBlock = P3D.String4ToInt(File, pos)
-			pos = pos + 4
-			local Data = File:sub(pos, pos + CompressedLength)
+			CompressedLength, UncompressedBlock, pos = unpack("<ii", File, pos)
+			UncompressedTbl[#UncompressedTbl + 1] = P3D.DecompressBlock(File, UncompressedBlock, pos)
 			pos = pos + CompressedLength
-			Uncompressed, UncompressedPos = P3D.DecompressBlock(Data, Uncompressed, UncompressedPos, UncompressedBlock)
 			DecompressedLength = DecompressedLength + UncompressedBlock
 		end
-		return Uncompressed
+		return table.concat(UncompressedTbl)
 	else
 		return File
 	end
@@ -679,7 +668,6 @@ end
 function P3D.P3DChunk:SetChunkAtIndex(idx, ChunkData)
 	if #self.ChunkTypes < idx then return end
 	local ChunkLen = ChunkData:len()
-	if ChunkLen < 13 then return end
 	local OldLen = self.Chunks[idx]:len()
 	self.ChunkTypes[idx] = ChunkData:sub(1, 4)
 	self.Chunks[idx] = ChunkData
@@ -687,7 +675,6 @@ end
 
 function P3D.P3DChunk:AddChunk(ChunkData, idx)
 	local ChunkLen = ChunkData:len()
-	if ChunkLen < 12 then return end
 	local ChunkID = ChunkData:sub(1, 4)
 	if idx then
 		table.insert(self.ChunkTypes, idx, ChunkID)
@@ -720,7 +707,6 @@ function P3D.P3DChunk:GetName()
 end
 
 function P3D.P3DChunk:SetName(NewName)
-	if self.ValueStr:len() < 2 then return end
 	NewName = P3D.MakeP3DString(NewName)
 	self.ValueStr = P3D.SetString(self.ValueStr, 1, NewName)
 	self.Name = NewName
@@ -802,8 +788,7 @@ function P3D.ShaderP3DChunk:Output()
 end
 
 function P3D.ShaderP3DChunk:SetIntParameter(Name, Value)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(INTEGER_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -815,8 +800,7 @@ function P3D.ShaderP3DChunk:SetIntParameter(Name, Value)
 end
 
 function P3D.ShaderP3DChunk:GetIntParameter(Name)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(INTEGER_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -827,8 +811,7 @@ function P3D.ShaderP3DChunk:GetIntParameter(Name)
 end
 
 function P3D.ShaderP3DChunk:SetTextureParameter(Name, Value)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	Value = P3D.MakeP3DString(Value)
 	for idx in self:GetChunkIndexes(TEXTURE_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
@@ -843,8 +826,7 @@ function P3D.ShaderP3DChunk:SetTextureParameter(Name, Value)
 end
 
 function P3D.ShaderP3DChunk:GetTextureParameter(Name)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(TEXTURE_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -855,8 +837,7 @@ function P3D.ShaderP3DChunk:GetTextureParameter(Name)
 end
 
 function P3D.ShaderP3DChunk:SetColourParameter(Name, A, R, G, B)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(COLOUR_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -868,8 +849,7 @@ function P3D.ShaderP3DChunk:SetColourParameter(Name, A, R, G, B)
 end
 
 function P3D.ShaderP3DChunk:GetColourParameter(Name)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(COLOUR_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -880,8 +860,7 @@ function P3D.ShaderP3DChunk:GetColourParameter(Name)
 end
 
 function P3D.ShaderP3DChunk:SetFloatParameter(Name, Value)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(FLOAT_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -893,8 +872,7 @@ function P3D.ShaderP3DChunk:SetFloatParameter(Name, Value)
 end
 
 function P3D.ShaderP3DChunk:GetFloatParameter(Name)
-	if Name:len() > 4 then return end
-	Name = P3D.MakeP3DString(Name)
+	Name = P3D.MakeFourCC(Name)
 	for idx in self:GetChunkIndexes(FLOAT_PARAMETER_CHUNK) do
 		local ChunkData = self:GetChunkAtIndex(idx)
 		if ChunkData:sub(13, 16) == Name then
@@ -2049,7 +2027,7 @@ function P3D.CompressedQuaternionChannelP3DChunk:new(Data)
 	local o = P3D.CompressedQuaternionChannelP3DChunk.parentClass.new(self, Data)
 	o.Version, o.Param, o.NumFrames = unpack("<ic4i", o.ValueStr)
 	local idx = 1 + 4 + 4 + 4
-	o.Frames = table.pack(unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx))
+	o.Frames = {unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx)}
 	o.Frames[#o.Frames] = nil
 	idx = idx + o.NumFrames * 2
 	o.Values = {}
@@ -2222,21 +2200,43 @@ function P3D.FrontendLanguageP3DChunk:new(Data)
 	local o = P3D.FrontendLanguageP3DChunk.parentClass.new(self, Data)
 	o.Name, o.Language, o.NumEntries, o.Modulo, o.BufferSize = unpack("<s1c1iii", o.ValueStr)
 	local idx = 1 + o.Name:len() + 1 + 1 + 4 + 4 + 4
-	o.Hashes = table.pack(unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx))
+	o.Hashes = {unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx)}
 	o.Hashes[#o.Hashes] = nil
 	idx = idx + 4 * o.NumEntries
-	o.Offsets = table.pack(unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx))
+	o.Offsets = {unpack("<" .. string.rep("I", o.NumEntries), o.ValueStr, idx)}
 	o.Offsets[#o.Offsets] = nil
 	idx = idx + 4 * o.NumEntries
 	o.Buffer = unpack("<c" .. o.BufferSize, o.ValueStr, idx)
 	return o
 end
 
+function P3D.FrontendLanguageP3DChunk:GetValueFromHash(Hash)
+	local index = nil
+	for i=1,#self.Hashes do
+		if self.Hashes[i] == Hash then
+			index = i
+			break
+		end
+	end
+	if not index then return nil end
+	local out = {}
+	for i=self.Offsets[index] + 1,#self.Buffer,2 do
+		local s = unpack("<H", self.Buffer, i)
+		if s == 0 then break end
+		out[#out + 1] = s
+	end
+	return utf8.char(table.unpack(out))
+end
+
+function P3D.FrontendLanguageP3DChunk:GetValueFromName(Name)
+	local Hash = self:GetNameHash(Name)
+	return self:GetValueFromHash(Hash)
+end
+
 function P3D.FrontendLanguageP3DChunk:GetNameHash(Name)
 	local Hash = 0
-	local chars = table.pack(unpack("<" .. string.rep("B", #Name), Name))
-	chars[#chars] = nil
-	for i=1,#chars do
+	local chars = {unpack("<" .. string.rep("B", #Name), Name)}
+	for i=1,#Name do
 		local c = chars[i]
 		Hash = (c + (Hash << 6)) % self.Modulo
 	end
@@ -2244,16 +2244,18 @@ function P3D.FrontendLanguageP3DChunk:GetNameHash(Name)
 end
 
 function P3D.FrontendLanguageP3DChunk:AddValue(Name, String)
-	if Name:len() == 0 then return end
-	String = P3D.AsciiToUTF16(String)
-	if String:sub(-2) ~= "\0\0" then String = String .. "\0\0" end
+	local ucs2 = {}
+	for p,c in utf8.codes(String) do
+		if c == 0 then break end
+		ucs2[#ucs2 + 1] = c
+	end
+	ucs2[#ucs2 + 1] = 0
+	String = pack("<" .. string.rep("H", #ucs2), table.unpack(ucs2))
 	self.Hashes[#self.Hashes + 1] = self:GetNameHash(Name)
-	local Offset = self.Offsets[#self.Offsets] + 1
-	local tmp = self.Buffer:sub(Offset)
-	self.Offsets[#self.Offsets + 1] = Offset + tmp:len() - 1
+	self.Offsets[#self.Offsets + 1] = #self.Buffer
 	self.Buffer = self.Buffer .. String
 end
---TODO: Handle create, handle remove, handle insert, handle edit
+--TODO: Handle create, handle remove, handle insert, handle edit, handle bulk add
 
 function P3D.FrontendLanguageP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
@@ -2267,5 +2269,4 @@ function P3D.FrontendLanguageP3DChunk:Output()
 	output[4] = pack("<c" .. BufferSize, self.Buffer)
 	output[5] = chunks
 	return table.concat(output)
-	--return pack("<c4IIs1c1iii" .. string.rep("I", EntriesN * 2) .. "c" .. BufferSize, self.ChunkType, Len, Len + chunks:len(), self.Name, self.Language, EntriesN, self.Modulo, BufferSize, table.unpack(self.Hashes), table.unpack(self.Offsets), self.Buffer) .. chunks
 end
