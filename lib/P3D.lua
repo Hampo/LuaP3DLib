@@ -648,6 +648,10 @@ function P3D.P3DChunk:new(Data)
 	return setmetatable(Data, self)
 end
 
+function P3D.P3DChunk:create()
+	return P3D.P3DChunk:new{Raw = P3D.BlankHeader)}
+end
+
 function P3D.P3DChunk:newChildClass(type)
 	self.__index = self
 	return setmetatable({type = type or "none", parentClass = self}, self)
@@ -658,7 +662,6 @@ function P3D.P3DChunk:GetChunkCount()
 end
 
 function P3D.P3DChunk:RemoveChunkAtIndex(idx)
-	local ChunkLen = self.Chunks[idx]:len()
 	table.remove(self.ChunkTypes, idx)
 	table.remove(self.Chunks, idx)
 end
