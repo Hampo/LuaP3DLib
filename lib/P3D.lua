@@ -2586,17 +2586,17 @@ end
 P3D.RoadP3DChunk = P3D.P3DChunk:newChildClass("Road")
 function P3D.RoadP3DChunk:new(Data)
 	local o = P3D.RoadP3DChunk.parentClass.new(self, Data)
-	o.Name, o.Unknown, o.StartIntersectionLocatorNode, o.EndIntersectionLocatorNode, o.MaximumCars, o.Unknown2, o.Unknown3, o.NoReset, o.Unknown4 = unpack("<s1is1s1iBBBB", o.ValueStr)
+	o.Name, o.Unknown, o.StartIntersectionLocatorNode, o.EndIntersectionLocatorNode, o.MaximumCars, o.Speed, o.Intelligence, o.Shortcut, o.Unknown4 = unpack("<s1is1s1iBBBB", o.ValueStr)
 	return o
 end
 
-function P3D.RoadP3DChunk:create(Name,Unknown,StartIntersectionLocatorNode,EndIntersectionLocatorNode,MaximumCars,Unknown2,Unknown3,NoReset,Unknown4)
+function P3D.RoadP3DChunk:create(Name,Unknown,StartIntersectionLocatorNode,EndIntersectionLocatorNode,MaximumCars,Speed,Intelligence,Shortcut,Unknown4)
 	local Len = 12 + Name:len() + 1 + 4 + StartIntersectionLocatorNode:len() + 1 + EndIntersectionLocatorNode:len() + 1 + 4 + 1 + 1 + 1 + 1
-	return P3D.RoadP3DChunk:new{Raw = pack("<IIIs1is1s1iBBBB", P3D.Identifiers.Road, Len, Len, Name, Unknown, StartIntersectionLocatorNode, EndIntersectionLocatorNode, MaximumCars, Unknown2, Unknown3, NoReset, Unknown4)}
+	return P3D.RoadP3DChunk:new{Raw = pack("<IIIs1is1s1iBBBB", P3D.Identifiers.Road, Len, Len, Name, Unknown, StartIntersectionLocatorNode, EndIntersectionLocatorNode, MaximumCars, Speed, Intelligence, Shortcut, Unknown4)}
 end
 
 function P3D.RoadP3DChunk:Output()
 	local chunks = table.concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + self.StartIntersectionLocatorNode:len() + 1 + self.EndIntersectionLocatorNode:len() + 1 + 4 + 1 + 1 + 1 + 1
-	return pack("<IIIs1is1s1iBBBB", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.StartIntersectionLocatorNode, self.EndIntersectionLocatorNode, self.MaximumCars, self.Unknown2, self.Unknown3, self.NoReset, self.Unknown4) .. chunks
+	return pack("<IIIs1is1s1iBBBB", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.StartIntersectionLocatorNode, self.EndIntersectionLocatorNode, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut, self.Unknown4) .. chunks
 end
