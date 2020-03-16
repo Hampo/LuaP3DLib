@@ -2501,6 +2501,25 @@ function P3D.FrontendMultiTextP3DChunk:Output()
 	return pack("<IIIs1iiiiiiiBBBBifs1BBBBBiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.PositionX, self.PositionY, self.DimensionX, self.DimensionY, self.JustificationX, self.JustificationY, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Translucency, self.RotationValue, self.TextStyleName, self.ShadowEnabled, self.ShadowColour.B, self.ShadowColour.G, self.ShadowColour.R, self.ShadowColour.A, self.ShadowOffsetX, self.ShadowOffsetY, self.CurrentText) .. chunks
 end
 
+--Frontend Text Style Resource Chunk
+P3D.FrontendTextStyleResourceP3DChunk = P3D.P3DChunk:newChildClass("Frontend Text Style Resource")
+function P3D.FrontendTextStyleResourceP3DChunk:new(Data)
+	local o = P3D.FrontendTextStyleResourceP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.Filename, o.InventoryName = unpack("<s1is1s1", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendTextStyleResourceP3DChunk:create(Name,Version,Filename,InventoryName)
+	local Len = 12 + Name:len() + 1 + 4 + Filename:len() + 1 + InventoryName:len() + 1
+	return P3D.FrontendTextStyleResourceP3DChunk:new{Raw = pack("<IIIs1is1s1", P3D.Identifiers.Frontend_Text_Style_Resource, Len, Len, Name, Version, Filename, InventoryName)}
+end
+
+function P3D.FrontendTextStyleResourceP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.Filename:len() + 1 + self.InventoryName:len() + 1
+	return pack("<IIIs1is1s1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Filename, self.InventoryName) .. chunks
+end
+
 --Frontend String Text Bible Chunk
 P3D.FrontendStringTextBibleP3DChunk = P3D.P3DChunk:newChildClass("Frontend String Text Bible")
 function P3D.FrontendStringTextBibleP3DChunk:new(Data)
@@ -2518,4 +2537,66 @@ function P3D.FrontendStringTextBibleP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + self.BibleName:len() + 1 + self.StringId:len() + 1
 	return pack("<IIIs1s1", self.ChunkType, Len, Len + chunks:len(), self.BibleName, self.StringId) .. chunks
+end
+
+--Road Data Segment Chunk
+P3D.RoadDataSegmentP3DChunk = P3D.P3DChunk:newChildClass("Road Data Segment")
+function P3D.RoadDataSegmentP3DChunk:new(Data)
+	local o = P3D.RoadDataSegmentP3DChunk.parentClass.new(self, Data)
+	o.Position = {X=0,Y=0,Z=0}
+	o.Position2 = {X=0,Y=0,Z=0}
+	o.Position3 = {X=0,Y=0,Z=0}
+	o.Name, o.Unknown, o.Lanes, o.Unknown2, o.Position.X, o.Position.Y, o.Position.Z, o.Position2.X, o.Position2.Y, o.Position2.Z, o.Position3.X, o.Position3.Y, o.Position3.Z = unpack("<s1iiifffffffff", o.ValueStr)
+	return o
+end
+
+function P3D.RoadDataSegmentP3DChunk:create(Name,Unknown,Lanes,Unknown2,Position,Position2,Position3)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 12 + 12 + 12
+	return P3D.RoadDataSegmentP3DChunk:new{Raw = pack("<IIIs1iiifffffffff", P3D.Identifiers.Road_Data_Segment, Len, Len, Name, Unknown, Lanes, Unknown2, Position.X, Position.Y, Position.Z, Position2.X, Position2.Y, Position2.Z, Position3.X, Position3.Y, Position3.Z)}
+end
+
+function P3D.RoadDataSegmentP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 12 + 12 + 12
+	return pack("<IIIs1iiifffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.Lanes, self.Unknown2, self.Position.X, self.Position.Y, self.Position.Z, self.Position2.X, self.Position2.Y, self.Position2.Z, self.Position3.X, self.Position3.Y, self.Position3.Z) .. chunks
+end
+
+--Road Segment Chunk
+P3D.RoadSegmentP3DChunk = P3D.P3DChunk:newChildClass("Road Segment")
+function P3D.RoadSegmentP3DChunk:new(Data)
+	local o = P3D.RoadSegmentP3DChunk.parentClass.new(self, Data)
+	o.Transform = P3D.MatrixIdentity()
+	o.Unknown = P3D.MatrixIdentity()
+	o.Name, o.CubeShape, o.Transform.M11, o.Transform.M12, o.Transform.M13, o.Transform.M14, o.Transform.M21, o.Transform.M22, o.Transform.M23, o.Transform.M34, o.Transform.M31, o.Transform.M32, o.Transform.M33, o.Transform.M34, o.Transform.M41, o.Transform.M42, o.Transform.M43, o.Transform.M44, o.Unknown.M11, o.Unknown.M12, o.Unknown.M13, o.Unknown.M14, o.Unknown.M21, o.Unknown.M22, o.Unknown.M23, o.Unknown.M34, o.Unknown.M31, o.Unknown.M32, o.Unknown.M33, o.Unknown.M34, o.Unknown.M41, o.Unknown.M42, o.Unknown.M43, o.Unknown.M44 = unpack("<s1s1ffffffffffffffffffffffffffffffff", o.ValueStr)
+	return o
+end
+
+function P3D.RoadSegmentP3DChunk:create(Name,CubeShape,Transform,Unknown)
+	local Len = 12 + Name:len() + 1 + CubeShape:len() + 1 + 64 + 64
+	return P3D.RoadSegmentP3DChunk:new{Raw = pack("<IIIs1s1ffffffffffffffffffffffffffffffff", P3D.Identifiers.Road_Segment, Len, Len, Name, CubeShape, Transform.M11, Transform.M12, Transform.M13, Transform.M14, Transform.M21, Transform.M22, Transform.M23, Transform.M34, Transform.M31, Transform.M32, Transform.M33, Transform.M34, Transform.M41, Transform.M42, Transform.M43, Transform.M44, Unknown.M11, Unknown.M12, Unknown.M13, Unknown.M14, Unknown.M21, Unknown.M22, Unknown.M23, Unknown.M34, Unknown.M31, Unknown.M32, Unknown.M33, Unknown.M34, Unknown.M41, Unknown.M42, Unknown.M43, Unknown.M44)}
+end
+
+function P3D.RoadSegmentP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + self.CubeShape:len() + 1 + 64 + 64
+	return pack("<IIIs1s1ffffffffffffffffffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.CubeShape, self.Transform.M11, self.Transform.M12, self.Transform.M13, self.Transform.M14, self.Transform.M21, self.Transform.M22, self.Transform.M23, self.Transform.M34, self.Transform.M31, self.Transform.M32, self.Transform.M33, self.Transform.M34, self.Transform.M41, self.Transform.M42, self.Transform.M43, self.Transform.M44, self.Unknown.M11, self.Unknown.M12, self.Unknown.M13, self.Unknown.M14, self.Unknown.M21, self.Unknown.M22, self.Unknown.M23, self.Unknown.M34, self.Unknown.M31, self.Unknown.M32, self.Unknown.M33, self.Unknown.M34, self.Unknown.M41, self.Unknown.M42, self.Unknown.M43, self.Unknown.M44) .. chunks
+end
+
+--Road Chunk
+P3D.RoadP3DChunk = P3D.P3DChunk:newChildClass("Road")
+function P3D.RoadP3DChunk:new(Data)
+	local o = P3D.RoadP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Unknown, o.StartIntersectionLocatorNode, o.EndIntersectionLocatorNode, o.MaximumCars, o.Unknown2, o.Unknown3, o.NoReset, o.Unknown4 = unpack("<s1is1s1iBBBB", o.ValueStr)
+	return o
+end
+
+function P3D.RoadP3DChunk:create(Name,Unknown,StartIntersectionLocatorNode,EndIntersectionLocatorNode,MaximumCars,Unknown2,Unknown3,NoReset,Unknown4)
+	local Len = 12 + Name:len() + 1 + 4 + StartIntersectionLocatorNode:len() + 1 + EndIntersectionLocatorNode:len() + 1 + 4 + 1 + 1 + 1 + 1
+	return P3D.RoadP3DChunk:new{Raw = pack("<IIIs1is1s1iBBBB", P3D.Identifiers.Road, Len, Len, Name, Unknown, StartIntersectionLocatorNode, EndIntersectionLocatorNode, MaximumCars, Unknown2, Unknown3, NoReset, Unknown4)}
+end
+
+function P3D.RoadP3DChunk:Output()
+	local chunks = table.concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.StartIntersectionLocatorNode:len() + 1 + self.EndIntersectionLocatorNode:len() + 1 + 4 + 1 + 1 + 1 + 1
+	return pack("<IIIs1is1s1iBBBB", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Unknown, self.StartIntersectionLocatorNode, self.EndIntersectionLocatorNode, self.MaximumCars, self.Unknown2, self.Unknown3, self.NoReset, self.Unknown4) .. chunks
 end
