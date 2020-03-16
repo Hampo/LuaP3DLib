@@ -57,6 +57,7 @@ function SetLocators(filePath)
 		end
 	end
 	if modified then output = P3DFile:Output() end
+	return modified, output
 end
 
 function GetRoads(RoadPositions, Level)

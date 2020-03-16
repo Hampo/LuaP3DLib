@@ -101,12 +101,15 @@ if Settings.SeedMode >= 2 then
 		for i=1,#FilePaths do
 			if WildcardMatch(filePath, FilePaths[i], true, true) then
 				local modified, output = SetLocators(filePath)
-				if modified then Cache[filePath] = output end
+				if modified then
+					count = count + 1
+					Cache[filePath] = output
+				end
 				break
 			end
 		end
-		print("Processed file \"" .. GetFileName(filePath) .. "\" (" .. i .. "/" .. filesN .. ")")
+		--print("Processed file \"" .. GetFileName(filePath) .. "\" (" .. i .. "/" .. filesN .. ")")
 	end
 	local endTime = GetTime()
-	print("Set locators in " .. (endTime - startTime) * 1000 .. "ms")
+	print("Set locators in " .. count .. " files in " .. (endTime - startTime) * 1000 .. "ms")
 end
