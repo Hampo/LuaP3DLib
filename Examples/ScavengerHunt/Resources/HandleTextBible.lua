@@ -8,15 +8,14 @@ if Cache.SRR2 ~= nil then
 	return
 end
 
-local Value = "Scavenger Hunt Version: " .. GetModVersion() .. "\nLauncher Version: " .. GetLauncherVersion() .. "\nSeed: " .. (Settings.FixedSeed and Settings.Seed or tobasestring(Seed))
-
 local Chunk = P3D.P3DChunk:new{Raw = ReadFile(Path)}
 local BibleIdx = Chunk:GetChunkIndex(P3D.Identifiers.Frontend_Text_Bible)
 if not BibleIdx then return end
 local BibleChunk = P3D.FrontendTextBibleP3DChunk:new{Raw = Chunk:GetChunkAtIndex(BibleIdx)}
 for idx in BibleChunk:GetChunkIndexes(P3D.Identifiers.Frontend_Language) do
 	local LanguageChunk = P3D.FrontendLanguageP3DChunk:new{Raw = BibleChunk:GetChunkAtIndex(idx)}
-	LanguageChunk:AddValue("ScavengerHunt", Value)
+	LanguageChunk:AddValue("ScavengerHunt", "Scavenger Hunt Version: " .. GetModVersion() .. "\nLauncher Version: " .. GetLauncherVersion() .. "\nRandom Car/Char Starts: " .. tostring(Settings.RandomiseCarStarts) .. "\nSeed: " .. (Settings.FixedSeed and Settings.Seed or tobasestring(Seed)))
+	LanguageChunk:AddValue("ScavengerSeed", "Random Car/Char Starts: " .. tostring(Settings.RandomiseCarStarts) .. "\nSeed: " .. (Settings.FixedSeed and Settings.Seed or tobasestring(Seed)))
 	BibleChunk:SetChunkAtIndex(idx, LanguageChunk:Output())
 end
 Chunk:SetChunkAtIndex(BibleIdx, BibleChunk:Output())
