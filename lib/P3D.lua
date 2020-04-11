@@ -748,25 +748,6 @@ function P3D.TextureP3DChunk:Output()
 	return pack("<IIIs1iiiiiiiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Width, self.Height, self.Bpp, self.AlphaDepth, self.NumMipMaps, self.TextureType, self.Usage, self.Priority) .. chunks
 end
 
---Image Chunk
-P3D.ImageP3DChunk = P3D.P3DChunk:newChildClass("Image")
-function P3D.ImageP3DChunk:new(Data)
-	local o = P3D.ImageP3DChunk.parentClass.new(self, Data)
-	o.Name, o.Version, o.Width, o.Height, o.Bpp, o.Palettized, o.HasAlpha, o.Format = unpack("<s1iiiiiii", o.ValueStr)
-	return o
-end
-
-function P3D.ImageP3DChunk:create(Name,Version,Width,Height,Bpp,Palettized,HasAlpha,Format)
-	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return P3D.ImageP3DChunk:new{Raw = pack("<IIIs1iiiiiii", P3D.Identifiers.Image, Len, Len, Name, Version, Width, Height, Bpp, Palettized, HasAlpha, Format)}
-end
-
-function P3D.ImageP3DChunk:Output()
-	local chunks = concat(self.Chunks)
-	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return pack("<IIIs1iiiiiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Width, self.Height, self.Bpp, self.Palettized, self.HasAlpha, self.Format) .. chunks
-end
-
 --Shader Chunk
 P3D.ShaderP3DChunk = P3D.P3DChunk:newChildClass("Shader")
 function P3D.ShaderP3DChunk:new(Data)
@@ -2201,25 +2182,18 @@ function P3D.SpriteP3DChunk:create(Name,NativeX,NativeY,Shader,ImageWidth,ImageH
 	return P3D.SpriteP3DChunk:new{Raw = pack("<IIIs1iis1iiii", P3D.Identifiers.Sprite, Len, Len, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight, ImageCount, BlitBorder)}
 end
 
+function P3D.SpriteP3DChunk:GetImageCount()
+	local NumImages = 0
+	for idx in self:GetChunkIndexes(P3D.Identifiers.Image) do
+		NumImages = NumImages + 1
+	end
+	return NumImages
+end
+
 function P3D.SpriteP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4 + self.Shader:len() + 1 + 4 + 4 + 4 + 4
-	return pack("<IIIs1iis1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NativeX, self.NativeY, self.Shader, self.ImageWidth, self.ImageHeight, self.ImageCount, self.BlitBorder) .. chunks
-end
-
-function P3D.SpriteP3DChunk:RemoveChunkAtIndex(idx)
-	local ID = self.ChunkTypes[idx]
-	P3D.SpriteP3DChunk.parentClass.RemoveChunkAtIndex(self, idx)
-	if ID == P3D.Identifiers.Image then
-		self.ImageCount = self.ImageCount - 1
-	end
-end
-
-function P3D.SpriteP3DChunk:AddChunk(ChunkData, idx)
-	local _, ID = P3D.SpriteP3DChunk.parentClass.AddChunk(self, ChunkData, idx)
-	if ID == P3D.Identifiers.Image then
-		self.ImageCount = self.ImageCount + 1
-	end
+	return pack("<IIIs1iis1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.NativeX, self.NativeY, self.Shader, self.ImageWidth, self.ImageHeight, self:GetImageCount(), self.BlitBorder) .. chunks
 end
 
 --Image Chunk
