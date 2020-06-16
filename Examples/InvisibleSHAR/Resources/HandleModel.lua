@@ -9,8 +9,11 @@ for k,v in pairs(Cache) do
 	end
 end
 if not PreLoad then
+	print(Path)
 	local Original = ReadFile(Path)
-	if WildcardMatch(Path, "/GameData/art/chars/*_m.p3d", true, true) then
+	if Path:find("cards.p3d", 1, false) or Path:find("wrench.p3d", 1, false) then
+		if Settings.IncludeCards then Original = MakeModelInvisible(Original) end
+	elseif WildcardMatch(Path, "/GameData/art/chars/*_m.p3d", true, true) then
 		Original = MakeCharacterInvisible(Original)
 	else
 		Original = MakeModelInvisible(Original)

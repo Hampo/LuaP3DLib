@@ -1,0 +1,2 @@
+if not Settings.IncludeCars or not Settings.IncludeCarShadows then return end
+Output(ReadFile("/GameData/" .. GetPath()):gsub("SetShadowAdjustments%s*(.-%);", "SetShadowAdjustments(-1.25, -2.25, -1.3, -0.3, -1.3, 0.3, -1.25, 2.25);"))

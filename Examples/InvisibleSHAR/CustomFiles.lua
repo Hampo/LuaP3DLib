@@ -12,6 +12,11 @@ dofile(GetModPath() .. "/Resources/lib/P3D.lua")
 dofile(GetModPath() .. "/Resources/lib/P3DFunctions.lua")
 PreLoad = Settings.PreLoadData
 Cache = {}
+if Settings.ModSandbox and not EnvIsModSandbox then
+	dofile(GetModPath() .. "/Resources/lib/ModSandbox.lua")
+	MainModSandbox = ModSandbox.Sandbox:InitFromMainMod(true)
+	IsSandbox = MainModSandbox ~= nil
+end
 if PreLoad then
 	Alert("Pre-loading files. Please wait.")
 	local files = {}
@@ -41,7 +46,7 @@ if PreLoad then
 	local count = 0
 	for i=1,filesN do
 		local filePath = files[i]
-		if WildcardMatch(filePath, "/GameData/Art/l*", true, true) or WildcardMatch(filePath, "/GameData/art/nis/gags/*", true, true) or (WildcardMatch(filePath, "/GameData/art/cars/*", true, true) and Settings.IncludeCars) or (WildcardMatch(filePath, "/GameData/art/chars/*_m.p3d", true, true) and Settings.IncludeChars) or (WildcardMatch(filePath, "/GameData/art/frontend/scrooby/resource/pure3d/l?hudmap.p3d", true, true) and Settings.IncludeMinimap) or WildcardMatch(filePath, "/GameData/art/frontend/scrooby/resource/pure3d/camset*", true, true) then
+		if ((filePath == "/GameData/art/cards.p3d" or filePath == "/GameData/art/wrench.p3d") and Settings.IncludeCards) or WildcardMatch(filePath, "/GameData/art/missions/level0?/level.p3d", true, true) or WildcardMatch(filePath, "/GameData/Art/l*", true, true) or WildcardMatch(filePath, "/GameData/art/nis/gags/*", true, true) or (WildcardMatch(filePath, "/GameData/art/cars/*", true, true) and Settings.IncludeCars) or (WildcardMatch(filePath, "/GameData/art/chars/*_m.p3d", true, true) and Settings.IncludeChars) or (WildcardMatch(filePath, "/GameData/art/frontend/scrooby/resource/pure3d/l?hudmap.p3d", true, true) and Settings.IncludeMinimap) or WildcardMatch(filePath, "/GameData/art/frontend/scrooby/resource/pure3d/camset*", true, true) then
 			local file, modified
 			if WildcardMatch(filePath, "/GameData/art/chars/*_m.p3d", true, true) then
 				file, modified = MakeCharacterInvisible(ReadFile(filePath))

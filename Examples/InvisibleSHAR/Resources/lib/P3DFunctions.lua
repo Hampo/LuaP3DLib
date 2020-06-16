@@ -4,7 +4,7 @@ function MakeCharacterInvisible(Original)
 	local RootChunk = P3D.P3DChunk:new{Raw = Original}
 	local modified = false
 	for idx, id in RootChunk:GetChunkIndexes(nil) do
-		if id == P3D.Identifiers.Composite_Drawable then
+		if not Settings.IncludeCharShadows and id == P3D.Identifiers.Composite_Drawable then
 			local CompDrawChunk = P3D.CompositeDrawableP3DChunk:new{Raw=RootChunk:GetChunkAtIndex(idx)}
 			for idx2 in CompDrawChunk:GetChunkIndexes(nil) do
 				CompDrawChunk:RemoveChunkAtIndex(idx2)
@@ -19,7 +19,7 @@ function MakeCharacterInvisible(Original)
 	return RootChunk:Output(), modified
 end
 
-	local ROOT_CHUNKS = {P3D.Identifiers.Static_Entity, P3D.Identifiers.Inst_Stat_Phys, P3D.Identifiers.Dyna_Phys, P3D.Identifiers.Breakable_Object, P3D.Identifiers.World_Sphere, P3D.Identifiers.Inst_Stat_Entity}
+local ROOT_CHUNKS = {P3D.Identifiers.Static_Entity, P3D.Identifiers.Inst_Stat_Phys, P3D.Identifiers.Dyna_Phys, P3D.Identifiers.Breakable_Object, P3D.Identifiers.World_Sphere, P3D.Identifiers.Inst_Stat_Entity}
 function MakeModelInvisible(Original)
 	local RootChunk = P3D.P3DChunk:new{Raw = Original}
 	local modified = false
@@ -37,8 +37,32 @@ function MakeModelInvisible(Original)
 				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(P3D.Identifiers.Mesh) do
 					AnimObjWrapperChunk:SetChunkAtIndex(idx2, MakeModelInvisibleProcessMesh(AnimObjWrapperChunk:GetChunkAtIndex(idx2)))
 				end
+				AnimDynaPhysChunk:SetChunkAtIndex(idx, AnimObjWrapperChunk:Output())
 			end
 			RootChunk:SetChunkAtIndex(RootIdx, AnimDynaPhysChunk:Output())
+			modified = true
+		elseif RootID == P3D.Identifiers.Old_Billboard_Quad_Group then
+			local OldBillboardQuadGroupChunk = P3D.OldBillboardQuadGroupP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			for idx in OldBillboardQuadGroupChunk:GetChunkIndexes(P3D.Identifiers.Old_Billboard_Quad) do
+				local OldBillboardQuadChunk = P3D.OldBillboardQuadP3DChunk:new{Raw = OldBillboardQuadGroupChunk:GetChunkAtIndex(idx)}
+				OldBillboardQuadChunk.Width = 0
+				OldBillboardQuadChunk.Height = 0
+				OldBillboardQuadGroupChunk:SetChunkAtIndex(idx, OldBillboardQuadChunk:Output())
+			end
+			RootChunk:SetChunkAtIndex(RootIdx, OldBillboardQuadGroupChunk:Output())
+			modified = true
+		elseif RootID == P3D.Identifiers.Multi_Controller then
+			local MultiControllerChunk = P3D.MultiControllerP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
+			for idx in MultiControllerChunk:GetChunkIndexes(P3D.Identifiers.Multi_Controller_Tracks) do
+				local MultiControllerTracksChunk = P3D.MultiControllerTracksP3DChunk:new{Raw = MultiControllerChunk:GetChunkAtIndex(idx)}
+				for i=#MultiControllerTracksChunk.Tracks,1,-1 do
+					if MultiControllerTracksChunk.Tracks[i].Name:sub(1,4) ~= "PTRN" then
+						table.remove(MultiControllerTracksChunk.Tracks, i)
+					end
+				end
+				MultiControllerChunk:SetChunkAtIndex(idx, MultiControllerTracksChunk:Output())
+			end
+			RootChunk:SetChunkAtIndex(RootIdx, MultiControllerChunk:Output())
 			modified = true
 		end
 	end
