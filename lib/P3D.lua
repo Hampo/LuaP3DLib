@@ -1601,6 +1601,19 @@ function P3D.LocatorP3DChunk:new(Data)
 	return o
 end
 
+function P3D.LocatorP3DChunk:createType3(Name, Position, Rotation, ParkedCar, FreeCar)
+	ParkedCar = (ParkedCar == true or ParkedCar == 1) and 1 or 0
+	local DataLen = 2
+	if FreeCar then
+		FreeCar = FreeCar .. string.rep("\0", 4 - FreeCar:len() % 4)
+		DataLen = DataLen + FreeCar:len() / 4
+	else
+		FreeCar = ""
+	end
+	local Len = 12 + Name:len() + 1 + 4 + 4 + DataLen * 4 + 12 + 4
+	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iific" .. FreeCar:len() .. "fffi", P3D.Identifiers.Locator, Len, Len, Name, 3, DataLen, Rotation, ParkedCar, FreeCar, Position.X, Position.Y, Position.Z, 0)}
+end
+
 function P3D.LocatorP3DChunk:createType9(Name, Position, Type, UnknownStr1, UnknownStr2, Unknown1, Unknown2)
 	local dataTbl = {UnknownStr1}
 	for i=1,4 - UnknownStr1:len() % 4 do
@@ -1624,6 +1637,18 @@ function P3D.LocatorP3DChunk:GetType0Data()
 	local Parameter = nil
 	if self.DataLen >= 2 then Parameter = unpack("<I", self.ValueStr, idx) end
 	return Event, Parameter
+end
+
+function P3D.LocatorP3DChunk:GetType3Data()
+	local Rotation, idx = unpack("<f", self.ValueStr, self.Name:len() + 1 + 4 + 4 + 1)
+	local ParkedCar, FreeCar
+	if self.DataLen >= 2 then
+		ParkedCar = unpack("<I", self.ValueStr, idx)
+		if self.DataLen > 2 then
+			FreeCar = unpack("<c" .. 4 * (self.DataLen - 2), self.ValueStr, idx)
+		end
+	end
+	return Rotation, ParkedCar, FreeCar
 end
 
 function P3D.LocatorP3DChunk:GetType9Data()
