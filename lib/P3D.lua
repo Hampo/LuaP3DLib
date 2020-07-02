@@ -1601,6 +1601,26 @@ function P3D.LocatorP3DChunk:new(Data)
 	return o
 end
 
+function P3D.LocatorP3DChunk:createType0(Name, Position, Event, Parameter)
+	local DataLen = Parameter and 2 or 1
+	local Len = 12 + Name:len() + 1 + 4 + 4 + DataLen * 4 + 12 + 4
+	local tbl = {}
+	tbl[1] = Name
+	tbl[2] = 0
+	tbl[3] = DataLen
+	tbl[4] = Event
+	local i = 5
+	if Parameter then
+		tbl[5] = Parameter
+		i = 6
+	end
+	tbl[i] = Position.X
+	tbl[i + 1] = Position.Y
+	tbl[i + 2] = Position.Z
+	tbl[i + 3] = 0
+	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iii" .. (Parameter and "i" or "") .. "fffi", P3D.Identifiers.Locator, Len, Len, table.unpack(tbl))}
+end
+
 function P3D.LocatorP3DChunk:createType3(Name, Position, Rotation, ParkedCar, FreeCar)
 	ParkedCar = (ParkedCar == true or ParkedCar == 1) and 1 or 0
 	local DataLen = 2
