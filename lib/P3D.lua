@@ -1203,6 +1203,7 @@ function P3D.PositionListP3DChunk:GetPositionsCount()
 end
 
 function P3D.PositionListP3DChunk:create(...)
+	local arg = {...}
 	local PositionsN = #arg
 	local len = 16 + PositionsN * 12
 	local positions = {}
