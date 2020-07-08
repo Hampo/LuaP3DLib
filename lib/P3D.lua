@@ -1158,6 +1158,7 @@ function P3D.ColourListP3DChunk:new(Data)
 end
 
 function P3D.ColourListP3DChunk:create(...)
+	local arg = {...}
 	local ColoursN = #arg
 	local len = 16 + ColoursN * 4
 	local colours = {}
@@ -1165,7 +1166,7 @@ function P3D.ColourListP3DChunk:create(...)
 		local col = arg[i]
 		colours[#colours + 1] = ARGBToString4(col.A, col.R, col.G, col.B)
 	end
-	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, ColoursN) .. concat(colours)}
+	return P3D.ColourListP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, ColoursN) .. concat(colours)}
 end
 
 function P3D.ColourListP3DChunk:GetColoursCount()
@@ -1211,7 +1212,7 @@ function P3D.PositionListP3DChunk:create(...)
 		local pos = arg[i]
 		positions[#positions + 1] = P3D.Vector3ToString12(pos.X, pos.Y, pos.Z)
 	end
-	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, PositionsN) .. concat(positions)}
+	return P3D.PositionListP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Position_List, len, len, PositionsN) .. concat(positions)}
 end
 
 function P3D.PositionListP3DChunk:Output()
