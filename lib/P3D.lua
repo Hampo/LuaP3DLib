@@ -1918,6 +1918,7 @@ function P3D.MultiControllerTracksP3DChunk:new(Data)
 end
 
 function P3D.MultiControllerTracksP3DChunk:create(...)
+	local arg = {...}
 	local TracksN = #arg
 	local len = 16
 	local tracks = {}
@@ -1926,7 +1927,7 @@ function P3D.MultiControllerTracksP3DChunk:create(...)
 		tracks[#tracks + 1] = pack("<s1fff", track.Name, track.StartTime, track.EndTime, track.Scale)
 		len = len + track.Name:len() + 1 + 4 + 4 + 4
 	end
-	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Multi_Controller_Tracks, len, len, TracksN) .. concat(tracks)}
+	return P3D.MultiControllerTracksP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Multi_Controller_Tracks, len, len, TracksN) .. concat(tracks)}
 end
 
 function P3D.MultiControllerTracksP3DChunk:GetTrackCount()
