@@ -1208,7 +1208,7 @@ function P3D.PositionListP3DChunk:create(...)
 	local positions = {}
 	for i=1,PositionsN do
 		local pos = arg[i]
-		positions[#positions + 1] = P3D.Vector3ToString12(pos,X, pos.Y, pos.Z)
+		positions[#positions + 1] = P3D.Vector3ToString12(pos.X, pos.Y, pos.Z)
 	end
 	return P3D.MeshP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, PositionsN) .. concat(positions)}
 end
@@ -1219,7 +1219,7 @@ function P3D.PositionListP3DChunk:Output()
 	local positions = {}
 	for i=1,PositionsN do
 		local pos = self.Positions[i]
-		positions[#positions + 1] = P3D.Vector3ToString12(pos,X, pos.Y, pos.Z)
+		positions[#positions + 1] = P3D.Vector3ToString12(pos.X, pos.Y, pos.Z)
 	end
 	return pack("<IIIi", self.ChunkType, len, len, PositionsN) .. concat(positions)
 end
