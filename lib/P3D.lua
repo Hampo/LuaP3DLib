@@ -1164,7 +1164,7 @@ function P3D.ColourListP3DChunk:create(...)
 	local colours = {}
 	for i=1,ColoursN do
 		local col = arg[i]
-		colours[#colours + 1] = ARGBToString4(col.A, col.R, col.G, col.B)
+		colours[#colours + 1] = P3D.ARGBToString4(col.A, col.R, col.G, col.B)
 	end
 	return P3D.ColourListP3DChunk:new{Raw = pack("<IIIi", P3D.Identifiers.Colour_List, len, len, ColoursN) .. concat(colours)}
 end
