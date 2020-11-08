@@ -30,6 +30,11 @@ elseif ModifierType == 3 then
 end
 PreLoad = Settings.PreLoadData
 Cache = {}
+if Settings.ModSandbox and not EnvIsModSandbox then
+	dofile(GetModPath() .. "/Resources/lib/ModSandbox.lua")
+	MainModSandbox = ModSandbox.Sandbox:InitFromMainMod(true)
+	IsSandbox = MainModSandbox ~= nil
+end
 if PreLoad then
 	Alert("Pre-loading files. Please wait.")
 	local files = {}

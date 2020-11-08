@@ -113,7 +113,7 @@ function SetModelRGB(Original, A, R, G, B)
 		elseif RootID == P3D.Identifiers.Anim_Dyna_Phys then
 			local AnimDynaPhysChunk = P3D.AnimDynaPhysP3DChunk:new{Raw = RootChunk:GetChunkAtIndex(RootIdx)}
 			for idx in AnimDynaPhysChunk:GetChunkIndexes(P3D.Identifiers.Anim_Obj_Wrapper) do
-				local AnimObjWrapperChunk = AnimObjWrapperP3DChunk:new{Raw = AnimDynaPhysChunk:GetChunkAtIndex(idx)}
+				local AnimObjWrapperChunk = P3D.AnimObjWrapperP3DChunk:new{Raw = AnimDynaPhysChunk:GetChunkAtIndex(idx)}
 				for idx2 in AnimObjWrapperChunk:GetChunkIndexes(P3D.Identifiers.Mesh) do
 					AnimObjWrapperChunk:SetChunkAtIndex(idx2, SetModelRGBProcessMesh(AnimObjWrapperChunk:GetChunkAtIndex(idx2), A, R, G, B))
 				end
@@ -157,7 +157,7 @@ end
 function SetModelRGBProcessMesh(Original, A, R, G, B)
 	local MeshChunk = P3D.MeshP3DChunk:new{Raw = Original}
 	for idx in MeshChunk:GetChunkIndexes(P3D.Identifiers.Old_Primitive_Group) do
-		local OldPrimitiveGroupChunk = OldPrimitiveGroupP3DChunk:new{Raw = MeshChunk:GetChunkAtIndex(idx)}
+		local OldPrimitiveGroupChunk = P3D.OldPrimitiveGroupP3DChunk:new{Raw = MeshChunk:GetChunkAtIndex(idx)}
 		for idx2 in OldPrimitiveGroupChunk:GetChunkIndexes(P3D.Identifiers.Colour_List) do
 			local ColourListChunk = P3D.ColourListP3DChunk:new{Raw = OldPrimitiveGroupChunk:GetChunkAtIndex(idx2)}
 			for i=1,#ColourListChunk.Colours do
