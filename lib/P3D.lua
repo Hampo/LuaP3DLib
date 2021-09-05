@@ -2130,6 +2130,44 @@ function P3D.ParticleSystemFactoryP3DChunk:Output()
 	return pack("<IIIis1fiihhi", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.FrameRate, self.NumAnimFrames, self.NumOLFrames, self.CycleAnim, self.EnableSorting, self:GetEmitterCount()) .. chunks
 end
 
+--Old Sprite Emitter Chunk
+P3D.OldSpriteEmitterP3DChunk = P3D.P3DChunk:newChildClass("Old Sprite Emitter")
+function P3D.OldSpriteEmitterP3DChunk:new(Data)
+	local o = P3D.OldSpriteEmitterP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Name, o.ShaderName, o.AngleMode, o.Angle, o.TextureAnimMode, o.NumTextureFrames, o.TextureFrameRate = unpack("<Is1s1c4fc4II", o.ValueStr)
+	return o
+end
+
+function P3D.OldSpriteEmitterP3DChunk:create(Version, Name, ShaderName, AngleMode, Angle, TextureAnimMode, NumTextureFrames, TextureFrameRate)
+	local Len = 12 + 4 + Name:len() + 1 + ShaderName:len() + 1 + 4 + 4 + 4 + 4 + 4
+	return P3D.OldSpriteEmitterP3DChunk:new{Raw = pack("<IIIIs1s1c4fc4II", P3D.Identifiers.Old_Sprite_Emitter, Len, Len, Version, Name, ShaderName, AngleMode, Angle, TextureAnimMode, NumTextureFrames, TextureFrameRate) .. Data}
+end
+
+function P3D.OldSpriteEmitterP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + self.Name:len() + 1 + self.ShaderName:len() + 1 + 4 + 4 + 4 + 4 + 4
+	return pack("<IIIIs1s1c4fc4II", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.ShaderName, self.AngleMode, self.Angle, self.TextureAnimMode, self.NumTextureFrames, self.TextureFrameRate) .. chunks
+end
+
+--Old Base Emitter Chunk
+P3D.OldBaseEmitterP3DChunk = P3D.P3DChunk:newChildClass("Old Base Emitter")
+function P3D.OldBaseEmitterP3DChunk:new(Data)
+	local o = P3D.OldBaseEmitterP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Name, o.ParticleType, o.GeneratorType, o.ZTest, o.ZWrite, o.Fog, o.MaxParticles, o.InfiniteLife, o.RotationalCohesion, o.TranslationCohesion = unpack("<Is1c4c4IIIIIff", o.ValueStr)
+	return o
+end
+
+function P3D.OldBaseEmitterP3DChunk:create(Version, Name, ParticleType, GeneratorType, ZTest, ZWrite, Fog, MaxParticles, InfiniteLife, RotationalCohesion, TranslationCohesion)
+	local Len = 12 + 4 + Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4
+	return P3D.OldBaseEmitterP3DChunk:new{Raw = pack("<IIIIs1c4c4IIIIIff", P3D.Identifiers.Old_Base_Emitter, Len, Len, Version, Name, ParticleType, GeneratorType, ZTest, ZWrite, Fog, MaxParticles, InfiniteLife, RotationalCohesion, TranslationCohesion) .. Data}
+end
+
+function P3D.OldBaseEmitterP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4
+	return pack("<IIIIs1c4c4IIIIIff", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.ParticleType, self.GeneratorType, self.ZTest, self.ZWrite, self.Fog, self.MaxParticles, self.InfiniteLife, self.RotationalCohesion, self.TranslationCohesion) .. chunks
+end
+
 --Instance List Chunk
 P3D.InstanceListP3DChunk = P3D.P3DChunk:newChildClass("Instance List")
 function P3D.InstanceListP3DChunk:new(Data)
@@ -2271,6 +2309,81 @@ function P3D.AnimationGroupP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIis1ii", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.GroupId, #self.Chunks) .. chunks
+end
+
+--Vector 2D OF Channel Chunk
+P3D.Vector2DOFChannelP3DChunk = P3D.P3DChunk:newChildClass("Vector 2D OF Channel")
+function P3D.Vector2DOFChannelP3DChunk:new(Data)
+	local o = P3D.Vector2DOFChannelP3DChunk.parentClass.new(self, Data)
+	o.Constants = {}
+	o.Version, o.Param, o.Mapping, o.Constants.X, o.Constants.Y, o.Constants.Z, o.NumFrames, idx = unpack("<Ic4HfffI", o.ValueStr)
+	local idx = 1 + 4 + 2 + 4 + 4 + 4 + 4 + 4
+	o.Frames = {unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx)}
+	o.Frames[#o.Frames] = nil
+	idx = idx + o.NumFrames * 2
+	o.Values = {}
+	for i=1,o.NumFrames do
+		local value = {}
+		value.X, value.Y = unpack("<ff", o.ValueStr, idx)
+		o.Values[i] = value
+		idx = idx + 8
+	end
+	return o
+end
+
+--TODO: Create
+
+function P3D.Vector2DOFChannelP3DChunk:GetFrameCount()
+	return #self.Frames
+end
+
+function P3D.Vector2DOFChannelP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local FramesN = self:GetFrameCount()
+	local values = {}
+	for i=1,FramesN do
+		local value = self.Values[i]
+		values[i] = pack("ff", value.X, value.Y)
+	end
+	local Len = 12 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + FramesN * 2 + FramesN * 8
+	return pack("<IIIIc4HfffI" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, self.Mapping, self.Constants.X, self.Constants.Y, self.Constants.Z, FramesN, table.unpack(self.Frames)) .. concat(values) .. chunks
+end
+
+--Vector 3D OF Channel Chunk
+P3D.Vector3DOFChannelP3DChunk = P3D.P3DChunk:newChildClass("Vector 3D OF Channel")
+function P3D.Vector3DOFChannelP3DChunk:new(Data)
+	local o = P3D.Vector3DOFChannelP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Param, o.NumFrames = unpack("<Ic4I", o.ValueStr)
+	local idx = 1 + 4 + 4 + 4
+	o.Frames = {unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx)}
+	o.Frames[#o.Frames] = nil
+	idx = idx + o.NumFrames * 2
+	o.Values = {}
+	for i=1,o.NumFrames do
+		local value = {}
+		value.X, value.Y, value.Z = unpack("<fff", o.ValueStr, idx)
+		o.Values[i] = value
+		idx = idx + 12
+	end
+	return o
+end
+
+--TODO: Create
+
+function P3D.Vector3DOFChannelP3DChunk:GetFrameCount()
+	return #self.Frames
+end
+
+function P3D.Vector3DOFChannelP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local FramesN = self:GetFrameCount()
+	local values = {}
+	for i=1,FramesN do
+		local value = self.Values[i]
+		values[i] = pack("fff", value.X, value.Y, value.Z)
+	end
+	local Len = 12 + 4 + 4 + 4 + FramesN * 2 + FramesN * 12
+	return pack("<IIIic4i" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames)) .. concat(values) .. chunks
 end
 
 --Compressed Quaternion Channel Chunk
