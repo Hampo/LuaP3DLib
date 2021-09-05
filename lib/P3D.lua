@@ -1812,6 +1812,65 @@ function P3D.PhysicsObjectP3DChunk:Output()
 	return pack("<IIIs1is1iff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.MaterialName, self:GetJointCount(), self.Volume, self.RestingSensitivity) .. chunks
 end
 
+--Physics Joint Chunk
+P3D.PhysicsJointP3DChunk = P3D.P3DChunk:newChildClass("Physics Joint")
+function P3D.PhysicsJointP3DChunk:new(Data)
+	local o = P3D.PhysicsJointP3DChunk.parentClass.new(self, Data)
+	o.Index, o.Volume, o.Stiffness, o.MaxAngle, o.MinAngle, o.DOF = unpack("<IffffI", o.ValueStr)
+	return o
+end
+
+function P3D.PhysicsJointP3DChunk:create(Index, Volume, Stiffness, MaxAngle, MinAngle, DOF)
+	local Len = 12 + 4 + 4 + 4 + 4 + 4 + 4
+	return P3D.PhysicsJointP3DChunk:new{Raw = pack("<IIIIffffI", P3D.Identifiers.Physics_Joint, Len, Len, Index, Volume, Stiffness, MaxAngle, MinAngle, DOF)}
+end
+
+function P3D.PhysicsJointP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4 + 4 + 4 + 4
+	return pack("<IIIIffffI", self.ChunkType, Len, Len + chunks:len(), self.Index, self.Volume, self.Stiffness, self.MaxAngle, self.MinAngle, self.DOF) .. chunks
+end
+
+--Physics Vector Chunk
+P3D.PhysicsVectorP3DChunk = P3D.P3DChunk:newChildClass("Physics Vector")
+function P3D.PhysicsVectorP3DChunk:new(Data)
+	local o = P3D.PhysicsVectorP3DChunk.parentClass.new(self, Data)
+	o.Vector = {}
+	o.Vector.X, o.Vector.Y, o.Vector.Z = unpack("<fff", o.ValueStr)
+	return o
+end
+
+function P3D.PhysicsVectorP3DChunk:create(Vector)
+	local Len = 12 + 4 + 4 + 4
+	return P3D.PhysicsVectorP3DChunk:new{Raw = pack("<IIIfff", P3D.Identifiers.Physics_Vector, Len, Len, Vector.X, Vector.Y, Vector.Z)}
+end
+
+function P3D.PhysicsVectorP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4
+	return pack("<IIIfff", self.ChunkType, Len, Len + chunks:len(), self.Vector.X, self.Vector.Y, self.Vector.Z) .. chunks
+end
+
+--Physics Inertia Matrix Chunk
+P3D.PhysicsInertiaMatrixP3DChunk = P3D.P3DChunk:newChildClass("Physics Inertia Matrix")
+function P3D.PhysicsInertiaMatrixP3DChunk:new(Data)
+	local o = P3D.PhysicsInertiaMatrixP3DChunk.parentClass.new(self, Data)
+	o.X = {}
+	o.X.X, o.X.Y, o.X.Z, o.YY, o.YZ, o.ZZ = unpack("<ffffff", o.ValueStr)
+	return o
+end
+
+function P3D.PhysicsInertiaMatrixP3DChunk:create(X, YY, YZ, ZZ)
+	local Len = 12 + 4 + 4 + 4 + 4 + 4 + 4
+	return P3D.PhysicsInertiaMatrixP3DChunk:new{Raw = pack("<IIIffffff", P3D.Identifiers.Physics_Inertia_Matrix, Len, Len, X.X, X.Y, X.Z, YY, YZ, ZZ)}
+end
+
+function P3D.PhysicsInertiaMatrixP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4 + 4 + 4 + 4
+	return pack("<IIIffffff", self.ChunkType, Len, Len + chunks:len(), self.X.X, self.X.Y, self.X.Z, self.YY, self.YZ, self.ZZ) .. chunks
+end
+
 --Collision Object Chunk
 P3D.CollisionObjectP3DChunk = P3D.P3DChunk:newChildClass("Collision Object")
 function P3D.CollisionObjectP3DChunk:new(Data)
@@ -1869,6 +1928,64 @@ function P3D.CollisionVolumeP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4 + 4
 	return pack("<IIIiii", self.ChunkType, Len, Len + chunks:len(), self.ObjectReferenceIndex, self.OwnerIndex, self:GetVolumeCount()) .. chunks
+end
+
+--Collision Oriented Bounding Box Chunk
+P3D.CollisionOrientedBoundingBoxP3DChunk = P3D.P3DChunk:newChildClass("Collision Oriented Bounding Box")
+function P3D.CollisionOrientedBoundingBoxP3DChunk:new(Data)
+	local o = P3D.CollisionOrientedBoundingBoxP3DChunk.parentClass.new(self, Data)
+	o.Length1, o.Length2, o.Length3 = unpack("<fff", o.ValueStr)
+	return o
+end
+
+function P3D.CollisionOrientedBoundingBoxP3DChunk:create(Length1,Length2,Length3)
+	local Len = 12 + 4 + 4 + 4
+	return P3D.CollisionOrientedBoundingBoxP3DChunk:new{Raw = pack("<IIIfff", P3D.Identifiers.Collision_Oriented_Bounding_Box, Len, Len, Length1, Length2, Length3)}
+end
+
+function P3D.CollisionOrientedBoundingBoxP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4
+	return pack("<IIIfff", self.ChunkType, Len, Len + chunks:len(), self.Length1, self.Length2, self.Length3) .. chunks
+end
+
+--Collision Sphere Chunk
+P3D.CollisionSphereP3DChunk = P3D.P3DChunk:newChildClass("Collision Sphere")
+function P3D.CollisionSphereP3DChunk:new(Data)
+	local o = P3D.CollisionSphereP3DChunk.parentClass.new(self, Data)
+	o.SphereRadius = unpack("<f", o.ValueStr)
+	return o
+end
+
+function P3D.CollisionSphereP3DChunk:create(SphereRadius)
+	local Len = 12 + 4
+	return P3D.CollisionSphereP3DChunk:new{Raw = pack("<IIIf", P3D.Identifiers.Collision_Vector, Len, Len, SphereRadius)}
+end
+
+function P3D.CollisionSphereP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4
+	return pack("<IIIf", self.ChunkType, Len, Len + chunks:len(), self.SphereRadius) .. chunks
+end
+
+--Collision Vector Chunk
+P3D.CollisionVectorP3DChunk = P3D.P3DChunk:newChildClass("Collision Vector")
+function P3D.CollisionVectorP3DChunk:new(Data)
+	local o = P3D.CollisionVectorP3DChunk.parentClass.new(self, Data)
+	o.Vector = {}
+	o.Vector.X, o.Vector.Y, o.Vector.Z = unpack("<fff", o.ValueStr)
+	return o
+end
+
+function P3D.CollisionVectorP3DChunk:create(Vector)
+	local Len = 12 + 4 + 4 + 4
+	return P3D.CollisionVectorP3DChunk:new{Raw = pack("<IIIfff", P3D.Identifiers.Collision_Vector, Len, Len, Vector.X, Vector.Y, Vector.Z)}
+end
+
+function P3D.CollisionVectorP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4
+	return pack("<IIIfff", self.ChunkType, Len, Len + chunks:len(), self.Vector.X, self.Vector.Y, self.Vector.Z) .. chunks
 end
 
 --Multi Controller Chunk
