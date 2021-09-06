@@ -2335,7 +2335,35 @@ function P3D.Float1ChannelP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local FramesN = self:GetFrameCount()
 	local Len = 12 + 4 + 4 + 4 + FramesN * 2 + FramesN * 4
-	return pack("<IIIic4i" .. string.rep("h", #self.Frames) .. string.rep("f", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames), table.unpack(self.Values)) .. chunks
+	return pack("<IIIic4i" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames)) .. pack("<" .. string.rep("f", #self.Frames), table.unpack(self.Values)) .. chunks
+end
+
+--Vector 1D OF Channel Chunk
+P3D.Vector1DOFChannelP3DChunk = P3D.P3DChunk:newChildClass("Vector 1D OF Channel")
+function P3D.Vector1DOFChannelP3DChunk:new(Data)
+	local o = P3D.Vector1DOFChannelP3DChunk.parentClass.new(self, Data)
+	o.Constants = {}
+	o.Version, o.Param, o.Mapping, o.Constants.X, o.Constants.Y, o.Constants.Z, o.NumFrames, idx = unpack("<Ic4HfffI", o.ValueStr)
+	local idx = 1 + 4 + 4 + 2 + 4 + 4 + 4 + 4
+	o.Frames = {unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx)}
+	o.Frames[#o.Frames] = nil
+	idx = idx + o.NumFrames * 2
+	o.Values = {unpack("<" .. string.rep("f", o.NumFrames), o.ValueStr, idx)}
+	o.Values[#o.Values] = nil
+	return o
+end
+
+--TODO: Create
+
+function P3D.Vector1DOFChannelP3DChunk:GetFrameCount()
+	return #self.Frames
+end
+
+function P3D.Vector1DOFChannelP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local FramesN = self:GetFrameCount()
+	local Len = 12 + 4 + 4 + 2 + 4 + 4 + 4 + 4 + FramesN * 2 + FramesN * 4
+	return pack("<IIIIc4HfffI" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, self.Mapping, self.Constants.X, self.Constants.Y, self.Constants.Z, FramesN, table.unpack(self.Frames)) .. pack("<" .. string.rep("f", #self.Frames), table.unpack(self.Values)) .. chunks
 end
 
 --Vector 2D OF Channel Chunk
@@ -2344,7 +2372,7 @@ function P3D.Vector2DOFChannelP3DChunk:new(Data)
 	local o = P3D.Vector2DOFChannelP3DChunk.parentClass.new(self, Data)
 	o.Constants = {}
 	o.Version, o.Param, o.Mapping, o.Constants.X, o.Constants.Y, o.Constants.Z, o.NumFrames, idx = unpack("<Ic4HfffI", o.ValueStr)
-	local idx = 1 + 4 + 2 + 4 + 4 + 4 + 4 + 4
+	local idx = 1 + 4 + 4 + 2 + 4 + 4 + 4 + 4
 	o.Frames = {unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx)}
 	o.Frames[#o.Frames] = nil
 	idx = idx + o.NumFrames * 2
@@ -2372,7 +2400,7 @@ function P3D.Vector2DOFChannelP3DChunk:Output()
 		local value = self.Values[i]
 		values[i] = pack("ff", value.X, value.Y)
 	end
-	local Len = 12 + 4 + 2 + 4 + 4 + 4 + 4 + 4 + FramesN * 2 + FramesN * 8
+	local Len = 12 + 4 + 4 + 2 + 4 + 4 + 4 + 4 + FramesN * 2 + FramesN * 8
 	return pack("<IIIIc4HfffI" .. string.rep("h", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, self.Mapping, self.Constants.X, self.Constants.Y, self.Constants.Z, FramesN, table.unpack(self.Frames)) .. concat(values) .. chunks
 end
 
