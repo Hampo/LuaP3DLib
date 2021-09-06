@@ -2311,6 +2311,33 @@ function P3D.AnimationGroupP3DChunk:Output()
 	return pack("<IIIis1ii", self.ChunkType, Len, Len + chunks:len(), self.Version, self.Name, self.GroupId, #self.Chunks) .. chunks
 end
 
+--Float 1 Channel Chunk
+P3D.Float1ChannelP3DChunk = P3D.P3DChunk:newChildClass("Float 1 Channel")
+function P3D.Float1ChannelP3DChunk:new(Data)
+	local o = P3D.Float1ChannelP3DChunk.parentClass.new(self, Data)
+	o.Version, o.Param, o.NumFrames = unpack("<Ic4I", o.ValueStr)
+	local idx = 1 + 4 + 4 + 4
+	o.Frames = {unpack("<" .. string.rep("h", o.NumFrames), o.ValueStr, idx)}
+	o.Frames[#o.Frames] = nil
+	idx = idx + o.NumFrames * 2
+	o.Values = {unpack("<" .. string.rep("f", o.NumFrames), o.ValueStr, idx)}
+	o.Values[#o.Values] = nil
+	return o
+end
+
+--TODO: Create
+
+function P3D.Float1ChannelP3DChunk:GetFrameCount()
+	return #self.Frames
+end
+
+function P3D.Float1ChannelP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local FramesN = self:GetFrameCount()
+	local Len = 12 + 4 + 4 + 4 + FramesN * 2 + FramesN * 4
+	return pack("<IIIic4i" .. string.rep("h", #self.Frames) .. string.rep("f", #self.Frames), self.ChunkType, Len, Len + chunks:len(), self.Version, self.Param, FramesN, table.unpack(self.Frames), table.unpack(self.Values)) .. chunks
+end
+
 --Vector 2D OF Channel Chunk
 P3D.Vector2DOFChannelP3DChunk = P3D.P3DChunk:newChildClass("Vector 2D OF Channel")
 function P3D.Vector2DOFChannelP3DChunk:new(Data)

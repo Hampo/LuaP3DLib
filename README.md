@@ -13,16 +13,19 @@ This is a single Lua file you are able to add to mods in order to modify P3D fil
 Name=Proddy
 Website=https://github.com/Hampo/LuaP3DEditor
 Notes=P3D Class System - P3D Functions
+Group=LuaP3DEditor
 
 [Author]
 Name=EnAppelsin
 Website=https://github.com/EnAppelsin
 Notes=Original P3D Lua idea - P3D Functions
+Group=LuaP3DEditor
 
 [Author]
 Name=Lucas Cardellini
 Website=https://lucasstuff.com/
 Notes=P3D Functions Performance Improvements
+Group=LuaP3DEditor
 ```
 
 # Examples
