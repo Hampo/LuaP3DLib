@@ -2780,6 +2780,25 @@ function P3D.FrontendLayerP3DChunk:Output()
 	return pack("<IIIs1iiii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Visible, self.Editable, self.Alpha) .. chunks
 end
 
+--Frontend Group Chunk
+P3D.FrontendGroupP3DChunk = P3D.P3DChunk:newChildClass("Frontend Group")
+function P3D.FrontendGroupP3DChunk:new(Data)
+	local o = P3D.FrontendGroupP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.Alpha = unpack("<s1ii", o.ValueStr)
+	return o
+end
+
+function P3D.FrontendGroupP3DChunk:create(Name,Version,Alpha)
+	local Len = 12 + Name:len() + 1 + 4 + 4
+	return P3D.FrontendGroupP3DChunk:new{Raw = pack("<IIIs1ii", P3D.Identifiers.Frontend_Group, Len, Len, Name, Version, Alpha)}
+end
+
+function P3D.FrontendGroupP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4
+	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Alpha) .. chunks
+end
+
 --Frontend Multi Text Chunk
 P3D.FrontendMultiTextP3DChunk = P3D.P3DChunk:newChildClass("Frontend Multi Text")
 P3D.FrontendMultiTextP3DChunk.Justifications = {
