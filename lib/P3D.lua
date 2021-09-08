@@ -2708,19 +2708,19 @@ function P3D.TriggerVolumeP3DChunk:new(Data)
 	local o = P3D.TriggerVolumeP3DChunk.parentClass.new(self, Data)
 	o.HalfExtents = {X=0,Y=0,Z=0}
 	o.Matrix = P3D.MatrixIdentity()
-	o.Name, o.IsRect, o.HalfExtents.X, o.HalfExtents.Y, o.HalfExtents.Z, o.Matrix.M11, o.Matrix.M12, o.Matrix.M13, o.Matrix.M14, o.Matrix.M21, o.Matrix.M22, o.Matrix.M23, o.Matrix.M34, o.Matrix.M31, o.Matrix.M32, o.Matrix.M33, o.Matrix.M34, o.Matrix.M41, o.Matrix.M42, o.Matrix.M43, o.Matrix.M44 = unpack("<s1ifffffffffffffffffff", o.ValueStr)
+	o.Name, o.IsRect, o.HalfExtents.X, o.HalfExtents.Y, o.HalfExtents.Z, o.Matrix.M11, o.Matrix.M12, o.Matrix.M13, o.Matrix.M14, o.Matrix.M21, o.Matrix.M22, o.Matrix.M23, o.Matrix.M24, o.Matrix.M31, o.Matrix.M32, o.Matrix.M33, o.Matrix.M34, o.Matrix.M41, o.Matrix.M42, o.Matrix.M43, o.Matrix.M44 = unpack("<s1ifffffffffffffffffff", o.ValueStr)
 	return o
 end
 
 function P3D.TriggerVolumeP3DChunk:create(Name,IsRect,HalfExtents,Matrix)
 	local Len = 12 + Name:len() + 1 + 4 + 12 + 64
-	return P3D.TriggerVolumeP3DChunk:new{Raw = pack("<IIIs1ifffffffffffffffffff", P3D.Identifiers.Trigger_Volume, Len, Len, Name, IsRect, HalfExtents.X, HalfExtents.Y, HalfExtents.Z, Matrix.M11, Matrix.M12, Matrix.M13, Matrix.M14, Matrix.M21, Matrix.M22, Matrix.M23, Matrix.M34, Matrix.M31, Matrix.M32, Matrix.M33, Matrix.M34, Matrix.M41, Matrix.M42, Matrix.M43, Matrix.M44)}
+	return P3D.TriggerVolumeP3DChunk:new{Raw = pack("<IIIs1ifffffffffffffffffff", P3D.Identifiers.Trigger_Volume, Len, Len, Name, IsRect, HalfExtents.X, HalfExtents.Y, HalfExtents.Z, Matrix.M11, Matrix.M12, Matrix.M13, Matrix.M14, Matrix.M21, Matrix.M22, Matrix.M23, Matrix.M24, Matrix.M31, Matrix.M32, Matrix.M33, Matrix.M34, Matrix.M41, Matrix.M42, Matrix.M43, Matrix.M44)}
 end
 
 function P3D.TriggerVolumeP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 12 + 64
-	return pack("<IIIs1ifffffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsRect, self.HalfExtents.X, self.HalfExtents.Y, self.HalfExtents.Z, self.Matrix.M11, self.Matrix.M12, self.Matrix.M13, self.Matrix.M14, self.Matrix.M21, self.Matrix.M22, self.Matrix.M23, self.Matrix.M34, self.Matrix.M31, self.Matrix.M32, self.Matrix.M33, self.Matrix.M34, self.Matrix.M41, self.Matrix.M42, self.Matrix.M43, self.Matrix.M44) .. chunks
+	return pack("<IIIs1ifffffffffffffffffff", self.ChunkType, Len, Len + chunks:len(), self.Name, self.IsRect, self.HalfExtents.X, self.HalfExtents.Y, self.HalfExtents.Z, self.Matrix.M11, self.Matrix.M12, self.Matrix.M13, self.Matrix.M14, self.Matrix.M21, self.Matrix.M22, self.Matrix.M23, self.Matrix.M24, self.Matrix.M31, self.Matrix.M32, self.Matrix.M33, self.Matrix.M34, self.Matrix.M41, self.Matrix.M42, self.Matrix.M43, self.Matrix.M44) .. chunks
 end
 
 --Frontend Project Chunk
