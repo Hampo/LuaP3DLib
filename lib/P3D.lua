@@ -2761,6 +2761,27 @@ function P3D.FrontendPageP3DChunk:Output()
 	return pack("<IIIs1iii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.ResolutionX, self.ResolutionY) .. chunks
 end
 
+--Frontend Pure3D Resource Chunk
+P3D.FrontendPure3DResourceP3DChunk = P3D.P3DChunk:newChildClass("Frontend Pure3D Resource")
+function P3D.FrontendPure3DResourceP3DChunk:new(Data)
+	local o = P3D.FrontendPure3DResourceP3DChunk.parentClass.new(self, Data)
+	o.Name, o.Version, o.Filename, o.InventoryName, o.CameraName, o.AnimationName = unpack("<s1is1s1s1s1", o.ValueStr)
+	local idx = o.Name:len() + 1 + 4 + o.Filename:len() + 1 + o.InventoryName:len() + 1 + o.CameraName:len() + 1 + o.AnimationName:len() + 1
+	o.Data = o.ValueStr:sub(idx + 1)
+	return o
+end
+
+function P3D.FrontendPure3DResourceP3DChunk:create(Name, Version, Filename, InventoryName, CameraName, AnimationName, Data)
+	local Len = 12 + Name:len() + 1 + 4 + Filename:len() + 1 + InventoryName:len() + 1 + CameraName:len() + 1 + AnimationName:len() + 1 + Data:len()
+	return P3D.FrontendPure3DResourceP3DChunk:new{Raw = pack("<IIIs1is1s1s1s1", P3D.Identifiers.Frontend_Pure3D_Resource, Len, Len, Name, Version, Filename, InventoryName, CameraName, AnimationName) .. Data}
+end
+
+function P3D.FrontendPure3DResourceP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + self.Filename:len() + 1 + self.InventoryName:len() + 1 + self.CameraName:len() + 1 + self.AnimationName:len() + 1 + self.Data:len()
+	return pack("<IIIs1is1s1s1s1", self.ChunkType, Len, Len + chunks:len(), 	self.Name, self.Version, self.Filename, self.InventoryName, self.CameraName, self.AnimationName) .. self.Data .. chunks
+end
+
 --Frontend Layer Chunk
 P3D.FrontendLayerP3DChunk = P3D.P3DChunk:newChildClass("Frontend Layer")
 function P3D.FrontendLayerP3DChunk:new(Data)
@@ -2797,6 +2818,35 @@ function P3D.FrontendGroupP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + self.Name:len() + 1 + 4 + 4
 	return pack("<IIIs1ii", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.Alpha) .. chunks
+end
+
+--Frontend Pure3D Object Chunk
+P3D.FrontendPure3DObjectP3DChunk = P3D.P3DChunk:newChildClass("Frontend Pure3D Object")
+P3D.FrontendPure3DObjectP3DChunk.Justifications = {
+	Left = 0,
+	Right = 1,
+	Top = 2,
+	Bottom = 3,
+	Centre = 4,
+}
+function P3D.FrontendPure3DObjectP3DChunk:new(Data)
+	local o = P3D.FrontendPure3DObjectP3DChunk.parentClass.new(self, Data)
+	o.Colour = {}
+	o.Name, o.Version, o.PositionX, o.PositionY, o.DimensionX, o.DimensionY, o.JustificationX, o.JustificationY, o.Colour.B, o.Colour.G, o.Colour.R, o.Colour.A, o.Translucency, o.RotationValue, o.InventoryName = unpack("<s1IIIIIIIBBBBIfs1", o.ValueStr)
+	local idx = o.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + o.InventoryName:len() + 1
+	o.Data = o.ValueStr:sub(idx + 1)
+	return o
+end
+
+function P3D.FrontendPure3DObjectP3DChunk:create(Name, Version, PositionX, PositionY, DimensionX, DimensionY, JustificationX, JustificationY, Colour, Translucency, RotationValue, InventoryName, Data)
+	local Len = 12 + Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + InventoryName:len() + 1 + Data:len()
+	return P3D.FrontendPure3DObjectP3DChunk:new{Raw = pack("<IIIs1IIIIIIIBBBBIfs1", P3D.Identifiers.Frontend_Pure3D_Object, Len, Len, Name, Version, PositionX, PositionY, DimensionX, DimensionY, JustificationX, JustificationY, Colour.B, Colour.G, Colour.R, Colour.A, Translucency, RotationValue, InventoryName) .. Data}
+end
+
+function P3D.FrontendPure3DObjectP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + self.Name:len() + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + self.InventoryName:len() + 1 + self.Data:len()
+	return pack("<IIIs1IIIIIIIBBBBIfs1", self.ChunkType, Len, Len + chunks:len(), self.Name, self.Version, self.PositionX, self.PositionY, self.DimensionX, self.DimensionY, self.JustificationX, self.JustificationY, self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A, self.Translucency, self.RotationValue, self.InventoryName) .. self.Data .. chunks
 end
 
 --Frontend Multi Text Chunk
