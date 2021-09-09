@@ -2682,6 +2682,32 @@ function P3D.FrontendLanguageP3DChunk:AddValue(Name, String)
 	self.Offsets[#self.Offsets + 1] = #self.Buffer
 	self.Buffer = self.Buffer .. String
 end
+
+function P3D.FrontendLanguageP3DChunk:SetValue(Name, String)
+	local idx
+	local hash = self:GetNameHash(Name)
+	for i=1,#self.Hashes do
+		if self.Hashes[i] == hash then
+			idx = i
+			break
+		end
+	end
+	assert(idx, "Could not find matching hash for \"" .. Name .. "\".")
+	local offset = self.Offsets[idx]
+	local startLen = self.Offsets[idx + 1] - offset
+	local ucs2 = {}
+	for p,c in utf8.codes(String) do
+		if c == 0 then break end
+		ucs2[#ucs2 + 1] = c
+	end
+	ucs2[#ucs2 + 1] = 0
+	String = pack("<" .. string.rep("H", #ucs2), table.unpack(ucs2))
+	self.Buffer = self.Buffer:sub(1, offset) .. String .. self.Buffer:sub(offset + startLen + 1)
+	local diff = String:len() - startLen
+	for i=idx + 1,#self.Offsets do
+		self.Offsets[i] = self.Offsets[i] + diff
+	end
+end
 --TODO: Handle create, handle remove, handle insert, handle edit, handle bulk add
 
 function P3D.FrontendLanguageP3DChunk:GetEntryCount()
