@@ -1636,22 +1636,22 @@ function P3D.LocatorP3DChunk:createType3(Name, Position, Rotation, ParkedCar, Fr
 	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iific" .. FreeCar:len() .. "fffi", P3D.Identifiers.Locator, Len, Len, Name, 3, DataLen, Rotation, ParkedCar, FreeCar, Position.X, Position.Y, Position.Z, 0)}
 end
 
-function P3D.LocatorP3DChunk:createType9(Name, Position, Type, UnknownStr1, UnknownStr2, Unknown1, Unknown2)
-	local dataTbl = {UnknownStr1}
-	for i=1,4 - UnknownStr1:len() % 4 do
+function P3D.LocatorP3DChunk:createType9(Name, Position, ActionName, ObjectName, JointName, ButtonInput, ShouldTransform)
+	local dataTbl = {ObjectName}
+	for i=1,4 - ObjectName:len() % 4 do
 		dataTbl[#dataTbl + 1] = "\0"
 	end
-	dataTbl[#dataTbl + 1] = UnknownStr2
-	for i=1,4 - UnknownStr2:len() % 4 do
+	dataTbl[#dataTbl + 1] = JointName
+	for i=1,4 - JointName:len() % 4 do
 		dataTbl[#dataTbl + 1] = "\0"
 	end
-	dataTbl[#dataTbl + 1] = Type
-	for i=1,4 - Type:len() % 4 do
+	dataTbl[#dataTbl + 1] = ActionName
+	for i=1,4 - ActionName:len() % 4 do
 		dataTbl[#dataTbl + 1] = "\0"
 	end
 	local data = concat(dataTbl)
 	local Len = 12 + Name:len() + 1 + 4 + 4 + data:len() + 4 + 4 + 12 + 4
-	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iic" .. data:len() .. "iifffi", P3D.Identifiers.Locator, Len, Len, Name, 9, data:len() / 4 + 2, data, Unknown1, Unknown2, Position.X, Position.Y, Position.Z, 0)}
+	return P3D.LocatorP3DChunk:new{Raw = pack("<IIIs1iic" .. data:len() .. "iifffi", P3D.Identifiers.Locator, Len, Len, Name, 9, data:len() / 4 + 2, data, ButtonInput, ShouldTransform, Position.X, Position.Y, Position.Z, 0)}
 end
 
 function P3D.LocatorP3DChunk:GetType0Data()
@@ -1674,8 +1674,8 @@ function P3D.LocatorP3DChunk:GetType3Data()
 end
 
 function P3D.LocatorP3DChunk:GetType9Data()
-	local data, Unknown1, Unknown2 = unpack("<c" .. (self.DataLen - 2) * 4 .. "ii", self.ValueStr, self.Name:len() + 1 + 4 + 4 + 1)
-	local UnknownStr1, UnknownStr2, Type
+	local data, ButtonInput, ShouldTransform = unpack("<c" .. (self.DataLen - 2) * 4 .. "ii", self.ValueStr, self.Name:len() + 1 + 4 + 4 + 1)
+	local ObjectName, JointName, ActionName
 	local index = 1
 	local position = 1
 	local buffer = {}
@@ -1685,18 +1685,18 @@ function P3D.LocatorP3DChunk:GetType9Data()
 		else
 			if #buffer > 0 then
 				if index == 1 then
-					UnknownStr1 = concat(buffer)
+					ObjectName = concat(buffer)
 				elseif index == 2 then
-					UnknownStr2 = concat(buffer)
+					JointName = concat(buffer)
 				elseif index == 3 then
-					Type = concat(buffer)
+					ActionName = concat(buffer)
 				end
 				buffer = {}
 				index = index + 1
 			end
 		end
 	end
-	return Type, UnknownStr1, UnknownStr2, Unknown1, Unknown2
+	return ActionName, ObjectName, JointName, ButtonInput, ShouldTransform
 end
 
 function P3D.LocatorP3DChunk:GetTriggerCount()
@@ -2500,6 +2500,26 @@ function P3D.FollowCameraDataP3DChunk:Output()
 	local chunks = concat(self.Chunks)
 	local Len = 12 + 4 + 4 + 4 + 4 + 12
 	return pack("<IIIiffffff", self.ChunkType, Len, Len + chunks:len(), self.Index, self.Unknown, self.Angle, self.Distance, self.Look.X, self.Look.Y, self.Look.Z) .. chunks
+end
+
+--Walker Camera Data Chunk
+P3D.WalkerCameraDataP3DChunk = P3D.P3DChunk:newChildClass("Walker Camera Data")
+function P3D.WalkerCameraDataP3DChunk:new(Data)
+	local o = P3D.WalkerCameraDataP3DChunk.parentClass.new(self, Data)
+	o.Look = {X=0,Y=0,Z=0}
+	o.Index, o.MinMagnitude, o.MaxMagnitude, o.Elevation, o.Look.X, o.Look.Y, o.Look.Z = unpack("<iffffff", o.ValueStr)
+	return o
+end
+
+function P3D.WalkerCameraDataP3DChunk:create(Index,MinMagnitude,MaxMagnitude,Elevation,Look)
+	local Len = 12 + 4 + 4 + 4 + 4 + 12
+	return P3D.WalkerCameraDataP3DChunk:new{Raw = pack("<IIIiffffff", P3D.Identifiers.Walker_Camera_Data, Len, Len, Index, MinMagnitude, MaxMagnitude, Elevation, Look.X, Look.Y, Look.Z)}
+end
+
+function P3D.WalkerCameraDataP3DChunk:Output()
+	local chunks = concat(self.Chunks)
+	local Len = 12 + 4 + 4 + 4 + 4 + 12
+	return pack("<IIIiffffff", self.ChunkType, Len, Len + chunks:len(), self.Index, self.MinMagnitude, self.MaxMagnitude, self.Elevation, self.Look.X, self.Look.Y, self.Look.Z) .. chunks
 end
 
 --Sprite Chunk
