@@ -63,6 +63,7 @@ P3D.Identifiers = {
 	Float_1_Channel = 0x121100,
 	Float_2_Channel = 0x121101,
 	Follow_Camera_Data = 0x3000100,
+	Walker_Camera_Data = 0x3000101,
 	Frame_Controller = 0x121201,
 	Frontend_Group = 0x18004,
 	Frontend_Image_Resource = 0x18100,
