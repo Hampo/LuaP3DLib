@@ -56,6 +56,6 @@ function P3D.TriggerVolumeP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
-	local headerLen = 12 + #Name + 1 + 4 + 12 + 36
+	local headerLen = 12 + #Name + 1 + 4 + 12 + 64
 	return string_pack("<IIIs1Ifffffffffffffffffff", self.Identifier, headerLen, headerLen + #chunkData, Name, self.IsRect, self.HalfExtents.X, self.HalfExtents.Y, self.HalfExtents.Z, self.Matrix.M11, self.Matrix.M12, self.Matrix.M13, self.Matrix.M14, self.Matrix.M21, self.Matrix.M22, self.Matrix.M23, self.Matrix.M24, self.Matrix.M31, self.Matrix.M32, self.Matrix.M33, self.Matrix.M34, self.Matrix.M41, self.Matrix.M42, self.Matrix.M43, self.Matrix.M44) .. chunkData
 end
