@@ -437,7 +437,7 @@ local function RemoveChunk(self, ChunkOrIndex)
 end
 
 local function GetChunks(self, Identifier, Backwards)
-	assert(Identifier == nil or type(Identifier) == "number"), "Arg #1 (Identifier) must be a number")
+	assert(Identifier == nil or type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
 	
 	local chunks = self.Chunks
 	local chunkN = #chunks
@@ -470,7 +470,7 @@ local function GetChunks(self, Identifier, Backwards)
 end
 
 local function GetChunksIndexed(self, Identifier, Backwards)
-	assert(Identifier == nil or type(Identifier) == "number"), "Arg #1 (Identifier) must be a number")
+	assert(Identifier == nil or type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
 	
 	local chunks = self.Chunks
 	local chunkN = #chunks
