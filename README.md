@@ -1,4 +1,4 @@
-# Lua P3D Lin (Previously Lua P3D Editor)
+# Lua P3D Lib (Previously Lua P3D Editor)
 This is a single Lua file you are able to add to mods in order to modify P3D files dynamically.
 
 # Installation
