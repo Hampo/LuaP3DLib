@@ -23,7 +23,7 @@ local function new(self, Name)
 	
 	local Data = {
 		Chunks = {},
-		Name = Name,
+		Name = Name
 	}
 	
 	self.__index = self
