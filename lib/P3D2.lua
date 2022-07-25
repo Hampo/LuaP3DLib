@@ -43,9 +43,9 @@ P3D.Identifiers = {
 	Collision_Volume_Owner = 0x7010021, -- Done
 	Collision_Volume_Owner_Name = 0x7010022, -- Done
 	Collision_Wall = 0x7010005, -- TODO
-	Colour_Channel = 0x121109, -- TODO
-	Colour_List = 0x10008, -- TODO
-	Composite_Drawable = 0x4512, -- TODO
+	Colour_Channel = 0x121109, -- Done
+	Colour_List = 0x10008, -- Done
+	Composite_Drawable = 0x4512, -- Done
 	Composite_Drawable_2 = 0x123000, -- TODO
 	Composite_Drawable_Effect = 0x4518, -- TODO
 	Composite_Drawable_Effect_List = 0x4517, -- TODO
@@ -436,7 +436,69 @@ local function RemoveChunk(self, ChunkOrIndex)
 	end
 end
 
-P3D.P3DFile = setmetatable({load = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk}, {__call = LoadP3DFile})
+local function GetChunks(self, Identifier, Backwards)
+	local chunks = self.Chunks
+	local chunkN = #chunks
+	
+	if Backwards == nil or Backwards then
+		local n = chunkN
+		return function()
+			while n > 0 do
+				local Chunk = chunks[n]
+				n = n - 1
+				if Identifier == nil or Chunk.Identifier == Identifier then
+					return Chunk
+				end
+			end
+			return nil
+		end
+	else
+		local n = 1
+		return function()
+			while n <= chunkN do
+				local Chunk = chunks[n]
+				n = n + 1
+				if Identifier == nil or Chunk.Identifier == Identifier then
+					return Chunk
+				end
+			end
+			return nil
+		end
+	end
+end
+
+local function GetChunksIndexed(self, Identifier, Backwards)
+	local chunks = self.Chunks
+	local chunkN = #chunks
+	
+	if Backwards == nil or Backwards then
+		local n = chunkN
+		return function()
+			while n > 0 do
+				local Chunk = chunks[n]
+				n = n - 1
+				if Identifier == nil or Chunk.Identifier == Identifier then
+					return n + 1, Chunk
+				end
+			end
+			return nil
+		end
+	else
+		local n = 1
+		return function()
+			while n <= chunkN do
+				local Chunk = chunks[n]
+				n = n + 1
+				if Identifier == nil or Chunk.Identifier == Identifier then
+					return n - 1, Chunk
+				end
+			end
+			return nil
+		end
+	end
+end
+
+P3D.P3DFile = setmetatable({load = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunksIndexed = GetChunkIndexed}, {__call = LoadP3DFile})
 
 function P3D.P3DFile:__tostring()
 	local chunks = {}
@@ -447,7 +509,11 @@ function P3D.P3DFile:__tostring()
 	return string_pack("<III", FileSignature, 12, 12 + #chunkData) .. chunkData
 end
 
-P3D.P3DChunk = {AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk}
+function P3D.P3DFile:Output()
+	Output(tostring(self))
+end
+
+P3D.P3DChunk = {AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunksIndexed = GetChunkIndexed}
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
@@ -460,24 +526,6 @@ function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	
 	self.__index = self
 	return setmetatable(Data, self)
-end
-
-function P3D.P3DChunk:GetChunkIndexes(ChunkID)
-	local i = #self.Chunks
-	return function()
-		while i > 0 do
-			local Chunk = self.Chunks[i]
-			i = i - 1
-			if ChunkID == nil or Chunk.Identifier == ChunkID then
-				return i + 1, Chunk
-			end
-		end
-		return nil
-	end
-end
-
-function P3D.P3DChunk:GetChunkIndex(ChunkID)
-	return self:GetChunkIndexes(ChunkID)()
 end
 
 function P3D.P3DChunk:__tostring()
