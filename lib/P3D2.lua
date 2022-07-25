@@ -401,8 +401,8 @@ local function LoadP3DFile(self, Path)
 end
 
 local function AddChunk(self, Chunk, Index)
-	assert(type(Chunk) == "table" and Chunk.Identifier, "Chunk must be a valid chunk")
-	assert(Index == nil or (type(Index) == "number" and Index <= #self.Chunks), "Index must be a number smaller than the chunk count")
+	assert(type(Chunk) == "table" and Chunk.Identifier, "Arg #1 (Chunk) must be a valid chunk")
+	assert(Index == nil or (type(Index) == "number" and Index <= #self.Chunks), "Arg #2 (Index) must be a number smaller than the chunk count")
 	
 	if Index then
 		table.insert(self.Chunks, Index, Chunk)
@@ -412,8 +412,8 @@ local function AddChunk(self, Chunk, Index)
 end
 
 local function SetChunk(self, Chunk, Index)
-	assert(type(Chunk) == "table" and Chunk.Identifier, "Chunk must be a valid chunk")
-	assert(type(Index) == "number" and Index <= #self.Chunks, "Index must be a number smaller than the chunk count")
+	assert(type(Chunk) == "table" and Chunk.Identifier, "Arg #1 (Chunk) must be a valid chunk")
+	assert(type(Index) == "number" and Index <= #self.Chunks, "Arg #2 (Index) must be a number smaller than the chunk count")
 	
 	self.Chunks[Index] = Chunk
 end
@@ -421,10 +421,10 @@ end
 local function RemoveChunk(self, ChunkOrIndex)
 	local t = type(ChunkOrIndex)
 	if t == "number" then
-		assert(ChunkOrIndex <= #self.Chunks, "Index must be below chunk count")
+		assert(ChunkOrIndex <= #self.Chunks, "Arg #1 (Index) must be below chunk count")
 		table.remove(self.Chunks, ChunkOrIndex)
 	elseif t == "table" then
-		assert(ChunkOrIndex.Identifier, "Chunk must be a valid chunk")
+		assert(ChunkOrIndex.Identifier, "Arg #1 (Chunk) must be a valid chunk")
 		for i=1,#self.Chunks do
 			if self.Chunks[i] == ChunkOrIndex then
 				table.remove(self.Chunks, i)
@@ -432,15 +432,17 @@ local function RemoveChunk(self, ChunkOrIndex)
 			end
 		end
 	else
-		error("ChunkOrIndex must be a number or a valid chunk")
+		error("Arg #1 (ChunkOrIndex) must be a number or a valid chunk")
 	end
 end
 
 local function GetChunks(self, Identifier, Backwards)
+	assert(Identifier == nil or type(Identifier) == "number"), "Arg #1 (Identifier) must be a number")
+	
 	local chunks = self.Chunks
 	local chunkN = #chunks
 	
-	if Backwards == nil or Backwards then
+	if Backwards then
 		local n = chunkN
 		return function()
 			while n > 0 do
@@ -468,10 +470,12 @@ local function GetChunks(self, Identifier, Backwards)
 end
 
 local function GetChunksIndexed(self, Identifier, Backwards)
+	assert(Identifier == nil or type(Identifier) == "number"), "Arg #1 (Identifier) must be a number")
+	
 	local chunks = self.Chunks
 	local chunkN = #chunks
 	
-	if Backwards == nil or Backwards then
+	if Backwards then
 		local n = chunkN
 		return function()
 			while n > 0 do

@@ -264,7 +264,9 @@ function P3D.LocatorP3DChunk:__tostring()
 		chunks[i] = tostring(self.Chunks[i])
 	end
 	local chunkData = table_concat(chunks)
+	
 	local Name = P3D.MakeP3DString(self.Name)
+	
 	local headerLen = 12 + #Name + 1 + 4 + 12 + 4
 	local data
 	if self.Type == 0 then -- Event
