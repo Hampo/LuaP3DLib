@@ -18,29 +18,31 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name)
+local function new(self, Name, IsTranslucent)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
+	assert(type(IsTranslucent) == "number", "Arg #2 (IsTranslucent) must be a number")
 	
 	local Data = {
 		Chunks = {},
-		Name = Name
+		Name = Name,
+		IsTranslucent = IsTranslucent
 	}
 	
 	self.__index = self
 	return setmetatable(Data, self)
 end
 
-P3D.AnimObjWrapperP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Anim_Obj_Wrapper), {__call = new})
-P3D.AnimObjWrapperP3DChunk.new = new
-function P3D.AnimObjWrapperP3DChunk:parse(Contents, Pos, DataLength)
+P3D.CompositeDrawableSkinP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Skin), {__call = new})
+P3D.CompositeDrawableSkinP3DChunk.new = new
+function P3D.CompositeDrawableSkinP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Unknown, chunk.Unknown2 = string_unpack("<s1", chunk.ValueStr)
+	chunk.Name, chunk.IsTranslucent = string_unpack("<s1I", chunk.ValueStr)
 	
 	return chunk
 end
 
-function P3D.AnimObjWrapperP3DChunk:__tostring()
+function P3D.CompositeDrawableSkinP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
@@ -49,6 +51,6 @@ function P3D.AnimObjWrapperP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
-	local headerLen = 12 + #Name + 1
-	return string_pack("<IIIs1BB", self.Identifier, headerLen, headerLen + #chunkData, Name) .. chunkData
+	local headerLen = 12 + #Name + 1 + 4
+	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.IsTranslucent) .. chunkData
 end

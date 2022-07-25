@@ -23,24 +23,24 @@ local function new(self, Name)
 	
 	local Data = {
 		Chunks = {},
-		Name = Name
+		Name = Name,
 	}
 	
 	self.__index = self
 	return setmetatable(Data, self)
 end
 
-P3D.AnimObjWrapperP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Anim_Obj_Wrapper), {__call = new})
-P3D.AnimObjWrapperP3DChunk.new = new
-function P3D.AnimObjWrapperP3DChunk:parse(Contents, Pos, DataLength)
+P3D.InstanceListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Instance_List), {__call = new})
+P3D.InstanceListP3DChunk.new = new
+function P3D.InstanceListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Unknown, chunk.Unknown2 = string_unpack("<s1", chunk.ValueStr)
+	chunk.Name = string_unpack("<s1", chunk.ValueStr)
 	
 	return chunk
 end
 
-function P3D.AnimObjWrapperP3DChunk:__tostring()
+function P3D.InstanceListP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
@@ -50,5 +50,5 @@ function P3D.AnimObjWrapperP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1
-	return string_pack("<IIIs1BB", self.Identifier, headerLen, headerLen + #chunkData, Name) .. chunkData
+	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, Name) .. chunkData
 end
