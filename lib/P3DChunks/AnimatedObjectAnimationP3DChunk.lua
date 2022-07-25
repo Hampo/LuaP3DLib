@@ -18,15 +18,15 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Unknown, Name, FrameRate, NumOldFrameControllers)
-	assert(type(Unknown) == "number", "Arg #1 (Unknown) must be a number")
+local function new(self, Version, Name, FrameRate, NumOldFrameControllers)
+	assert(type(Version) == "number", "Arg #1 (Version) must be a number")
 	assert(type(Name) == "string", "Arg #2 (Name) must be a string")
 	assert(type(FrameRate) == "number", "Arg #3 (FrameRate) must be a number")
 	assert(type(NumOldFrameControllers) == "number", "Arg #4 (NumOldFrameControllers) must be a number")
 	
 	local Data = {
 		Chunks = {},
-		Unknown = Unknown,
+		Version = Version,
 		Name = Name,
 		FrameRate = FrameRate,
 		NumOldFrameControllers = NumOldFrameControllers,
@@ -41,7 +41,7 @@ P3D.AnimatedObjectAnimationP3DChunk.new = new
 function P3D.AnimatedObjectAnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Unknown, chunk.Name, chunk.FrameRate, chunk.NumOldFrameControllers = string_unpack("<Is1fI", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.FrameRate, chunk.NumOldFrameControllers = string_unpack("<Is1fI", chunk.ValueStr)
 	
 	return chunk
 end
@@ -56,5 +56,5 @@ function P3D.AnimatedObjectAnimationP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4
-	return string_pack("<IIIIs1fI", self.Identifier, headerLen, headerLen + #chunkData, self.Unknown, Name, self.FrameRate, self.NumOldFrameControllers) .. chunkData
+	return string_pack("<IIIIs1fI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.FrameRate, self.NumOldFrameControllers) .. chunkData
 end

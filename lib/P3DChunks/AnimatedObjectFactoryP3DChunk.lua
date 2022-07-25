@@ -18,17 +18,17 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Unknown, Name, Unknown2, NumAnimations)
-	assert(type(Unknown) == "number", "Arg #1 (Unknown) must be a number")
+local function new(self, Version, Name, BaseAnimation, NumAnimations)
+	assert(type(Version) == "number", "Arg #1 (Version) must be a number")
 	assert(type(Name) == "string", "Arg #2 (Name) must be a string")
-	assert(type(Unknown2) == "string", "Arg #3 (Unknown2) must be a string")
+	assert(type(BaseAnimation) == "string", "Arg #3 (BaseAnimation) must be a string")
 	assert(type(NumAnimations) == "number", "Arg #4 (NumAnimations) must be a number")
 	
 	local Data = {
 		Chunks = {},
-		Unknown = Unknown,
+		Version = Version,
 		Name = Name,
-		Unknown2 = Unknown2,
+		BaseAnimation = BaseAnimation,
 		NumAnimations = NumAnimations,
 	}
 	
@@ -41,7 +41,7 @@ P3D.AnimatedObjectFactoryP3DChunk.new = new
 function P3D.AnimatedObjectFactoryP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Unknown, chunk.Name, chunk.Unknown2, chunk.NumAnimations = string_unpack("<Is1s1I", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.BaseAnimation, chunk.NumAnimations = string_unpack("<Is1s1I", chunk.ValueStr)
 	
 	return chunk
 end
@@ -54,8 +54,8 @@ function P3D.AnimatedObjectFactoryP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
-	local Unknown2 = P3D.MakeP3DString(self.Unknown2)
+	local BaseAnimation = P3D.MakeP3DString(self.BaseAnimation)
 	
-	local headerLen = 12 + 4 + #Name + 1 + #Unknown2 + 1 + 4
-	return string_pack("<IIIIs1s1I", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, Unknown2, self.NumAnimations) .. chunkData
+	local headerLen = 12 + 4 + #Name + 1 + #BaseAnimation + 1 + 4
+	return string_pack("<IIIIs1s1I", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, BaseAnimation, self.NumAnimations) .. chunkData
 end

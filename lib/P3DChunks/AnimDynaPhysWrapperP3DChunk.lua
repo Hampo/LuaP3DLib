@@ -18,12 +18,16 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name)
+local function new(self, Name, Version, HasAlpha)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
+	assert(type(Version) == "number", "Arg #2 (Version) must be a number")
+	assert(type(HasAlpha) == "number", "Arg #3 (HasAlpha) must be a number")
 	
 	local Data = {
 		Chunks = {},
 		Name = Name,
+		Version = Version,
+		HasAlpha = HasAlpha,
 	}
 	
 	self.__index = self
@@ -35,7 +39,7 @@ P3D.AnimDynaPhysWrapperP3DChunk.new = new
 function P3D.AnimDynaPhysWrapperP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name = string_unpack("<s1", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.HasAlpha = string_unpack("<s1II", chunk.ValueStr)
 	
 	return chunk
 end
@@ -49,6 +53,6 @@ function P3D.AnimDynaPhysWrapperP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
-	local headerLen = 12 + #Name + 1
-	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, Name) .. chunkData
+	local headerLen = 12 + #Name + 1 + 4 + 4
+	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.HasAlpha) .. chunkData
 end

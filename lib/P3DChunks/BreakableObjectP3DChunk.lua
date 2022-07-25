@@ -20,12 +20,12 @@ local type = type
 
 local function new(self, Index, MaxInstances)
 	assert(type(Index) == "number", "Arg #1 (Index) must be a number")
-	assert(type(Count) == "number", "Arg #2 (Count) must be a number")
+	assert(type(MaxInstances) == "number", "Arg #2 (MaxInstances) must be a number")
 	
 	local Data = {
 		Chunks = {},
 		Index = Index,
-		Count = Count
+		MaxInstances = MaxInstances
 	}
 	
 	self.__index = self
@@ -37,7 +37,7 @@ P3D.BreakableObjectP3DChunk.new = new
 function P3D.BreakableObjectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Index, chunk.Count = string_unpack("<II", chunk.ValueStr)
+	chunk.Index, chunk.MaxInstances = string_unpack("<II", chunk.ValueStr)
 	
 	return chunk
 end
@@ -50,5 +50,5 @@ function P3D.BreakableObjectP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack("<IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.Count) .. chunkData
+	return string_pack("<IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MaxInstances) .. chunkData
 end

@@ -18,16 +18,16 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, Unknown, RenderOrder)
+local function new(self, Name, Version, HasAlpha)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(Unknown) == "number", "Arg #2 (Unknown) must be a number")
-	assert(type(RenderOrder) == "number", "Arg #3 (RenderOrder) must be a number")
+	assert(type(Version) == "number", "Arg #2 (Version) must be a number")
+	assert(type(HasAlpha) == "number", "Arg #3 (HasAlpha) must be a number")
 	
 	local Data = {
 		Chunks = {},
 		Name = Name,
-		Unknown = Unknown,
-		RenderOrder = RenderOrder,
+		Version = Version,
+		HasAlpha = HasAlpha,
 	}
 	
 	self.__index = self
@@ -39,7 +39,7 @@ P3D.StaticEntityP3DChunk.new = new
 function P3D.StaticEntityP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Unknown, chunk.RenderOrder = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.HasAlpha = string_unpack("<s1II", chunk.ValueStr)
 	
 	return chunk
 end
@@ -54,5 +54,5 @@ function P3D.StaticEntityP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4
-	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Unknown, self.RenderOrder) .. chunkData
+	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.HasAlpha) .. chunkData
 end
