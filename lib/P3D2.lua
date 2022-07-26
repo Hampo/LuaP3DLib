@@ -384,7 +384,9 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 		local Identifier, HeaderLength, Length = string_unpack("<III", Contents, Pos)
 		
 		local class = P3D.ChunkClasses[Identifier] or P3D.P3DChunk
-		local Chunk = class:parse(Contents, Pos + 12, HeaderLength - 12, Identifier)
+		local Chunk, overwrittenHeaderLength = class:parse(Contents, Pos + 12, HeaderLength - 12, Identifier)
+		
+		HeaderLength = overwrittenHeaderLength or HeaderLength
 		
 		ProcessSubChunks(Chunk, Contents, Pos + HeaderLength, Pos + Length)
 		
