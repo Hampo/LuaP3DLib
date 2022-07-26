@@ -44,7 +44,7 @@ function P3D.BooleanChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local numFrames, pos
 	chunk.Version, chunk.Param, chunk.StartState, numFrames, pos = string_unpack("<Ic4HI", chunk.ValueStr)
 	
-	chunk.Values = table_pack(string_unpack("<" .. string.rep("H", numFrames), chunk.ValueStr, pos))
+	chunk.Values = table_pack(string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos))
 	chunk.Values[numFrames + 1] = nil
 	
 	return chunk

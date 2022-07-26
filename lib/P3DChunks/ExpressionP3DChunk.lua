@@ -45,11 +45,11 @@ function P3D.ExpressionP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos
 	chunk.Version, chunk.Name, num, pos = string_unpack("<Is1I", chunk.ValueStr)
 	
-	chunk.Keys = table_pack(string_unpack("<" .. string.rep("f", num), chunk.ValueStr, pos))
+	chunk.Keys = table_pack(string_unpack("<" .. string_rep("f", num), chunk.ValueStr, pos))
 	pos = chunk.Keys[num + 1]
 	chunk.Keys[num + 1] = nil
 	
-	chunk.Indices = table_pack(string_unpack("<" .. string.rep("I", num), chunk.ValueStr, pos))
+	chunk.Indices = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
 	chunk.Indices[num + 1] = nil
 	
 	return chunk

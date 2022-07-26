@@ -44,7 +44,7 @@ function P3D.ExpressionGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos
 	chunk.Version, chunk.Name, chunk.TargetName, num, pos = string_unpack("<Is1s1I", chunk.ValueStr)
 	
-	chunk.Stages = table_pack(string_unpack("<" .. string.rep("I", num), chunk.ValueStr, pos))
+	chunk.Stages = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
 	chunk.Stages[num + 1] = nil
 	
 	return chunk

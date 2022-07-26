@@ -45,11 +45,11 @@ function P3D.Float1ChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local numFrames, pos
 	chunk.Version, chunk.Param, numFrames, pos = string_unpack("<Ic4I", chunk.ValueStr)
 	
-	chunk.Frames = table_pack(string_unpack("<" .. string.rep("H", numFrames), chunk.ValueStr, pos))
+	chunk.Frames = table_pack(string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos))
 	pos = chunk.Frames[numFrames + 1]
 	chunk.Frames[numFrames + 1] = nil
 	
-	chunk.Values = table_pack(string_unpack("<" .. string.rep("f", numFrames), chunk.ValueStr, pos))
+	chunk.Values = table_pack(string_unpack("<" .. string_rep("f", numFrames), chunk.ValueStr, pos))
 	chunk.Values[numFrames + 1] = nil
 	
 	return chunk
