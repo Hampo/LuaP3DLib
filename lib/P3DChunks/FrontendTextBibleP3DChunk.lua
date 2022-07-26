@@ -45,7 +45,7 @@ function P3D.FrontendTextBibleP3DChunk:GetLanguages()
 	local languages = {}
 	for i=1,#self.Chunks do
 		local chunk = self.Chunks[i]
-		if chunk.Identifier == P3D.Identifiers.Frontend_Language_Chunk then
+		if chunk.Identifier == P3D.Identifiers.Frontend_Language then
 			n = n + 1
 			languages[n] = chunk.Language
 		end
@@ -62,7 +62,8 @@ function P3D.FrontendTextBibleP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	local num, languages = self:GetLanguages()
+	languages = P3D.MakeP3DString(languages)
 	
-	local headerLen = 12 + #Name + 1 + 4 + num
-	return string_pack("<IIIs1Ic" .. num, self.Identifier, headerLen, headerLen + #chunkData, Name, num, languages) .. chunkData
+	local headerLen = 12 + #Name + 1 + 4 + #languages + 1
+	return string_pack("<IIIs1Is1", self.Identifier, headerLen, headerLen + #chunkData, Name, num, languages) .. chunkData
 end

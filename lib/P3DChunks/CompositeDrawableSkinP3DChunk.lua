@@ -52,5 +52,5 @@ function P3D.CompositeDrawableSkinP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4
-	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.IsTranslucent) .. chunkData
+	return string_pack("<IIIs1I", self.Identifier, headerLen, headerLen + #chunkData, Name, self.IsTranslucent) .. chunkData
 end

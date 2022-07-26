@@ -58,10 +58,10 @@ function P3D.ColourListP3DChunk:__tostring()
 	local colours = {}
 	for i=1,coloursN do
 		local colour = self.Colours[i]
-		colours[i] = string_pack("<BBBB", value.B, value.G, value.R, value.A)
+		colours[i] = string_pack("<BBBB", colour.B, colour.G, colour.R, colour.A)
 	end
-	local coloursData = table_concat(values)
+	local coloursData = table_concat(colours)
 	
 	local headerLen = 12 + 4 + coloursN * 4
-	return string_pack("<IIIIc4I" .. string_rep("H", framesN), self.Identifier, headerLen, headerLen + #chunkData, coloursN) .. coloursData .. chunkData
+	return string_pack("<IIII", self.Identifier, headerLen, headerLen + #chunkData, coloursN) .. coloursData .. chunkData
 end

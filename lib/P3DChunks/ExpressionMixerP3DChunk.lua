@@ -60,5 +60,5 @@ function P3D.ExpressionMixerP3DChunk:__tostring()
 	local ExpressionGroupName = P3D.MakeP3DString(self.ExpressionGroupName)
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + #TargetName + 1 + #ExpressionGroupName + 1
-	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type, TargetName, ExpressionGroupName) .. chunkData
+	return string_pack("<IIIIs1Is1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type, TargetName, ExpressionGroupName) .. chunkData
 end

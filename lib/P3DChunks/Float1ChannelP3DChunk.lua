@@ -68,9 +68,9 @@ function P3D.Float1ChannelP3DChunk:__tostring()
 		values[i] = self.Frames[i]
 	end
 	for i=1,framesN do
-		values[keysN + i] = self.Values[i]
+		values[framesN + i] = self.Values[i]
 	end
 	
 	local headerLen = 12 + 4 + 4 + 4 + framesN * 2 + framesN * 4
-	return string_pack("<IIIIc4I" .. string_rep("H", framesN) .. string_rep("f", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, framesN, table_unpack(values)) .. valuesData .. chunkData
+	return string_pack("<IIIIc4I" .. string_rep("H", framesN) .. string_rep("f", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, framesN, table_unpack(values)) .. chunkData
 end

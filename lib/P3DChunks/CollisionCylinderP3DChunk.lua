@@ -18,13 +18,15 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, FlatEnd)
-	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(FlatEnd) == "number", "Arg #2 (FlatEnd) must be a number")
+local function new(self, CylinderRadius, Length, FlatEnd)
+	assert(type(CylinderRadius) == "number", "Arg #1 (CylinderRadius) must be a number")
+	assert(type(Length) == "number", "Arg #2 (Length) must be a number")
+	assert(type(FlatEnd) == "number", "Arg #3 (FlatEnd) must be a number")
 	
 	local Data = {
 		Chunks = {},
-		Name = Name,
+		CylinderRadius = CylinderRadius,
+		Length = Length,
 		FlatEnd = FlatEnd
 	}
 	
@@ -37,7 +39,7 @@ P3D.CollisionCylinderP3DChunk.new = new
 function P3D.CollisionCylinderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.FlatEnd = string_unpack("<s1H", chunk.ValueStr)
+	chunk.CylinderRadius, chunk.Length, chunk.FlatEnd = string_unpack("<ffH", chunk.ValueStr)
 	
 	return chunk
 end
@@ -49,8 +51,6 @@ function P3D.CollisionCylinderP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
-	local Name = P3D.MakeP3DString(self.Name)
-	
-	local headerLen = 12 + #Name + 1 + 2
-	return string_pack("<IIIs1H", self.Identifier, headerLen, headerLen + #chunkData, Name, self.FlatEnd) .. chunkData
+	local headerLen = 12 + 4 + 4 + 2
+	return string_pack("<IIIffH", self.Identifier, headerLen, headerLen + #chunkData, self.CylinderRadius, self.Length, self.FlatEnd) .. chunkData
 end

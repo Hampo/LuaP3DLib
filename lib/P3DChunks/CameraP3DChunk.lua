@@ -51,6 +51,9 @@ P3D.CameraP3DChunk.new = new
 function P3D.CameraP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
+	chunk.Position = {}
+	chunk.Look = {}
+	chunk.Up = {}
 	chunk.Name, chunk.Version, chunk.FOV, chunk.AspectRatio, chunk.NearClip, chunk.FarClip, chunk.Position.X, chunk.Position.Y, chunk.Position.Z, chunk.Look.X, chunk.Look.Y, chunk.Look.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z = string_unpack("<s1Ifffffffffffff", chunk.ValueStr)
 	
 	return chunk
@@ -65,6 +68,6 @@ function P3D.CameraP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
-	local headerLen = 12 + #Name + 1 + 4 + 4
+	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 12 + 12 + 12
 	return string_pack("<IIIs1Ifffffffffffff", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.FOV, self.AspectRatio, self.NearClip, self.FarClip, self.Position.X, self.Position.Y, self.Position.Z, self.Look.X, self.Look.Y, self.Look.Z, self.Up.X, self.Up.Y, self.Up.Z) .. chunkData
 end

@@ -39,7 +39,7 @@ P3D.AnimObjWrapperP3DChunk.new = new
 function P3D.AnimObjWrapperP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Version, chunk.HasAlpha = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.HasAlpha = string_unpack("<s1BB", chunk.ValueStr)
 	
 	return chunk
 end
@@ -53,6 +53,6 @@ function P3D.AnimObjWrapperP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
-	local headerLen = 12 + #Name + 1 + 4 + 4
-	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.HasAlpha) .. chunkData
+	local headerLen = 12 + #Name + 1 + 1 + 1
+	return string_pack("<IIIs1BB", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.HasAlpha) .. chunkData
 end

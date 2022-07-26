@@ -56,6 +56,6 @@ function P3D.TriggerVolumeP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
-	local headerLen = 12 + 4 + 4 + 4 + 12
+	local headerLen = 12 + 4 + 4 + 4 + 4 + 12
 	return string_pack("<IIIIffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.Rotation, self.Elevation, self.Magnitude, self.TargetOffset.X, self.TargetOffset.Y, self.TargetOffset.Z) .. chunkData
 end

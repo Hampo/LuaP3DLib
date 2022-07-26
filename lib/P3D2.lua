@@ -291,11 +291,10 @@ local function DecompressBlock(Source, Length, SourceIndex)
 				local Unknown2
 				Unknown2, SourceIndex = string_unpack("<B", Source, SourceIndex)
 				if Unknown2 == 0 then
-					local Unknown3 = 0
 					repeat
-						Unknown3, SourceIndex = string_unpack("<B", Source, SourceIndex)
+						Unknown2, SourceIndex = string_unpack("<B", Source, SourceIndex)
 						Unknown = Unknown + 255
-					until Unknown3 ~= 0
+					until Unknown2 ~= 0
 				end
 				Unknown = Unknown + Unknown2
 				DestTbl[DestinationPos], DestTbl[DestinationPos + 1], DestTbl[DestinationPos + 2], DestTbl[DestinationPos + 3], DestTbl[DestinationPos + 4], DestTbl[DestinationPos + 5], DestTbl[DestinationPos + 6], DestTbl[DestinationPos + 7], DestTbl[DestinationPos + 8], DestTbl[DestinationPos + 9], DestTbl[DestinationPos + 10], DestTbl[DestinationPos + 11], DestTbl[DestinationPos + 12], DestTbl[DestinationPos + 13], DestTbl[DestinationPos + 14], SourceIndex = string_unpack("<c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1", Source, SourceIndex)
@@ -315,9 +314,8 @@ local function DecompressBlock(Source, Length, SourceIndex)
 				local Unknown4
 				Unknown4, SourceIndex = string_unpack("<B", Source, SourceIndex)
 				if Unknown4 == 0 then
-					local Unknown5
 					repeat
-						Unknown5, SourceIndex = string_unpack("<B", Source, SourceIndex)
+						Unknown4, SourceIndex = string_unpack("<B", Source, SourceIndex)
 						Unknown3 = Unknown3 + 255
 					until Unknown4 ~= 0
 				end
@@ -364,6 +362,22 @@ local function Decompress(File, UncompressedLength)
 	return table_concat(UncompressedTbl)
 end
 
+local FileSignature = 0xFF443350
+local CompressedFileSignature = 0x5A443350
+function P3D.DecompressFile(File)
+	assert(type(File) == "string", "Arg #1 (File) must be a string")
+	
+	local success, contents = pcall(ReadFile, File)
+	assert(success, "Failed to read file at '" .. File .. "': " .. contents)
+	
+	local Identifier, HeaderLength = string_unpack("<II", contents)
+	if Identifier ~= CompressedFileSignature then
+		return contents
+	end
+	
+	return Decompress(contents, HeaderLength)
+end
+
 local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	Parent.Chunks = Parent.Chunks or {}
 	while Pos < EndPos do
@@ -379,8 +393,6 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	end
 end
 
-local FileSignature = 0xFF443350
-local CompressedFileSignature = 0x5A443350
 local function LoadP3DFile(self, Path)
 	local Data = {}
 	if Path == nil then

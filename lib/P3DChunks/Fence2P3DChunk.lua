@@ -42,7 +42,7 @@ function P3D.Fence2P3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Start = {}
 	chunk.End = {}
 	chunk.Normal = {}
-	chunk.Start.X, chunk.Start.Y, chunk.Start.Z, chunk.Start.X, chunk.Start.Y, chunk.Start.Z, chunk.Start.X, chunk.Start.Y, chunk.Start.Z = string_unpack("<fffffffff", chunk.ValueStr)
+	chunk.Start.X, chunk.Start.Y, chunk.Start.Z, chunk.End.X, chunk.End.Y, chunk.End.Z, chunk.Normal.X, chunk.Normal.Y, chunk.Normal.Z = string_unpack("<fffffffff", chunk.ValueStr)
 	
 	return chunk
 end
@@ -55,5 +55,5 @@ function P3D.Fence2P3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 12 + 12 + 12
-	return string_pack("<IIIfffffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Start.X, self.Start.Y, self.Start.Z, self.Start.X, self.Start.Y, self.Start.Z, self.Start.X, self.Start.Y, self.Start.Z) .. chunkData
+	return string_pack("<IIIfffffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Start.X, self.Start.Y, self.Start.Z, self.End.X, self.End.Y, self.End.Z, self.Normal.X, self.Normal.Y, self.Normal.Z) .. chunkData
 end
