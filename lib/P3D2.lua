@@ -380,6 +380,7 @@ end
 
 local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	Parent.Chunks = Parent.Chunks or {}
+	local n = 0
 	while Pos < EndPos do
 		local Identifier, HeaderLength, Length = string_unpack("<III", Contents, Pos)
 		
@@ -390,7 +391,8 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 		
 		ProcessSubChunks(Chunk, Contents, Pos + HeaderLength, Pos + Length)
 		
-		Parent.Chunks[#Parent.Chunks + 1] = Chunk
+		n = n + 1
+		Parent.Chunks[n] = Chunk
 		Pos = Pos + Length
 	end
 end
