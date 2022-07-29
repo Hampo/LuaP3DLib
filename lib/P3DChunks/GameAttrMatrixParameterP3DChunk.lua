@@ -1,7 +1,6 @@
 --[[
 CREDITS:
-	Proddy#7272				- Converting to Lua
-	luca$ Cardellini#5473	- P3D Chunk Structure
+	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")

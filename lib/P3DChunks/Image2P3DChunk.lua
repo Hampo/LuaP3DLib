@@ -1,6 +1,7 @@
 --[[
 CREDITS:
-	Proddy#7272				- Converting to Lua, P3D Chunk Structure
+	Proddy#7272				- Converting to Lua
+	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
@@ -17,31 +18,33 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, Version)
+local function new(self, Name, Data2)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(Version == nil or type(Version) == "number", "Arg #2 (Version) must be a number")
+	assert(type(Data2) == "string", "Arg #2 (Data) must be a string")
 	
 	local Data = {
 		Chunks = {},
 		Name = Name,
-		Version = Version or 0
+		Data = Data2
 	}
 	
 	self.__index = self
 	return setmetatable(Data, self)
 end
 
-P3D.StaticPhysP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Static_Phys), {__call = new})
-P3D.StaticPhysP3DChunk.new = new
-function P3D.StaticPhysP3DChunk:parse(Contents, Pos, DataLength)
+P3D.Image2P3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Image_2), {__call = new})
+P3D.Image2P3DChunk.new = new
+function P3D.Image2P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Version = string_unpack("<s1I", chunk.ValueStr)
+	local pos
+	chunk.Name. pos = string_unpack("<s1", chunk.ValueStr)
+	chunk.Data = chunk.ValueStr:sub(pos)
 	
 	return chunk
 end
 
-function P3D.StaticPhysP3DChunk:__tostring()
+function P3D.Image2P3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
@@ -50,6 +53,6 @@ function P3D.StaticPhysP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	
-	local headerLen = 12 + #Name + 1 + 4
-	return string_pack("<IIIs1I", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version) .. chunkData
+	local headerLen = 12 + #Name + 1 + #self.Data
+	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, Name) .. self.Data .. chunkData
 end
