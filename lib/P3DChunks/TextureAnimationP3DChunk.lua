@@ -1,7 +1,6 @@
 --[[
 CREDITS:
-	Proddy#7272				- Converting to Lua
-	luca$ Cardellini#5473	- P3D Chunk Structure
+	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
@@ -18,9 +17,13 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, Data2)
+local function new(self, Name, Version, MaterialName, NumFrames, FrameRate, Cyclic)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(Data2) == "string", "Arg #2 (Data) must be a string")
+	assert(type(Version) == "number", "Arg #2 (Version) must be a number")
+	assert(type(MaterialName) == "string", "Arg #3 (MaterialName) must be a string")
+	assert(type(NumFrames) == "number", "Arg #4 (NumFrames) must be a number")
+	assert(type(FrameRate) == "number", "Arg #5 (FrameRate) must be a number")
+	assert(type(Cyclic) == "number", "Arg #6 (Cyclic) must be a number")
 	
 	local Data = {
 		Chunks = {},
@@ -37,8 +40,7 @@ P3D.TextureAnimationP3DChunk.new = new
 function P3D.TextureAnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	local pos
-	chunk.Name. pos = string_unpack("<s1", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.MaterialName, chunk.NumFrames, chunk.FrameRate, chunk.Cyclic = string_unpack("<s1Is1IfI", chunk.ValueStr)
 	chunk.Data = chunk.ValueStr:sub(pos)
 	
 	return chunk
@@ -52,7 +54,8 @@ function P3D.TextureAnimationP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	local MaterialName = P3D.MakeP3DString(self.MaterialName)
 	
-	local headerLen = 12 + #Name + 1 + #self.Data
-	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, Name) .. self.Data .. chunkData
+	local headerLen = 12 + #Name + 1 + 4 + #MaterialName + 1 + 4 + 4 + 4
+	return string_pack("<IIIs1Is1IfI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, MaterialName, self.NumFrames, self.FrameRate, self.Cyclic) .. chunkData
 end
