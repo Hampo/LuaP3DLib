@@ -112,7 +112,6 @@ P3D.Identifiers = {
 	Locator = 0x3000005,
 	Locator_2 = 0x1003,
 	Locator_3 = 0x14000,
-	Locator_Counts = 0x1023, -- TODO
 	Locator_Matrix = 0x300000C,
 	Matrix_List = 0x1000B, -- TODO
 	Matrix_Palette = 0x1000D, -- TODO
