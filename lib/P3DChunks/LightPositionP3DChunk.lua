@@ -18,37 +18,36 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name)
-	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
+local function new(self, Position)
+	assert(type(Position) == "table", "Arg #1 (Position) must be a table")
 	
 	local Data = {
 		Chunks = {},
-		Name = Name,
+		Position = Position
 	}
 	
 	self.__index = self
 	return setmetatable(Data, self)
 end
 
-P3D.InstanceListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Instance_List), {__call = new})
-P3D.InstanceListP3DChunk.new = new
-function P3D.InstanceListP3DChunk:parse(Contents, Pos, DataLength)
+P3D.LightPositionP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Position), {__call = new})
+P3D.LightPositionP3DChunk.new = new
+function P3D.LightPositionP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name = string_unpack("<s1", chunk.ValueStr)
+	chunk.Position = {}
+	chunk.Position.X, chunk.Position.Y, chunk.Position.Z = string_unpack("<fff", chunk.ValueStr)
 	
 	return chunk
 end
 
-function P3D.InstanceListP3DChunk:__tostring()
+function P3D.LightPositionP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
 	end
 	local chunkData = table_concat(chunks)
 	
-	local Name = P3D.MakeP3DString(self.Name)
-	
-	local headerLen = 12 + #Name + 1
-	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, Name) .. chunkData
+	local headerLen = 12 + 12
+	return string_pack("<IIIfff", self.Identifier, headerLen, headerLen + #chunkData, self.Position.X, self.Position.Y, self.Position.Z) .. chunkData
 end

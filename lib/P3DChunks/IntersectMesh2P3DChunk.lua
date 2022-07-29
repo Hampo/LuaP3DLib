@@ -18,37 +18,35 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name)
-	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
+local function new(self, SurfaceType)
+	assert(type(SurfaceType) == "string", "Arg #1 (SurfaceType) must be a string")
 	
 	local Data = {
 		Chunks = {},
-		Name = Name,
+		SurfaceType = SurfaceType
 	}
 	
 	self.__index = self
 	return setmetatable(Data, self)
 end
 
-P3D.InstanceListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Instance_List), {__call = new})
-P3D.InstanceListP3DChunk.new = new
-function P3D.InstanceListP3DChunk:parse(Contents, Pos, DataLength)
+P3D.IntersectMesh2P3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Intersect_Mesh_2), {__call = new})
+P3D.IntersectMesh2P3DChunk.new = new
+function P3D.IntersectMesh2P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name = string_unpack("<s1", chunk.ValueStr)
+	chunk.SurfaceType = string_unpack("<I", chunk.ValueStr)
 	
 	return chunk
 end
 
-function P3D.InstanceListP3DChunk:__tostring()
+function P3D.IntersectMesh2P3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
 	end
 	local chunkData = table_concat(chunks)
 	
-	local Name = P3D.MakeP3DString(self.Name)
-	
-	local headerLen = 12 + #Name + 1
-	return string_pack("<IIIs1", self.Identifier, headerLen, headerLen + #chunkData, Name) .. chunkData
+	local headerLen = 12 + 4
+	return string_pack("<IIII", self.Identifier, headerLen, headerLen + #chunkData, self.SurfaceType) .. chunkData
 end

@@ -96,31 +96,31 @@ P3D.Identifiers = {
 	Grid = 0x1000, -- Done
 	Grid_Cell = 0x1001, -- Done
 	History = 0x7000, -- Done
-	Image = 0x19001, -- TODO
+	Image = 0x19001, -- Done
 	Image_2 = 0x3510, -- Done
-	Image_Data = 0x19002, -- TODO
-	Image_Data_2 = 0x3511, -- TODO
-	Index_List = 0x1000A, -- TODO
+	Image_Data = 0x19002, -- Done
+	Image_Data_2 = 0x3511, -- Done
+	Index_List = 0x1000A, -- Done
 	Instance_List = 0x3000008, -- Done
-	Inst_Particle_System = 0x3001001, -- TODO
+	Inst_Particle_System = 0x3001001, -- Done
 	Inst_Stat_Entity = 0x3F00009, -- Done
 	Inst_Stat_Phys = 0x3F0000A, -- Done
-	Integer_Channel = 0x12110E, -- TODO
-	Intersect = 0x3F00003, -- TODO
-	Intersection = 0x3000004, -- TODO
-	Intersect_Mesh = 0x1008, -- TODO
-	Intersect_Mesh_2 = 0x1009, -- TODO
-	Lens_Flare = 0x3F0000D, -- TODO
-	Light = 0x13000, -- TODO
-	Light_Direction = 0x13001, -- TODO
-	Light_Group = 0x2380, -- TODO
-	Light_Position = 0x13002, -- TODO
-	Light_Shadow = 0x13004, -- TODO
+	Integer_Channel = 0x12110E, -- Done
+	Intersect = 0x3F00003, -- Done
+	Intersection = 0x3000004, -- Done
+	Intersect_Mesh = 0x1008, -- Done
+	Intersect_Mesh_2 = 0x1009, -- Done
+	Lens_Flare = 0x3F0000D, -- Done
+	Light = 0x13000, -- Done
+	Light_Direction = 0x13001, -- Done
+	Light_Group = 0x2380, -- Done
+	Light_Position = 0x13002, -- Done
+	Light_Shadow = 0x13004, -- Done
 	Locator = 0x3000005, -- Done
 	Locator_2 = 0x1003, -- Done
-	Locator_3 = 0x14000, -- TODO
+	Locator_3 = 0x14000, -- Done
 	Locator_Counts = 0x1023, -- TODO
-	Locator_Matrix = 0x300000C, -- TODO
+	Locator_Matrix = 0x300000C, -- Done
 	Matrix_List = 0x1000B, -- TODO
 	Matrix_Palette = 0x1000D, -- TODO
 	Mesh = 0x10000, -- TODO
@@ -232,6 +232,7 @@ P3D.Identifiers = {
 	Vector_3D_OF_Channel = 0x121104, -- TODO
 	Vertex_Compression_Hint = 0x10021, -- TODO
 	Vertex_Shader = 0x10011, -- TODO
+	Volume_Image = 0x19004, -- Done
 	Walker_Camera_Data = 0x3000101, -- Done
 	Weight_List = 0x1000C, -- TODO
 	World_Sphere = 0x3F0000B, -- TODO
@@ -537,7 +538,21 @@ function P3D.P3DFile:Output()
 	Output(tostring(self))
 end
 
-P3D.P3DChunk = {AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunksIndexed = GetChunkIndexed}
+local function P3DChunk_new(self, Identifier, ValueStr)
+	assert(type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
+	assert(type(ValueStr) == "string", "Arg #2 (ValueStr) must be a string")
+	
+	local Data = {
+		Chunks = {},
+		Identifier = Identifier,
+		ValueStr = ValueStr,
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end
+
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunksIndexed = GetChunkIndexed}, {__call = P3DChunk})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
