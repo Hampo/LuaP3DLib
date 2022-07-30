@@ -33,7 +33,8 @@ local function new(self, Version, Offsets, Param)
 	return setmetatable(Data, self)
 end
 
-P3D.OldVector2OffsetListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Vector2_Offset_List), {__call = new})
+P3D.OldVector2OffsetListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Vector2_Offset_List)
+getmetatable(P3D.OldVector2OffsetListP3DChunk).__call = new
 P3D.OldVector2OffsetListP3DChunk.new = new
 function P3D.OldVector2OffsetListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -30,7 +30,8 @@ local function new(self, Matrices)
 	return setmetatable(Data, self)
 end
 
-P3D.MatrixPaletteP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Matrix_Palette), {__call = new})
+P3D.MatrixPaletteP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Matrix_Palette)
+getmetatable(P3D.MatrixPaletteP3DChunk).__call = new
 P3D.MatrixPaletteP3DChunk.new = new
 function P3D.MatrixPaletteP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

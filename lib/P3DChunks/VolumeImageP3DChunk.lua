@@ -45,7 +45,8 @@ local function new(self, Name, Version, Width, Height, Depth, Bpp, Palettized, H
 	return setmetatable(Data, self)
 end
 
-P3D.VolumeImageP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Volume_Image), {__call = new})
+P3D.VolumeImageP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Volume_Image)
+getmetatable(P3D.VolumeImageP3DChunk).__call = new
 P3D.VolumeImageP3DChunk.new = new
 P3D.VolumeImageP3DChunk.Formats = {
 	Raw = 0,

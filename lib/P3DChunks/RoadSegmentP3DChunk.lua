@@ -36,7 +36,8 @@ local function new(self, Name, RoadDataSegment, Transform, Scale)
 	return setmetatable(Data, self)
 end
 
-P3D.RoadSegmentP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Road_Segment), {__call = new})
+P3D.RoadSegmentP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Road_Segment)
+getmetatable(P3D.RoadSegmentP3DChunk).__call = new
 P3D.RoadSegmentP3DChunk.new = new
 function P3D.RoadSegmentP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

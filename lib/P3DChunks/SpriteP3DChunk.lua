@@ -44,7 +44,8 @@ local function new(self, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight
 	return setmetatable(Data, self)
 end
 
-P3D.SpriteP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Sprite), {__call = new})
+P3D.SpriteP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Sprite)
+getmetatable(P3D.SpriteP3DChunk).__call = new
 P3D.SpriteP3DChunk.new = new
 function P3D.SpriteP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -37,7 +37,8 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.Vector3DOFChannelP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Vector_3D_OF_Channel), {__call = new})
+P3D.Vector3DOFChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Vector_3D_OF_Channel)
+getmetatable(P3D.Vector3DOFChannelP3DChunk).__call = new
 P3D.Vector3DOFChannelP3DChunk.new = new
 function P3D.Vector3DOFChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -34,7 +34,8 @@ local function new(self, Name, EventEnum, OnFrame)
 	return setmetatable(Data, self)
 end
 
-P3D.StatePropCallbackDataP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Callback_Data), {__call = new})
+P3D.StatePropCallbackDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Callback_Data)
+getmetatable(P3D.StatePropCallbackDataP3DChunk).__call = new
 P3D.StatePropCallbackDataP3DChunk.new = new
 function P3D.StatePropCallbackDataP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

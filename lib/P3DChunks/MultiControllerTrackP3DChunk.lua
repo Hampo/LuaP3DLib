@@ -34,7 +34,8 @@ local function new(self, Version, Name, Type)
 	return setmetatable(Data, self)
 end
 
-P3D.MultiControllerTrackP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Multi_Controller_Track), {__call = new})
+P3D.MultiControllerTrackP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Multi_Controller_Track)
+getmetatable(P3D.MultiControllerTrackP3DChunk).__call = new
 P3D.MultiControllerTrackP3DChunk.new = new
 function P3D.MultiControllerTrackP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

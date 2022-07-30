@@ -40,7 +40,8 @@ local function new(self, Version, Rotation, CutOffMode, UVOffsetRange, SourceRan
 	return setmetatable(Data, self)
 end
 
-P3D.OldBillboardDisplayInfoP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Billboard_Display_Info), {__call = new})
+P3D.OldBillboardDisplayInfoP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Billboard_Display_Info)
+getmetatable(P3D.OldBillboardDisplayInfoP3DChunk).__call = new
 P3D.OldBillboardDisplayInfoP3DChunk.new = new
 function P3D.OldBillboardDisplayInfoP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

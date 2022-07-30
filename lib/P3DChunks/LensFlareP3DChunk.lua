@@ -32,7 +32,8 @@ local function new(self, Name, Version)
 	return setmetatable(Data, self)
 end
 
-P3D.LensFlareP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Lens_Flare), {__call = new})
+P3D.LensFlareP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Lens_Flare)
+getmetatable(P3D.LensFlareP3DChunk).__call = new
 P3D.LensFlareP3DChunk.new = new
 function P3D.LensFlareP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -27,7 +27,8 @@ local function new(self)
 	return setmetatable(Data, self)
 end
 
-P3D.CollisionVolumeOwnerP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Volume_Owner), {__call = new})
+P3D.CollisionVolumeOwnerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Volume_Owner)
+getmetatable(P3D.CollisionVolumeOwnerP3DChunk).__call = new
 P3D.CollisionVolumeOwnerP3DChunk.new = new
 function P3D.CollisionVolumeOwnerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

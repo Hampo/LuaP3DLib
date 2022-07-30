@@ -36,7 +36,8 @@ local function new(self, MappedJointIndex, XAxisMap, YAxisMap, ZAxisMap)
 	return setmetatable(Data, self)
 end
 
-P3D.SkeletonJointMirrorMapP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Skeleton_Joint_Mirror_Map), {__call = new})
+P3D.SkeletonJointMirrorMapP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Skeleton_Joint_Mirror_Map)
+getmetatable(P3D.SkeletonJointMirrorMapP3DChunk).__call = new
 P3D.SkeletonJointMirrorMapP3DChunk.new = new
 function P3D.SkeletonJointMirrorMapP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

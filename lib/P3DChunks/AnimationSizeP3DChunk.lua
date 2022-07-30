@@ -38,7 +38,8 @@ local function new(self, Version, PC, PS2, XBOX, GC)
 	return setmetatable(Data, self)
 end
 
-P3D.AnimationSizeP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Size), {__call = new})
+P3D.AnimationSizeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Size)
+getmetatable(P3D.AnimationSizeP3DChunk).__call = new
 P3D.AnimationSizeP3DChunk.new = new
 function P3D.AnimationSizeP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -30,7 +30,8 @@ local function new(self, Positions)
 	return setmetatable(Data, self)
 end
 
-P3D.PathP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Path), {__call = new})
+P3D.PathP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Path)
+getmetatable(P3D.PathP3DChunk).__call = new
 P3D.PathP3DChunk.new = new
 function P3D.PathP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

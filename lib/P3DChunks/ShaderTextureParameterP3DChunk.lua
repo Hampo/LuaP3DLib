@@ -32,7 +32,8 @@ local function new(self, Param, Value)
 	return setmetatable(Data, self)
 end
 
-P3D.ShaderTextureParameterP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Shader_Texture_Parameter), {__call = new})
+P3D.ShaderTextureParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Shader_Texture_Parameter)
+getmetatable(P3D.ShaderTextureParameterP3DChunk).__call = new
 P3D.ShaderTextureParameterP3DChunk.new = new
 function P3D.ShaderTextureParameterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

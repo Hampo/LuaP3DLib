@@ -32,7 +32,8 @@ local function new(self, Version, NumGroups)
 	return setmetatable(Data, self)
 end
 
-P3D.AnimationHeaderP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Header), {__call = new})
+P3D.AnimationHeaderP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Header)
+getmetatable(P3D.AnimationHeaderP3DChunk).__call = new
 P3D.AnimationHeaderP3DChunk.new = new
 function P3D.AnimationHeaderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -32,7 +32,8 @@ local function new(self, Version, Types)
 	return setmetatable(Data, self)
 end
 
-P3D.SurfaceTypeListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Surface_Type_List), {__call = new})
+P3D.SurfaceTypeListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Surface_Type_List)
+getmetatable(P3D.SurfaceTypeListP3DChunk).__call = new
 P3D.SurfaceTypeListP3DChunk.new = new
 function P3D.SurfaceTypeListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

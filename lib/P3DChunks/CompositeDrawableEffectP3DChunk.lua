@@ -34,7 +34,8 @@ local function new(self, Name, IsTranslucent, SkeletonJointID)
 	return setmetatable(Data, self)
 end
 
-P3D.CompositeDrawableEffectP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Effect), {__call = new})
+P3D.CompositeDrawableEffectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Effect)
+getmetatable(P3D.CompositeDrawableEffectP3DChunk).__call = new
 P3D.CompositeDrawableEffectP3DChunk.new = new
 function P3D.CompositeDrawableEffectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -32,7 +32,8 @@ local function new(self, ParameterName, Value)
 	return setmetatable(Data, self)
 end
 
-P3D.GameAttributeIntegerParameterP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Game_Attribute_Integer_Parameter), {__call = new})
+P3D.GameAttributeIntegerParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Game_Attribute_Integer_Parameter)
+getmetatable(P3D.GameAttributeIntegerParameterP3DChunk).__call = new
 P3D.GameAttributeIntegerParameterP3DChunk.new = new
 function P3D.GameAttributeIntegerParameterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

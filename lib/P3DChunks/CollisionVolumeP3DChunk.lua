@@ -32,7 +32,8 @@ local function new(self, ObjectReferenceIndex, OwnerIndex)
 	return setmetatable(Data, self)
 end
 
-P3D.CollisionVolumeP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Volume), {__call = new})
+P3D.CollisionVolumeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Volume)
+getmetatable(P3D.CollisionVolumeP3DChunk).__call = new
 P3D.CollisionVolumeP3DChunk.new = new
 function P3D.CollisionVolumeP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

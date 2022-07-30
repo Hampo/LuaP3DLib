@@ -32,7 +32,8 @@ local function new(self, Name, Positions)
 	return setmetatable(Data, self)
 end
 
-P3D.SplineP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Spline), {__call = new})
+P3D.SplineP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Spline)
+getmetatable(P3D.SplineP3DChunk).__call = new
 P3D.SplineP3DChunk.new = new
 function P3D.SplineP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

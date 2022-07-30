@@ -44,7 +44,8 @@ local function new(self, Version, Name, Type, CycleMode, NumCycles, InfiniteCycl
 	return setmetatable(Data, self)
 end
 
-P3D.FrameControllerP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Frame_Controller), {__call = new})
+P3D.FrameControllerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frame_Controller)
+getmetatable(P3D.FrameControllerP3DChunk).__call = new
 P3D.FrameControllerP3DChunk.new = new
 function P3D.FrameControllerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

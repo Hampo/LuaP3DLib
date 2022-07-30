@@ -30,7 +30,8 @@ local function new(self, Colours)
 	return setmetatable(Data, self)
 end
 
-P3D.ColourListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Colour_List), {__call = new})
+P3D.ColourListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Colour_List)
+getmetatable(P3D.ColourListP3DChunk).__call = new
 P3D.ColourListP3DChunk.new = new
 function P3D.ColourListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

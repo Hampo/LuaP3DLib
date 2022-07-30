@@ -31,7 +31,8 @@ local function new(self, ParameterName, Value)
 	return setmetatable(Data, self)
 end
 
-P3D.GameAttributeVectorParameterP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Game_Attribute_Vector_Parameter), {__call = new})
+P3D.GameAttributeVectorParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Game_Attribute_Vector_Parameter)
+getmetatable(P3D.GameAttributeVectorParameterP3DChunk).__call = new
 P3D.GameAttributeVectorParameterP3DChunk.new = new
 function P3D.GameAttributeVectorParameterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

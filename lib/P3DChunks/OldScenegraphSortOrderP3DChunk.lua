@@ -30,7 +30,8 @@ local function new(self, SortOrder)
 	return setmetatable(Data, self)
 end
 
-P3D.OldScenegraphSortOrderP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Sort_Order), {__call = new})
+P3D.OldScenegraphSortOrderP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Sort_Order)
+getmetatable(P3D.OldScenegraphSortOrderP3DChunk).__call = new
 P3D.OldScenegraphSortOrderP3DChunk.new = new
 function P3D.OldScenegraphSortOrderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

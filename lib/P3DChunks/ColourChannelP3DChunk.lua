@@ -37,7 +37,8 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.ColourChannelP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Colour_Channel), {__call = new})
+P3D.ColourChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Colour_Channel)
+getmetatable(P3D.ColourChannelP3DChunk).__call = new
 P3D.ColourChannelP3DChunk.new = new
 function P3D.ColourChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -32,7 +32,8 @@ local function new(self, Version, Name)
 	return setmetatable(Data, self)
 end
 
-P3D.OldVertexAnimKeyFrameP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Vertex_Anim_Key_Frame), {__call = new})
+P3D.OldVertexAnimKeyFrameP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Vertex_Anim_Key_Frame)
+getmetatable(P3D.OldVertexAnimKeyFrameP3DChunk).__call = new
 P3D.OldVertexAnimKeyFrameP3DChunk.new = new
 function P3D.OldVertexAnimKeyFrameP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -32,7 +32,8 @@ local function new(self, Name, Lights)
 	return setmetatable(Data, self)
 end
 
-P3D.LightGroupP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Group), {__call = new})
+P3D.LightGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Group)
+getmetatable(P3D.LightGroupP3DChunk).__call = new
 P3D.LightGroupP3DChunk.new = new
 function P3D.LightGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

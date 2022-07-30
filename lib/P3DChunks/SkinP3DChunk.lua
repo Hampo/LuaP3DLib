@@ -34,7 +34,8 @@ local function new(self, Name, Version, SkeletonName)
 	return setmetatable(Data, self)
 end
 
-P3D.SkinP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Skin), {__call = new})
+P3D.SkinP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Skin)
+getmetatable(P3D.SkinP3DChunk).__call = new
 P3D.SkinP3DChunk.new = new
 function P3D.SkinP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

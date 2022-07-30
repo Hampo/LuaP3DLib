@@ -32,7 +32,8 @@ local function new(self, BibleName, StringID)
 	return setmetatable(Data, self)
 end
 
-P3D.FrontendStringTextBibleP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_String_Text_Bible), {__call = new})
+P3D.FrontendStringTextBibleP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_String_Text_Bible)
+getmetatable(P3D.FrontendStringTextBibleP3DChunk).__call = new
 P3D.FrontendStringTextBibleP3DChunk.new = new
 function P3D.FrontendStringTextBibleP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

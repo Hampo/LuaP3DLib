@@ -37,7 +37,8 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.Float1ChannelP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_1_Channel), {__call = new})
+P3D.Float1ChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_1_Channel)
+getmetatable(P3D.Float1ChannelP3DChunk).__call = new
 P3D.Float1ChannelP3DChunk.new = new
 function P3D.Float1ChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

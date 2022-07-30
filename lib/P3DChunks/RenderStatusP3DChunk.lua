@@ -30,7 +30,8 @@ local function new(self, CastShadow)
 	return setmetatable(Data, self)
 end
 
-P3D.RenderStatusP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Render_Status), {__call = new})
+P3D.RenderStatusP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Render_Status)
+getmetatable(P3D.RenderStatusP3DChunk).__call = new
 P3D.RenderStatusP3DChunk.new = new
 function P3D.RenderStatusP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

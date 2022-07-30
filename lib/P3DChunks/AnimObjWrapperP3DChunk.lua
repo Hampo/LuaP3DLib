@@ -33,7 +33,8 @@ local function new(self, Name, Version, HasAlpha)
 	return setmetatable(Data, self)
 end
 
-P3D.AnimObjWrapperP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Anim_Obj_Wrapper), {__call = new})
+P3D.AnimObjWrapperP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Anim_Obj_Wrapper)
+getmetatable(P3D.AnimObjWrapperP3DChunk).__call = new
 P3D.AnimObjWrapperP3DChunk.new = new
 function P3D.AnimObjWrapperP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

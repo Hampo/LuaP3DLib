@@ -32,7 +32,8 @@ local function new(self, Version, MaxInstances)
 	return setmetatable(Data, self)
 end
 
-P3D.OldParticleInstancingInfoP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Particle_Instancing_Info), {__call = new})
+P3D.OldParticleInstancingInfoP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Particle_Instancing_Info)
+getmetatable(P3D.OldParticleInstancingInfoP3DChunk).__call = new
 P3D.OldParticleInstancingInfoP3DChunk.new = new
 function P3D.OldParticleInstancingInfoP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

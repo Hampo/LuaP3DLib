@@ -50,7 +50,8 @@ local function new(self, Version, Name, ParticleType, GeneratorType, ZTest, ZWri
 	return setmetatable(Data, self)
 end
 
-P3D.OldBaseEmitterP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Base_Emitter), {__call = new})
+P3D.OldBaseEmitterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Base_Emitter)
+getmetatable(P3D.OldBaseEmitterP3DChunk).__call = new
 P3D.OldBaseEmitterP3DChunk.new = new
 function P3D.OldBaseEmitterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -32,7 +32,8 @@ local function new(self, Version, Interpolate)
 	return setmetatable(Data, self)
 end
 
-P3D.ChannelInterpolationModeP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Channel_Interpolation_Mode), {__call = new})
+P3D.ChannelInterpolationModeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Channel_Interpolation_Mode)
+getmetatable(P3D.ChannelInterpolationModeP3DChunk).__call = new
 P3D.ChannelInterpolationModeP3DChunk.new = new
 function P3D.ChannelInterpolationModeP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

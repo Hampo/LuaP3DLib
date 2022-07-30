@@ -27,7 +27,8 @@ local function new(self)
 	return setmetatable(Data, self)
 end
 
-P3D.CompositeDrawablePropListP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Prop_List), {__call = new})
+P3D.CompositeDrawablePropListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Prop_List)
+getmetatable(P3D.CompositeDrawablePropListP3DChunk).__call = new
 P3D.CompositeDrawablePropListP3DChunk.new = new
 function P3D.CompositeDrawablePropListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -27,7 +27,8 @@ local function new(self)
 	return setmetatable(Data, self)
 end
 
-P3D.OldScenegraphRootP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Root), {__call = new})
+P3D.OldScenegraphRootP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Root)
+getmetatable(P3D.OldScenegraphRootP3DChunk).__call = new
 P3D.OldScenegraphRootP3DChunk.new = new
 function P3D.OldScenegraphRootP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

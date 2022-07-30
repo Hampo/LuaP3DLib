@@ -35,7 +35,8 @@ local function new(self, Name, Version, MaterialName, NumFrames, FrameRate, Cycl
 	return setmetatable(Data, self)
 end
 
-P3D.TextureAnimationP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Texture_Animation), {__call = new})
+P3D.TextureAnimationP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Texture_Animation)
+getmetatable(P3D.TextureAnimationP3DChunk).__call = new
 P3D.TextureAnimationP3DChunk.new = new
 function P3D.TextureAnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -36,7 +36,8 @@ local function new(self, Name, Version, MaterialName, NumSubObject)
 	return setmetatable(Data, self)
 end
 
-P3D.CollisionObjectP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Object), {__call = new})
+P3D.CollisionObjectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Object)
+getmetatable(P3D.CollisionObjectP3DChunk).__call = new
 P3D.CollisionObjectP3DChunk.new = new
 function P3D.CollisionObjectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

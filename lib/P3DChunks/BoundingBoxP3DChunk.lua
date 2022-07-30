@@ -32,7 +32,8 @@ local function new(self, Low, High)
 	return setmetatable(Data, self)
 end
 
-P3D.BoundingBoxP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Bounding_Box), {__call = new})
+P3D.BoundingBoxP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Bounding_Box)
+getmetatable(P3D.BoundingBoxP3DChunk).__call = new
 P3D.BoundingBoxP3DChunk.new = new
 function P3D.BoundingBoxP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -40,7 +40,8 @@ local function new(self, Name, Version, MaterialName, NumJoints, Volume, Resting
 	return setmetatable(Data, self)
 end
 
-P3D.PhysicsObjectP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Physics_Object), {__call = new})
+P3D.PhysicsObjectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Physics_Object)
+getmetatable(P3D.PhysicsObjectP3DChunk).__call = new
 P3D.PhysicsObjectP3DChunk.new = new
 function P3D.PhysicsObjectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -32,7 +32,8 @@ local function new(self, Name, Value)
 	return setmetatable(Data, self)
 end
 
-P3D.ExportInfoNamedIntegerP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Export_Info_Named_Integer), {__call = new})
+P3D.ExportInfoNamedIntegerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Export_Info_Named_Integer)
+getmetatable(P3D.ExportInfoNamedIntegerP3DChunk).__call = new
 P3D.ExportInfoNamedIntegerP3DChunk.new = new
 function P3D.ExportInfoNamedIntegerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

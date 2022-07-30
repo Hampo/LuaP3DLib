@@ -35,7 +35,8 @@ local function new(self, Name, IsRect, HalfExtents, Matrix)
 	return setmetatable(Data, self)
 end
 
-P3D.TriggerVolumeP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Trigger_Volume), {__call = new})
+P3D.TriggerVolumeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Trigger_Volume)
+getmetatable(P3D.TriggerVolumeP3DChunk).__call = new
 P3D.TriggerVolumeP3DChunk.new = new
 function P3D.TriggerVolumeP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

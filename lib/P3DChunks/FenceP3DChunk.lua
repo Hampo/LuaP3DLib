@@ -28,7 +28,8 @@ local function new(self)
 	return setmetatable(Data, self)
 end
 
-P3D.FenceP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Fence), {__call = new})
+P3D.FenceP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Fence)
+getmetatable(P3D.FenceP3DChunk).__call = new
 P3D.FenceP3DChunk.new = new
 function P3D.FenceP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -30,7 +30,8 @@ local function new(self, SortOrder)
 	return setmetatable(Data, self)
 end
 
-P3D.CompositeDrawableSortOrderP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Sort_Order), {__call = new})
+P3D.CompositeDrawableSortOrderP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Sort_Order)
+getmetatable(P3D.CompositeDrawableSortOrderP3DChunk).__call = new
 P3D.CompositeDrawableSortOrderP3DChunk.new = new
 function P3D.CompositeDrawableSortOrderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

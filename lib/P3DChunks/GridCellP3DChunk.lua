@@ -32,7 +32,8 @@ local function new(self, Cell, Entities)
 	return setmetatable(Data, self)
 end
 
-P3D.GridCellP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Grid_Cell), {__call = new})
+P3D.GridCellP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Grid_Cell)
+getmetatable(P3D.GridCellP3DChunk).__call = new
 P3D.GridCellP3DChunk.new = new
 function P3D.GridCellP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

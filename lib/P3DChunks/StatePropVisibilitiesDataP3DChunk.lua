@@ -32,7 +32,8 @@ local function new(self, Name, Visible)
 	return setmetatable(Data, self)
 end
 
-P3D.StatePropVisibilitiesDataP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Visibilities_Data), {__call = new})
+P3D.StatePropVisibilitiesDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Visibilities_Data)
+getmetatable(P3D.StatePropVisibilitiesDataP3DChunk).__call = new
 P3D.StatePropVisibilitiesDataP3DChunk.new = new
 function P3D.StatePropVisibilitiesDataP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

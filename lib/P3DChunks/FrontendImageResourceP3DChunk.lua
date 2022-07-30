@@ -34,7 +34,8 @@ local function new(self, Name, Version, Filename)
 	return setmetatable(Data, self)
 end
 
-P3D.FrontendImageResourceP3DChunk = setmetatable(P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Image_Resource), {__call = new})
+P3D.FrontendImageResourceP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Image_Resource)
+getmetatable(P3D.FrontendImageResourceP3DChunk).__call = new
 P3D.FrontendImageResourceP3DChunk.new = new
 function P3D.FrontendImageResourceP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
