@@ -53,6 +53,9 @@ function P3D.RoadP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Type, chunk.StartIntersection, chunk.EndIntersection, chunk.MaximumCars, chunk.Speed, chunk.Intelligence, chunk.Shortcut, chunk.Unknown = string_unpack("<s1Is1s1IBBBB", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.StartIntersection = P3D.CleanP3DString(chunk.StartIntersection)
+	chunk.EndIntersection = P3D.CleanP3DString(chunk.EndIntersection)
 
 	return chunk
 end

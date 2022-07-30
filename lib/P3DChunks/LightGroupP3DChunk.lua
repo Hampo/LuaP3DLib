@@ -40,8 +40,13 @@ function P3D.LightGroupP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos
 	chunk.Name, num, pos = string_unpack("<s1I", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	
 	chunk.Lights = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
 	chunk.Lights[num + 1] = nil
+	for i=1,num do
+		chunk.Lights[i] = P3D.CleanP3DString(chunk.Lights[i])
+	end
 	
 	return chunk
 end

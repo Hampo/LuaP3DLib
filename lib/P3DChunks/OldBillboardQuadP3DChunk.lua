@@ -68,6 +68,7 @@ function P3D.OldBillboardQuadP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Uv3 = {}
 	chunk.UVOffset = {}
 	chunk.Version, chunk.Name, chunk.BillboardMode, chunk.Translation.X, chunk.Translation.Y, chunk.Translation.Z, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Uv0.X, chunk.Uv0.Y, chunk.Uv1.X, chunk.Uv1.Y, chunk.Uv2.X, chunk.Uv2.Y, chunk.Uv3.X, chunk.Uv3.Y, chunk.Width, chunk.Height, chunk.Distance, chunk.UVOffset.X, chunk.UVOffset.Y = string_unpack("<Is1c4fffBBBBfffffffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

@@ -41,6 +41,7 @@ function P3D.MultiControllerTrackP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.Type = string_unpack("<Is1c4", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

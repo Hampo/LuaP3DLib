@@ -47,6 +47,8 @@ function P3D.ShaderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.PddiShaderName, chunk.HasTranslucency, chunk.VertexNeeds, chunk.VertexMask = string_unpack("<s1Is1III", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.PddiShaderName = P3D.CleanP3DString(chunk.PddiShaderName)
 
 	return chunk
 end

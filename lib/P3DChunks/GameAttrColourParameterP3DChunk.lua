@@ -39,6 +39,7 @@ function P3D.GameAttributeColourParameterP3DChunk:parse(Contents, Pos, DataLengt
 	
 	chunk.Value = {}
 	chunk.ParameterName, chunk.Value.B, chunk.Value.G, chunk.Value.R, chunk.Value.A = string_unpack("<s1BBBB", chunk.ValueStr)
+	chunk.ParameterName = P3D.CleanP3DString(chunk.ParameterName)
 	
 	return chunk
 end

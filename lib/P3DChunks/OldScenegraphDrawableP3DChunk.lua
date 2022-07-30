@@ -41,6 +41,8 @@ function P3D.OldScenegraphDrawableP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.DrawableName, chunk.IsTranslucent = string_unpack("<s1s1I", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.DrawableName = P3D.CleanP3DString(chunk.DrawableName)
 
 	return chunk
 end

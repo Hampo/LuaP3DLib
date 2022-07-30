@@ -74,6 +74,8 @@ function P3D.FrontendMultiTextP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.ShadowColour = {}
 	chunk.ShadowOffset = {}
 	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Dimension.X, chunk.Dimension.Y, chunk.Justification.X, chunk.Justification.Y, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Translucency, chunk.RotationValue, chunk.TextStyleName, chunk.ShadowEnabled, chunk.ShadowColour.B, chunk.ShadowColour.G, chunk.ShadowColour.R, chunk.ShadowColour.A, chunk.ShadowOffset.X, chunk.ShadowOffset.Y, chunk.CurrentText = string_unpack("<s1IiiIIIIBBBBIfs1BBBBBiiI", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.TextStyleName = P3D.CleanP3DString(chunk.TextStyleName)
 	
 	return chunk
 end

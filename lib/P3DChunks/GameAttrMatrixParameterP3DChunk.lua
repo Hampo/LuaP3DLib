@@ -39,6 +39,7 @@ function P3D.GameAttributeMatrixParameterP3DChunk:parse(Contents, Pos, DataLengt
 	
 	chunk.Value = {}
 	chunk.ParameterName, chunk.Value.M11, chunk.Value.M12, chunk.Value.M13, chunk.Value.M14, chunk.Value.M21, chunk.Value.M22, chunk.Value.M23, chunk.Value.M24, chunk.Value.M31, chunk.Value.M32, chunk.Value.M33, chunk.Value.M34, chunk.Value.M41, chunk.Value.M42, chunk.Value.M43, chunk.Value.M44 = string_unpack("<s1ffffffffffffffff", chunk.ValueStr)
+	chunk.ParameterName = P3D.CleanP3DString(chunk.ParameterName)
 	
 	return chunk
 end

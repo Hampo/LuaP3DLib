@@ -39,6 +39,8 @@ function P3D.ExportInfoNamedStringP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Value = string_unpack("<s1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Value = P3D.CleanP3DString(chunk.Value)
 	
 	return chunk
 end

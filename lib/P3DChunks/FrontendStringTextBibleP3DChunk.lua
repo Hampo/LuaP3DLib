@@ -39,6 +39,8 @@ function P3D.FrontendStringTextBibleP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.BibleName, chunk.StringID = string_unpack("<s1s1", chunk.ValueStr)
+	chunk.BibleName = P3D.CleanP3DString(chunk.BibleName)
+	chunk.StringID = P3D.CleanP3DString(chunk.StringID)
 	
 	return chunk
 end

@@ -44,6 +44,9 @@ function P3D.ExpressionMixerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.Type, chunk.TargetName, chunk.ExpressionGroupName = string_unpack("<Is1Is1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.TargetName = P3D.CleanP3DString(chunk.TargetName)
+	chunk.ExpressionGroupName = P3D.CleanP3DString(chunk.ExpressionGroupName)
 	
 	return chunk
 end

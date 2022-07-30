@@ -46,6 +46,7 @@ function P3D.GridP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Minimum = {}
 	chunk.Maximum = {}
 	chunk.Name, chunk.CellCount.X, chunk.CellCount.Y, chunk.Minimum.X, chunk.Minimum.Y, chunk.Minimum.Z, chunk.Maximum.X, chunk.Maximum.Y, chunk.Maximum.Z = string_unpack("<s1IIffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

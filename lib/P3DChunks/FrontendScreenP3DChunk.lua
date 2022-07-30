@@ -42,6 +42,7 @@ function P3D.FrontendScreenP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos
 	chunk.Name, chunk.Version, num, pos = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	chunk.PageNames = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
 	chunk.PageNames[num + 1] = nil

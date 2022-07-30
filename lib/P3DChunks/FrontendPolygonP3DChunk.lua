@@ -47,6 +47,7 @@ function P3D.FrontendPolygonP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos
 	chunk.Name, chunk.Version, chunk.Translucency, num, pos = string_unpack("<s1III", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	chunk.Points = {}
 	for i=1,num do

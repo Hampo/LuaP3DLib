@@ -65,6 +65,8 @@ function P3D.FrontendPure3DObjectP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Justification = {}
 	chunk.Colour = {}
 	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Dimension.X, chunk.Dimension.Y, chunk.Justification.X, chunk.Justification.Y, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Translucency, chunk.RotationValue, chunk.Pure3DFilename, pos = string_unpack("<s1IiiIIIIBBBBIfs1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Pure3DFilename = P3D.CleanP3DString(chunk.Pure3DFilename)
 	
 	return chunk
 end

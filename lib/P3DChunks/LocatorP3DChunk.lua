@@ -175,6 +175,7 @@ function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local pos, dataLen
 	chunk.Name, chunk.Type, dataLen, pos = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.Position = {}
 	if chunk.Type == 0 then -- Event
 		chunk.Event = string_unpack("<I", chunk.ValueStr, pos)

@@ -42,6 +42,7 @@ function P3D.Locator3P3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.Position = {}
 	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Position.Z = string_unpack("<s1Ifff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

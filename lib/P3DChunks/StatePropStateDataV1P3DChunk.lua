@@ -51,6 +51,7 @@ function P3D.StatePropStateDataV1P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.AutoTransition, chunk.OutState, chunk.NumDrawables, chunk.NumFrameControllers, chunk.NumEvents, chunk.NumCallbacks, chunk.OutFrame = string_unpack("<s1IIIIIIf", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

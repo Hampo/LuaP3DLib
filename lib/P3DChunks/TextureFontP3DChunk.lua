@@ -49,6 +49,8 @@ function P3D.TextureFontP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.Shader, chunk.FontSize, chunk.FontWidth, chunk.FontHeight, chunk.FontBaseLine = string_unpack("<Is1s1ffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Shader = P3D.CleanP3DString(chunk.Shader)
 
 	return chunk
 end

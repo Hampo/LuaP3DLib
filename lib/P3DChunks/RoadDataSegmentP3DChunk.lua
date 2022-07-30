@@ -52,6 +52,7 @@ function P3D.RoadDataSegmentP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Position2 = {}
 	chunk.Position3 = {}
 	chunk.Name, chunk.Type, chunk.Lanes, chunk.HasShoulder, chunk.Position.X, chunk.Position.Y, chunk.Position.Z, chunk.Position2.X, chunk.Position2.Y, chunk.Position2.Z, chunk.Position3.X, chunk.Position3.Y, chunk.Position3.Z = string_unpack("<s1IIIfffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

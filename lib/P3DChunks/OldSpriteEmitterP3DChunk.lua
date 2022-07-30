@@ -51,6 +51,8 @@ function P3D.OldSpriteEmitterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.ShaderName, chunk.AngleMode, chunk.Angle, chunk.TextureAnimMode, chunk.NumTextureFrames, chunk.TextureFrameRate = string_unpack("<Is1s1c4fc4II", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.ShaderName = P3D.CleanP3DString(chunk.ShaderName)
 
 	return chunk
 end

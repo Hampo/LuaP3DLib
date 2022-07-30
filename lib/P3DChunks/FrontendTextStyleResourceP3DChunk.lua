@@ -43,6 +43,9 @@ function P3D.FrontendTextStyleResourceP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.Filename, chunk.InventoryName = string_unpack("<s1Is1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Filename = P3D.CleanP3DString(chunk.Filename)
+	chunk.InventoryName = P3D.CleanP3DString(chunk.InventoryName)
 	
 	return chunk
 end

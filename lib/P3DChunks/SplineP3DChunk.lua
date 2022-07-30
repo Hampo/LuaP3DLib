@@ -40,6 +40,7 @@ function P3D.SplineP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos
 	chunk.Name, num, pos = string_unpack("<s1I", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	chunk.Positions = {}
 	for i=1,num do

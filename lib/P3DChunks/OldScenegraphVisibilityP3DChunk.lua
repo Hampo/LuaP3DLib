@@ -40,6 +40,7 @@ function P3D.OldScenegraphVisibilityP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num
 	chunk.Name, num, chunk.IsVisible = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

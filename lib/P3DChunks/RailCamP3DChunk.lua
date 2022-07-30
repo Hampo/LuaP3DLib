@@ -60,6 +60,7 @@ function P3D.RailCamP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.TargetOffset = {}
 	chunk.AxisPlay = {}
 	chunk.Name, chunk.Behaviour, chunk.MinRadius, chunk.MaxRadius, chunk.TrackRail, chunk.TrackDist, chunk.ReverseSense, chunk.FOV, chunk.TargetOffset.X, chunk.TargetOffset.Y, chunk.TargetOffset.Z, chunk.AxisPlay.X, chunk.AxisPlay.Y, chunk.AxisPlay.Z, chunk.PositionLag, chunk.TargetLag = string_unpack("<s1IffIfIfffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

@@ -41,6 +41,7 @@ function P3D.CollisionEffectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.ClassType, chunk.PhyPropID, chunk.SoundResourceDataName = string_unpack("<IIs1", chunk.ValueStr)
+	chunk.SoundResourceDataName = P3D.CleanP3DString(chunk.SoundResourceDataName)
 	
 	return chunk
 end

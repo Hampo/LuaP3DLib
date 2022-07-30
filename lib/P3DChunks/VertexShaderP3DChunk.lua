@@ -37,6 +37,7 @@ function P3D.VertexShaderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.VertexShaderName = string_unpack("<s1", chunk.ValueStr)
+	chunk.VertexShaderName = P3D.CleanP3DString(chunk.VertexShaderName)
 
 	return chunk
 end

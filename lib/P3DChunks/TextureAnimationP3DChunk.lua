@@ -28,7 +28,11 @@ local function new(self, Name, Version, MaterialName, NumFrames, FrameRate, Cycl
 	local Data = {
 		Chunks = {},
 		Name = Name,
-		Data = Data2
+		Version = Version,
+		MaterialName = MaterialName,
+		NumFrames = NumFrames,
+		FrameRate = FrameRate,
+		Cyclic = Cyclic
 	}
 	
 	self.__index = self
@@ -42,7 +46,8 @@ function P3D.TextureAnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.MaterialName, chunk.NumFrames, chunk.FrameRate, chunk.Cyclic = string_unpack("<s1Is1IfI", chunk.ValueStr)
-	chunk.Data = chunk.ValueStr:sub(pos)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.MaterialName = P3D.CleanP3DString(chunk.MaterialName)
 	
 	return chunk
 end

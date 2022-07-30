@@ -41,6 +41,8 @@ function P3D.FrontendImageResourceP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.Filename = string_unpack("<s1Is1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Filename = P3D.CleanP3DString(chunk.Filename)
 	
 	return chunk
 end

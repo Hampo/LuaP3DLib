@@ -47,6 +47,8 @@ function P3D.OldBillboardQuadGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.Shader, chunk.ZTest, chunk.ZWrite, chunk.Fog = string_unpack("<Is1s1III", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Shader = P3D.CleanP3DString(chunk.Shader)
 
 	return chunk
 end

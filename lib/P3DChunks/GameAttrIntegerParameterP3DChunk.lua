@@ -39,6 +39,7 @@ function P3D.GameAttributeIntegerParameterP3DChunk:parse(Contents, Pos, DataLeng
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.ParameterName, chunk.Value = string_unpack("<s1I", chunk.ValueStr)
+	chunk.ParameterName = P3D.CleanP3DString(chunk.ParameterName)
 	
 	return chunk
 end

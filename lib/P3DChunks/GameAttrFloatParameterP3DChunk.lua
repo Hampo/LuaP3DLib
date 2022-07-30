@@ -38,6 +38,7 @@ function P3D.GameAttributeFloatParameterP3DChunk:parse(Contents, Pos, DataLength
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.ParameterName, chunk.Value = string_unpack("<s1f", chunk.ValueStr)
+	chunk.ParameterName = P3D.CleanP3DString(chunk.ParameterName)
 	
 	return chunk
 end

@@ -51,6 +51,8 @@ function P3D.SpriteP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.NativeX, chunk.NativeY, chunk.Shader, chunk.ImageWidth, chunk.ImageHeight, chunk.ImageCount, chunk.BlitBorder = string_unpack("<s1IIs1IIII", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Shader = P3D.CleanP3DString(chunk.Shader)
 
 	return chunk
 end

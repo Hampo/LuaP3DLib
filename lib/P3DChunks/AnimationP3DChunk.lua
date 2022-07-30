@@ -47,6 +47,7 @@ function P3D.AnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.AnimationType, chunk.NumFrames, chunk.FrameRate, chunk.Cyclic = string_unpack("<Is1c4ffI", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

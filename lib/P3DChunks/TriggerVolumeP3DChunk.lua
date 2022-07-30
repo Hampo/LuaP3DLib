@@ -44,6 +44,7 @@ function P3D.TriggerVolumeP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.HalfExtents = {}
 	chunk.Matrix = {}
 	chunk.Name, chunk.IsRect, chunk.HalfExtents.X, chunk.HalfExtents.Y, chunk.HalfExtents.Z, chunk.Matrix.M11, chunk.Matrix.M12, chunk.Matrix.M13, chunk.Matrix.M14, chunk.Matrix.M21, chunk.Matrix.M22, chunk.Matrix.M23, chunk.Matrix.M24, chunk.Matrix.M31, chunk.Matrix.M32, chunk.Matrix.M33, chunk.Matrix.M34, chunk.Matrix.M41, chunk.Matrix.M42, chunk.Matrix.M43, chunk.Matrix.M44 = string_unpack("<s1Ifffffffffffffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

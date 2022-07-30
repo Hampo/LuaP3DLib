@@ -52,6 +52,7 @@ function P3D.SkeletonJointP3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.RestPose = {}
 	chunk.Name, chunk.Parent, chunk.DOF, chunk.FreeAxis, chunk.PrimaryAxis, chunk.SecondaryAxis, chunk.TwistAxis, chunk.RestPose.M11, chunk.RestPose.M12, chunk.RestPose.M13, chunk.RestPose.M14, chunk.RestPose.M21, chunk.RestPose.M22, chunk.RestPose.M23, chunk.RestPose.M24, chunk.RestPose.M31, chunk.RestPose.M32, chunk.RestPose.M33, chunk.RestPose.M34, chunk.RestPose.M41, chunk.RestPose.M42, chunk.RestPose.M43, chunk.RestPose.M44 = string_unpack("<s1Iiiiiiffffffffffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

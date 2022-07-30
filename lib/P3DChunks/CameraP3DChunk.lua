@@ -56,6 +56,7 @@ function P3D.CameraP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Look = {}
 	chunk.Up = {}
 	chunk.Name, chunk.Version, chunk.FOV, chunk.AspectRatio, chunk.NearClip, chunk.FarClip, chunk.Position.X, chunk.Position.Y, chunk.Position.Z, chunk.Look.X, chunk.Look.Y, chunk.Look.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z = string_unpack("<s1Ifffffffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

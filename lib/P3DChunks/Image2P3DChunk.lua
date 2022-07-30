@@ -40,6 +40,7 @@ function P3D.Image2P3DChunk:parse(Contents, Pos, DataLength)
 	
 	local pos
 	chunk.Name. pos = string_unpack("<s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.Data = chunk.ValueStr:sub(pos)
 	
 	return chunk

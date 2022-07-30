@@ -49,6 +49,7 @@ function P3D.LightP3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.Colour = {}
 	chunk.Name, chunk.Version, chunk.Type, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Constant, chunk.Linear, chunk.Squard, chunk.Enabled = string_unpack("<s1IIBBBBfffI", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

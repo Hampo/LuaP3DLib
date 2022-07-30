@@ -48,6 +48,8 @@ function P3D.GridCellP3DChunk:parse(Contents, Pos, DataLength)
 		
 		Entity.Transform = {}
 		Entity.Type, Entity.Name, Entity.Unknown, Entity.Index, Entity.Transform.M11, Entity.Transform.M12, Entity.Transform.M13, Entity.Transform.M14, Entity.Transform.M21, Entity.Transform.M22, Entity.Transform.M23, Entity.Transform.M24, Entity.Transform.M31, Entity.Transform.M32, Entity.Transform.M33, Entity.Transform.M34, Entity.Transform.M41, Entity.Transform.M42, Entity.Transform.M43, Entity.Transform.M44, pos = string_unpack("<Is1s1Iffffffffffffffff", chunk.ValueStr, pos)
+		Entity.Name = P3D.CleanP3DString(Entity.Name)
+		Entity.Unknown = P3D.CleanP3DString(Entity.Unknown)
 		
 		Entities[i] = Entity
 	end

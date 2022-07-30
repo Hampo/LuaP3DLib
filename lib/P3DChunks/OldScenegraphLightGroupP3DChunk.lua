@@ -39,6 +39,8 @@ function P3D.OldScenegraphLightGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.LightGroupName = string_unpack("<s1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.LightGroupName = P3D.CleanP3DString(chunk.LightGroupName)
 
 	return chunk
 end

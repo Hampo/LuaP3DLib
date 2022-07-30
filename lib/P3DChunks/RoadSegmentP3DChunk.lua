@@ -45,6 +45,8 @@ function P3D.RoadSegmentP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Transform = {}
 	chunk.Scale = {}
 	chunk.Name, chunk.RoadDataSegment, chunk.Transform.M11, chunk.Transform.M12, chunk.Transform.M13, chunk.Transform.M14, chunk.Transform.M21, chunk.Transform.M22, chunk.Transform.M23, chunk.Transform.M24, chunk.Transform.M31, chunk.Transform.M32, chunk.Transform.M33, chunk.Transform.M34, chunk.Transform.M41, chunk.Transform.M42, chunk.Transform.M43, chunk.Transform.M44, chunk.Scale.M11, chunk.Scale.M12, chunk.Scale.M13, chunk.Scale.M14, chunk.Scale.M21, chunk.Scale.M22, chunk.Scale.M23, chunk.Scale.M24, chunk.Scale.M31, chunk.Scale.M32, chunk.Scale.M33, chunk.Scale.M34, chunk.Scale.M41, chunk.Scale.M42, chunk.Scale.M43, chunk.Scale.M44 = string_unpack("<s1s1ffffffffffffffffffffffffffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.RoadDataSegment = P3D.CleanP3DString(chunk.RoadDataSegment)
 
 	return chunk
 end

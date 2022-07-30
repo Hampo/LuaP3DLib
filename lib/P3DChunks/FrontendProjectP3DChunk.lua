@@ -50,6 +50,11 @@ function P3D.FrontendProjectP3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.Resolution = {}
 	chunk.Name, chunk.Version, chunk.Resolution.X, chunk.Resolution.Y, chunk.Platform, chunk.PagePath, chunk.ResourcePath, chunk.ScreenPath = string_unpack("<s1IIIs1s1s1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Platform = P3D.CleanP3DString(chunk.Platform)
+	chunk.PagePath = P3D.CleanP3DString(chunk.PagePath)
+	chunk.ResourcePath = P3D.CleanP3DString(chunk.ResourcePath)
+	chunk.ScreenPath = P3D.CleanP3DString(chunk.ScreenPath)
 	
 	return chunk
 end
@@ -68,5 +73,5 @@ function P3D.FrontendProjectP3DChunk:__tostring()
 	local ScreenPath = P3D.MakeP3DString(self.ScreenPath)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + #Platform + 1 + #PagePath + 1 + #ResourcePath + 1 + #ScreenPath + 1
-	return string_pack("<IIIs1IIIs1s1s1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Resolution.X, self.Resolution.Y, self.Platform, self.PagePath, self.ResourcePath, self.ScreenPath) .. chunkData
+	return string_pack("<IIIs1IIIs1s1s1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Resolution.X, self.Resolution.Y, Platform, PagePath, ResourcePath, ScreenPath) .. chunkData
 end

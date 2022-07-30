@@ -41,6 +41,7 @@ function P3D.CompositeDrawableEffectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.IsTranslucent, chunk.SkeletonJointID = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

@@ -52,6 +52,9 @@ function P3D.EntityChannelP3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.Values = table_pack(string_unpack("<" .. string_rep("s1", numFrames), chunk.ValueStr, pos))
 	chunk.Values[numFrames + 1] = nil
+	for i=1,numFrames do
+		chunk.Values[i] = P3D.CleanP3DString(chunk.Values[i])
+	end
 	
 	return chunk
 end

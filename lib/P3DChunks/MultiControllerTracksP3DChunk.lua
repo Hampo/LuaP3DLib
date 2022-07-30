@@ -43,6 +43,7 @@ function P3D.MultiControllerTracksP3DChunk:parse(Contents, Pos, DataLength)
 		local track = {}
 		track.Name, track.StartTime, track.EndTime, track.Scale, pos = string_unpack("<s1fff", chunk.ValueStr, pos)
 		chunk.Tracks[i] = track
+		track.Name = P3D.CleanP3DString(track.Name)
 	end
 	
 	return chunk

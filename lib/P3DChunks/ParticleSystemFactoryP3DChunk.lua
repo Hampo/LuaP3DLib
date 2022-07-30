@@ -49,6 +49,7 @@ function P3D.ParticleSystemFactoryP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.FrameRate, chunk.NumAnimFrames, chunk.NumOLFrames, chunk.CycleAnim, chunk.EnableSorting = string_unpack("<Is1fIIHH", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

@@ -47,6 +47,9 @@ function P3D.OldFrameControllerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Version, chunk.Name, chunk.Type, chunk.FrameOffset, chunk.HierarchyName, chunk.AnimationName = string_unpack("<Is1c4fs1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.HierarchyName = P3D.CleanP3DString(chunk.HierarchyName)
+	chunk.AnimationName = P3D.CleanP3DString(chunk.AnimationName)
 
 	return chunk
 end

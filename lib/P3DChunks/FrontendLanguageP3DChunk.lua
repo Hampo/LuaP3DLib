@@ -80,6 +80,7 @@ function P3D.FrontendLanguageP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local numEntries, bufferSize, pos
 	chunk.Name, chunk.Language, numEntries, chunk.Modulo, bufferSize, pos = string_unpack("<s1c1III", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	chunk.Hashes = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
 	pos = chunk.Hashes[numEntries + 1]

@@ -48,6 +48,8 @@ function P3D.PhysicsObjectP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local pos
 	chunk.Name, chunk.Version, chunk.MaterialName, chunk.NumJoints, chunk.Volume, chunk.RestingSensitivity, pos = string_unpack("<s1Is1Iff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.MaterialName = P3D.CleanP3DString(chunk.MaterialName)
 	
 	return chunk, pos + 11
 end

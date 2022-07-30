@@ -41,6 +41,8 @@ function P3D.SkinP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.SkeletonName = string_unpack("<s1Is1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.SkeletonName = P3D.CleanP3DString(chunk.SkeletonName)
 
 	return chunk
 end

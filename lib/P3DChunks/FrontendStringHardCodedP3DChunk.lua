@@ -37,6 +37,7 @@ function P3D.FrontendStringHardCodedP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.String = string_unpack("<s1", chunk.ValueStr)
+	chunk.String = P3D.CleanP3DString(chunk.String)
 	
 	return chunk
 end

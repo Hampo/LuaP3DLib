@@ -65,9 +65,13 @@ function P3D.FrontendMultiSpriteP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Justification = {}
 	chunk.Colour = {}
 	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Dimension.X, chunk.Dimension.Y, chunk.Justification.X, chunk.Justification.Y, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Translucency, chunk.RotationValue, num, pos = string_unpack("<s1IiiIIIIBBBBIfI", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	chunk.ImageNames = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
 	chunk.ImageNames[num + 1] = nil
+	for i=1,num do
+		chunk.ImageNames[i] = P3D.CleanP3DString(chunk.ImageNames[i])
+	end
 	
 	return chunk
 end

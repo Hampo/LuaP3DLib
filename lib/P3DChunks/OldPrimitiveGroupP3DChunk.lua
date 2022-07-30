@@ -70,6 +70,7 @@ function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num
 	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack("<Is1IIIII", chunk.ValueStr)
+	chunk.ShaderName = P3D.CleanP3DString(chunk.ShaderName)
 
 	return chunk
 end

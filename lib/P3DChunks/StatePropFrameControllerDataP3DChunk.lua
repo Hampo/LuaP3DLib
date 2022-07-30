@@ -49,6 +49,7 @@ function P3D.StatePropFrameControllerDataP3DChunk:parse(Contents, Pos, DataLengt
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Cyclic, chunk.NumberOfCycles, chunk.HoldFrame, chunk.MinFrame, chunk.MaxFrame, chunk.RelativeSpeed = string_unpack("<s1IIIfff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

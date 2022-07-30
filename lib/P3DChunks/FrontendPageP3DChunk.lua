@@ -42,6 +42,7 @@ function P3D.FrontendPageP3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.Resolution = {}
 	chunk.Name, chunk.Version, chunk.Resolution.X, chunk.Resolution.Y = string_unpack("<s1III", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

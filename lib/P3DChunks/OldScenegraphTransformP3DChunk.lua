@@ -41,6 +41,7 @@ function P3D.OldScenegraphTransformP3DChunk:parse(Contents, Pos, DataLength)
 	local num
 	chunk.Transform = {}
 	chunk.Name, num, chunk.Transform.M11, chunk.Transform.M12, chunk.Transform.M13, chunk.Transform.M14, chunk.Transform.M21, chunk.Transform.M22, chunk.Transform.M23, chunk.Transform.M24, chunk.Transform.M31, chunk.Transform.M32, chunk.Transform.M33, chunk.Transform.M34, chunk.Transform.M41, chunk.Transform.M42, chunk.Transform.M43, chunk.Transform.M44 = string_unpack("<s1Iffffffffffffffff", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
 end

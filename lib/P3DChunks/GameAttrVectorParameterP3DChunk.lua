@@ -39,6 +39,7 @@ function P3D.GameAttributeVectorParameterP3DChunk:parse(Contents, Pos, DataLengt
 	
 	chunk.Value = {}
 	chunk.ParameterName, chunk.Value.X, chunk.Value.Y, chunk.Value.Z = string_unpack("<s1fff", chunk.ValueStr)
+	chunk.ParameterName = P3D.CleanP3DString(chunk.ParameterName)
 	
 	return chunk
 end

@@ -44,6 +44,7 @@ function P3D.ExpressionP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos
 	chunk.Version, chunk.Name, num, pos = string_unpack("<Is1I", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	chunk.Keys = table_pack(string_unpack("<" .. string_rep("f", num), chunk.ValueStr, pos))
 	pos = chunk.Keys[num + 1]

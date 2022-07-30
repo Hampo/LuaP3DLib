@@ -42,6 +42,9 @@ function P3D.ATCP3DChunk:parse(Contents, Pos, DataLength)
 	for i=1,count do
 		local entry = {}
 		entry.SoundResourceDataName, entry.Particle, entry.BreakableObject, entry.Friction, entry.Mass, entry.Elasticity, pos = string_unpack("<s1s1s1fff", chunk.ValueStr, pos)
+		entry.SoundResourceDataName = P3D.CleanP3DString(entry.SoundResourceDataName)
+		entry.Particle = P3D.CleanP3DString(entry.Particle)
+		entry.BreakableObject = P3D.CleanP3DString(entry.BreakableObject)
 		Entries[i] = entry
 	end
 	chunk.Entries = Entries

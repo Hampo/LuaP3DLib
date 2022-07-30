@@ -39,6 +39,9 @@ function P3D.HistoryP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos = string_unpack("<H", chunk.ValueStr)
 	chunk.History = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
 	chunk.History[num + 1] = nil
+	for i=1,num do
+		chunk.History[i] = P3D.CleanP3DString(chunk.History[i])
+	end
 	
 	return chunk
 end

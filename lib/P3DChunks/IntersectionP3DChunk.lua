@@ -44,6 +44,7 @@ function P3D.IntersectionP3DChunk:parse(Contents, Pos, DataLength)
 	
 	chunk.Position = {}
 	chunk.Name, chunk.Position.X, chunk.Position.Y, chunk.Position.Z, chunk.Radius, chunk.TrafficBehaviour = string_unpack("<s1ffffI", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

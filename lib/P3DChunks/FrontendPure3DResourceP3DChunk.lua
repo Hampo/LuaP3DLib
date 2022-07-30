@@ -47,6 +47,11 @@ function P3D.FrontendPure3DResourceP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.Filename, chunk.InventoryName, chunk.CameraName, chunk.AnimationName = string_unpack("<s1Is1s1s1s1", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.Filename = P3D.CleanP3DString(chunk.Filename)
+	chunk.InventoryName = P3D.CleanP3DString(chunk.InventoryName)
+	chunk.CameraName = P3D.CleanP3DString(chunk.CameraName)
+	chunk.AnimationName = P3D.CleanP3DString(chunk.AnimationName)
 	
 	return chunk
 end
@@ -65,5 +70,5 @@ function P3D.FrontendPure3DResourceP3DChunk:__tostring()
 	local AnimationName = P3D.MakeP3DString(self.AnimationName)
 	
 	local headerLen = 12 + #Name + 1 + 4 + #Filename + 1 + #InventoryName + 1 + #CameraName + 1 + #AnimationName + 1
-	return string_pack("<IIIs1Is1s1s1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Filename, self.InventoryName, self.CameraName, self.AnimationName) .. chunkData
+	return string_pack("<IIIs1Is1s1s1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, Filename, InventoryName, CameraName, AnimationName) .. chunkData
 end

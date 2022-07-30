@@ -77,6 +77,7 @@ function P3D.VolumeImageP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.Width, chunk.Height, chunk.Depth, chunk.Bpp, chunk.Palettized, chunk.HasAlpha, chunk.Format = string_unpack("<s1IIIIIIII", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end

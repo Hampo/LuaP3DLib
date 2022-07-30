@@ -43,6 +43,8 @@ function P3D.CollisionObjectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Name, chunk.Version, chunk.MaterialName, chunk.NumSubObject = string_unpack("<s1Is1I", chunk.ValueStr)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	chunk.MaterialName = P3D.CleanP3DString(chunk.MaterialName)
 	
 	return chunk
 end

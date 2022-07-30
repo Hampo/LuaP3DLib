@@ -39,6 +39,7 @@ function P3D.ShaderTextureParameterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Param, chunk.Value = string_unpack("<c4s1", chunk.ValueStr)
+	chunk.Value = P3D.CleanP3DString(chunk.Value)
 
 	return chunk
 end

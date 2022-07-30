@@ -192,7 +192,7 @@ P3D.Identifiers = {
 	Texture = 0x19000,
 	Texture_Animation = 0x3520,
 	Texture_Font = 0x22000,
-	Texture_Glyph_List = 0x22001, -- TODO
+	Texture_Glyph_List = 0x22001,
 	Tree = 0x3F00004,
 	Tree_Node = 0x3F00005,
 	Tree_Node_2 = 0x3F00006,
@@ -460,6 +460,10 @@ local function GetChunks(self, Identifier, Backwards)
 	end
 end
 
+local function GetChunk(self, Identifier, Backwards)
+	return GetChunks(self, Identifier, Backwards)()
+end
+
 local function GetChunksIndexed(self, Identifier, Backwards)
 	assert(Identifier == nil or type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
 	
@@ -493,7 +497,11 @@ local function GetChunksIndexed(self, Identifier, Backwards)
 	end
 end
 
-P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunksIndexed = GetChunkIndexed}, {__call = LoadP3DFile})
+local function GetChunkIndexed(self, Identifier, Backwards)
+	return GetChunksIndexed(self, Identifier, Backwards)()
+end
+
+P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = LoadP3DFile})
 
 function P3D.P3DFile:__tostring()
 	local chunks = {}
@@ -522,7 +530,7 @@ local function P3DChunk_new(self, Identifier, ValueStr)
 	return setmetatable(Data, self)
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunksIndexed = GetChunkIndexed}, {__call = P3DChunk})
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	

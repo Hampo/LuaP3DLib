@@ -39,8 +39,9 @@ function P3D.Locator2P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	local pos
-	chunk.Name. pos = string_unpack("<s1", chunk.ValueStr)
+	chunk.Name, pos = string_unpack("<s1", chunk.ValueStr)
 	chunk.Data = chunk.ValueStr:sub(pos)
+	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
 end
