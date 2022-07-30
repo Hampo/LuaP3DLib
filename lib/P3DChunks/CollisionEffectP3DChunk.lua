@@ -18,14 +18,16 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, FlatEnd)
-	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(FlatEnd) == "number", "Arg #2 (FlatEnd) must be a number")
+local function new(self, ClassType, PhyPropID, SoundResourceDataName)
+	assert(type(ClassType) == "number", "Arg #1 (ClassType) must be a number")
+	assert(type(PhyPropID) == "number", "Arg #2 (PhyPropID) must be a number")
+	assert(type(SoundResourceDataName) == "string", "Arg #3 (SoundResourceDataName) must be a string")
 	
 	local Data = {
 		Chunks = {},
-		Name = Name,
-		FlatEnd = FlatEnd
+		ClassType = ClassType,
+		PhyPropID = PhyPropID,
+		SoundResourceDataName = SoundResourceDataName
 	}
 	
 	self.__index = self
@@ -38,7 +40,7 @@ P3D.CollisionEffectP3DChunk.new = new
 function P3D.CollisionEffectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Unknown, chunk.Unknown2, chunk.SoundResourceDataName = string_unpack("<IIs1", chunk.ValueStr)
+	chunk.ClassType, chunk.PhyPropID, chunk.SoundResourceDataName = string_unpack("<IIs1", chunk.ValueStr)
 	
 	return chunk
 end
@@ -53,5 +55,5 @@ function P3D.CollisionEffectP3DChunk:__tostring()
 	local SoundResourceDataName = P3D.MakeP3DString(self.SoundResourceDataName)
 	
 	local headerLen = 12 + 4 + 4 + #SoundResourceDataName + 1
-	return string_pack("<IIIIIs1", self.Identifier, headerLen, headerLen + #chunkData, self.Unknown, self.Unknown2, SoundResourceDataName) .. chunkData
+	return string_pack("<IIIIIs1", self.Identifier, headerLen, headerLen + #chunkData, self.ClassType, self.PhyPropID, SoundResourceDataName) .. chunkData
 end
