@@ -31,7 +31,6 @@ local function new(self, PreserveBoneLengths)
 end
 
 P3D.SkeletonJointBonePreserveP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Skeleton_Joint_Bone_Preserve)
-getmetatable(P3D.SkeletonJointBonePreserveP3DChunk).__call = new
 P3D.SkeletonJointBonePreserveP3DChunk.new = new
 function P3D.SkeletonJointBonePreserveP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

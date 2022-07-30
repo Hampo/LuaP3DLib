@@ -33,7 +33,6 @@ local function new(self, Version, Perspective)
 end
 
 P3D.OldBillboardPerspectiveInfoP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Billboard_Perspective_Info)
-getmetatable(P3D.OldBillboardPerspectiveInfoP3DChunk).__call = new
 P3D.OldBillboardPerspectiveInfoP3DChunk.new = new
 function P3D.OldBillboardPerspectiveInfoP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

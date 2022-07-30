@@ -31,7 +31,6 @@ local function new(self, Vector)
 end
 
 P3D.PhysicsVectorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Physics_Vector)
-getmetatable(P3D.PhysicsVectorP3DChunk).__call = new
 P3D.PhysicsVectorP3DChunk.new = new
 function P3D.PhysicsVectorP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

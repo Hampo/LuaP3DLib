@@ -55,7 +55,6 @@ local function new(self, Version, Name, BillboardMode, Translation, Colour, Uv0,
 end
 
 P3D.OldBillboardQuadP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Billboard_Quad)
-getmetatable(P3D.OldBillboardQuadP3DChunk).__call = new
 P3D.OldBillboardQuadP3DChunk.new = new
 function P3D.OldBillboardQuadP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

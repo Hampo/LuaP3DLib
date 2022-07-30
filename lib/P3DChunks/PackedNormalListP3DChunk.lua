@@ -31,7 +31,6 @@ local function new(self, Normals)
 end
 
 P3D.PackedNormalListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Packed_Normal_List)
-getmetatable(P3D.PackedNormalListP3DChunk).__call = new
 P3D.PackedNormalListP3DChunk.new = new
 function P3D.PackedNormalListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

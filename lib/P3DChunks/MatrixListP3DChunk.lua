@@ -31,7 +31,6 @@ local function new(self, Matrices)
 end
 
 P3D.MatrixListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Matrix_List)
-getmetatable(P3D.MatrixListP3DChunk).__call = new
 P3D.MatrixListP3DChunk.new = new
 function P3D.MatrixListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

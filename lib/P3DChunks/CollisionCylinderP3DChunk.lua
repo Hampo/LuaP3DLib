@@ -35,7 +35,6 @@ local function new(self, CylinderRadius, Length, FlatEnd)
 end
 
 P3D.CollisionCylinderP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Cylinder)
-getmetatable(P3D.CollisionCylinderP3DChunk).__call = new
 P3D.CollisionCylinderP3DChunk.new = new
 function P3D.CollisionCylinderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

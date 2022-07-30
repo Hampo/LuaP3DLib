@@ -45,7 +45,6 @@ local function new(self, Name, Parent, DOF, FreeAxis, PrimaryAxis, SecondaryAxis
 end
 
 P3D.SkeletonJointP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Skeleton_Joint)
-getmetatable(P3D.SkeletonJointP3DChunk).__call = new
 P3D.SkeletonJointP3DChunk.new = new
 function P3D.SkeletonJointP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

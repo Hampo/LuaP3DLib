@@ -41,7 +41,6 @@ local function new(self, Name, Version, PddiShaderName, HasTranslucency, VertexN
 end
 
 P3D.ShaderP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Shader)
-getmetatable(P3D.ShaderP3DChunk).__call = new
 P3D.ShaderP3DChunk.new = new
 function P3D.ShaderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

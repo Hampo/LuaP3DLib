@@ -35,7 +35,6 @@ local function new(self, Start, End, Normal)
 end
 
 P3D.Fence2P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Fence_2)
-getmetatable(P3D.Fence2P3DChunk).__call = new
 P3D.Fence2P3DChunk.new = new
 function P3D.Fence2P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

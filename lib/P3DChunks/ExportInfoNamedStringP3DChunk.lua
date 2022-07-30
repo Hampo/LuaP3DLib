@@ -33,7 +33,6 @@ local function new(self, Name, Value)
 end
 
 P3D.ExportInfoNamedStringP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Export_Info_Named_String)
-getmetatable(P3D.ExportInfoNamedStringP3DChunk).__call = new
 P3D.ExportInfoNamedStringP3DChunk.new = new
 function P3D.ExportInfoNamedStringP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

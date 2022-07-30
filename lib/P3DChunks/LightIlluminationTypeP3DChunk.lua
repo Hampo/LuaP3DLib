@@ -31,7 +31,6 @@ local function new(self, IlluminationType)
 end
 
 P3D.LightIlluminationTypeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Illumination_Type)
-getmetatable(P3D.LightIlluminationTypeP3DChunk).__call = new
 P3D.LightIlluminationTypeP3DChunk.new = new
 function P3D.LightIlluminationTypeP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

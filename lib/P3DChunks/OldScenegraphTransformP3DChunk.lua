@@ -33,7 +33,6 @@ local function new(self, Name, Transform)
 end
 
 P3D.OldScenegraphTransformP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Transform)
-getmetatable(P3D.OldScenegraphTransformP3DChunk).__call = new
 P3D.OldScenegraphTransformP3DChunk.new = new
 function P3D.OldScenegraphTransformP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -31,7 +31,6 @@ local function new(self, Glyphs)
 end
 
 P3D.TextureGlyphListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Texture_Glyph_List)
-getmetatable(P3D.TextureGlyphListP3DChunk).__call = new
 P3D.TextureGlyphListP3DChunk.new = new
 function P3D.TextureGlyphListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

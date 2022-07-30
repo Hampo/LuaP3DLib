@@ -55,7 +55,6 @@ local function new(self, Name, Version, Position, Dimension, Justification, Colo
 end
 
 P3D.FrontendMultiTextP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Multi_Text)
-getmetatable(P3D.FrontendMultiTextP3DChunk).__call = new
 P3D.FrontendMultiTextP3DChunk.new = new
 P3D.FrontendMultiTextP3DChunk.Justifications = {
 	Left = 0,

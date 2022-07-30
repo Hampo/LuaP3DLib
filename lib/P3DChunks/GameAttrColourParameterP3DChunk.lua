@@ -32,7 +32,6 @@ local function new(self, ParameterName, Value)
 end
 
 P3D.GameAttributeColourParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Game_Attribute_Colour_Parameter)
-getmetatable(P3D.GameAttributeColourParameterP3DChunk).__call = new
 P3D.GameAttributeColourParameterP3DChunk.new = new
 function P3D.GameAttributeColourParameterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

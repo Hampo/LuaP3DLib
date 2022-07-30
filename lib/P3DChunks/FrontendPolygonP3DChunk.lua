@@ -40,7 +40,6 @@ local function new(self, Name, Version, Translucency, Points, Colours)
 end
 
 P3D.FrontendPolygonP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Polygon)
-getmetatable(P3D.FrontendPolygonP3DChunk).__call = new
 P3D.FrontendPolygonP3DChunk.new = new
 function P3D.FrontendPolygonP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

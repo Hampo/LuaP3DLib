@@ -35,7 +35,6 @@ local function new(self, Name, Version, HasAlpha)
 end
 
 P3D.StaticEntityP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Static_Entity)
-getmetatable(P3D.StaticEntityP3DChunk).__call = new
 P3D.StaticEntityP3DChunk.new = new
 function P3D.StaticEntityP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

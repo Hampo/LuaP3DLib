@@ -33,7 +33,6 @@ local function new(self, Name, IsTranslucent)
 end
 
 P3D.CompositeDrawableSkinP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Skin)
-getmetatable(P3D.CompositeDrawableSkinP3DChunk).__call = new
 P3D.CompositeDrawableSkinP3DChunk.new = new
 function P3D.CompositeDrawableSkinP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

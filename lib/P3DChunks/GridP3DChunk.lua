@@ -37,7 +37,6 @@ local function new(self, Name, CellCount, Minimum, Maximum)
 end
 
 P3D.GridP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Grid)
-getmetatable(P3D.GridP3DChunk).__call = new
 P3D.GridP3DChunk.new = new
 function P3D.GridP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

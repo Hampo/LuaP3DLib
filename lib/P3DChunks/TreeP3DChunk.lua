@@ -33,7 +33,6 @@ local function new(self, Minimum, Maximum)
 end
 
 P3D.TreeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Tree)
-getmetatable(P3D.TreeP3DChunk).__call = new
 P3D.TreeP3DChunk.new = new
 function P3D.TreeP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

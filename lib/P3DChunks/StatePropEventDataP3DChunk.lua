@@ -35,7 +35,6 @@ local function new(self, Name, State, EventEnum)
 end
 
 P3D.StatePropEventDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Event_Data)
-getmetatable(P3D.StatePropEventDataP3DChunk).__call = new
 P3D.StatePropEventDataP3DChunk.new = new
 function P3D.StatePropEventDataP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

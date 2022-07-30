@@ -41,7 +41,6 @@ local function new(self, Version, Name, Type, FrameOffset, HierarchyName, Animat
 end
 
 P3D.OldFrameControllerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Frame_Controller)
-getmetatable(P3D.OldFrameControllerP3DChunk).__call = new
 P3D.OldFrameControllerP3DChunk.new = new
 function P3D.OldFrameControllerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

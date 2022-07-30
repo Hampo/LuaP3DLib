@@ -37,7 +37,6 @@ local function new(self, Version, Name, BaseAnimation, NumAnimations)
 end
 
 P3D.AnimatedObjectFactoryP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animated_Object_Factory)
-getmetatable(P3D.AnimatedObjectFactoryP3DChunk).__call = new
 P3D.AnimatedObjectFactoryP3DChunk.new = new
 function P3D.AnimatedObjectFactoryP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -41,7 +41,6 @@ local function new(self, Index, Volume, Stiffness, MaxAngle, MinAngle, DOF)
 end
 
 P3D.PhysicsJointP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Physics_Joint)
-getmetatable(P3D.PhysicsJointP3DChunk).__call = new
 P3D.PhysicsJointP3DChunk.new = new
 function P3D.PhysicsJointP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

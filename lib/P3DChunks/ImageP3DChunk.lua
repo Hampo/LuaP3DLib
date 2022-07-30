@@ -45,7 +45,6 @@ local function new(self, Name, Version, Width, Height, Bpp, Palettized, HasAlpha
 end
 
 P3D.ImageP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Image)
-getmetatable(P3D.ImageP3DChunk).__call = new
 P3D.ImageP3DChunk.new = new
 P3D.ImageP3DChunk.Formats = {
 	Raw = 0,

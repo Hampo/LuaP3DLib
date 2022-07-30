@@ -43,7 +43,6 @@ local function new(self, Name, Type, Lanes, HasShoulder, Position, Position2, Po
 end
 
 P3D.RoadDataSegmentP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Road_Data_Segment)
-getmetatable(P3D.RoadDataSegmentP3DChunk).__call = new
 P3D.RoadDataSegmentP3DChunk.new = new
 function P3D.RoadDataSegmentP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -31,7 +31,6 @@ local function new(self, String)
 end
 
 P3D.FrontendStringHardCodedP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_String_Hard_Coded)
-getmetatable(P3D.FrontendStringHardCodedP3DChunk).__call = new
 P3D.FrontendStringHardCodedP3DChunk.new = new
 function P3D.FrontendStringHardCodedP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

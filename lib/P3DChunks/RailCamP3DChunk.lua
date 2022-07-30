@@ -52,7 +52,6 @@ local function new(self, Name, Behaviour, MinRadius, MaxRadius, TrackRail, Track
 end
 
 P3D.RailCamP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Rail_Cam)
-getmetatable(P3D.RailCamP3DChunk).__call = new
 P3D.RailCamP3DChunk.new = new
 function P3D.RailCamP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

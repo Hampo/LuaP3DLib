@@ -38,7 +38,6 @@ local function new(self, Name, Version, Type, Colour, Constant, Linear, Squard, 
 end
 
 P3D.LightP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light)
-getmetatable(P3D.LightP3DChunk).__call = new
 P3D.LightP3DChunk.new = new
 P3D.LightP3DChunk.Types = {
 	Ambient = 0,

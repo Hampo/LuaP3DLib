@@ -37,7 +37,6 @@ local function new(self, Name, Version, Filename, InventoryName)
 end
 
 P3D.FrontendTextStyleResourceP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Text_Style_Resource)
-getmetatable(P3D.FrontendTextStyleResourceP3DChunk).__call = new
 P3D.FrontendTextStyleResourceP3DChunk.new = new
 function P3D.FrontendTextStyleResourceP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

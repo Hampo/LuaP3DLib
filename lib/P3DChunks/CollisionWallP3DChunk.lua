@@ -29,7 +29,6 @@ local function new(self)
 end
 
 P3D.CollisionWallP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Wall)
-getmetatable(P3D.CollisionWallP3DChunk).__call = new
 P3D.CollisionWallP3DChunk.new = new
 function P3D.CollisionWallP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

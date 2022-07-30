@@ -31,7 +31,6 @@ local function new(self, Name)
 end
 
 P3D.InstanceListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Instance_List)
-getmetatable(P3D.InstanceListP3DChunk).__call = new
 P3D.InstanceListP3DChunk.new = new
 function P3D.InstanceListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

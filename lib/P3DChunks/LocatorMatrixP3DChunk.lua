@@ -31,7 +31,6 @@ local function new(self, Matrix)
 end
 
 P3D.LocatorMatrixP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Locator_Matrix)
-getmetatable(P3D.LocatorMatrixP3DChunk).__call = new
 P3D.LocatorMatrixP3DChunk.new = new
 function P3D.LocatorMatrixP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

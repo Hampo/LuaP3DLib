@@ -49,7 +49,6 @@ local function new(self, Name, Version, Width, Height, Bpp, AlphaDepth, NumMipMa
 end
 
 P3D.TextureP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Texture)
-getmetatable(P3D.TextureP3DChunk).__call = new
 P3D.TextureP3DChunk.new = new
 function P3D.TextureP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

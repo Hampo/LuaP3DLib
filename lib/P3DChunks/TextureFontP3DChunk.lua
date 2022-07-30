@@ -43,7 +43,6 @@ local function new(self, Version, Name, Shader, FontSize, FontWidth, FontHeight,
 end
 
 P3D.TextureFontP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Texture_Font)
-getmetatable(P3D.TextureFontP3DChunk).__call = new
 P3D.TextureFontP3DChunk.new = new
 function P3D.TextureFontP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

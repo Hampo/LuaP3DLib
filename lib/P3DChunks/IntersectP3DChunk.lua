@@ -37,7 +37,6 @@ local function new(self, Indices, Positions, Normals)
 end
 
 P3D.IntersectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Intersect)
-getmetatable(P3D.IntersectP3DChunk).__call = new
 P3D.IntersectP3DChunk.new = new
 function P3D.IntersectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

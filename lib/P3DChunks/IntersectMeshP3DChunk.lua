@@ -31,7 +31,6 @@ local function new(self, Name)
 end
 
 P3D.IntersectMeshP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Intersect_Mesh)
-getmetatable(P3D.IntersectMeshP3DChunk).__call = new
 P3D.IntersectMeshP3DChunk.new = new
 function P3D.IntersectMeshP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

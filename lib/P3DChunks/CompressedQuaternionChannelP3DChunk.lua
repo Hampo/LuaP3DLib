@@ -38,7 +38,6 @@ local function new(self, Version, Param, Frames, Values)
 end
 
 P3D.CompressedQuaternionChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Compressed_Quaternion_Channel)
-getmetatable(P3D.CompressedQuaternionChannelP3DChunk).__call = new
 P3D.CompressedQuaternionChannelP3DChunk.new = new
 function P3D.CompressedQuaternionChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

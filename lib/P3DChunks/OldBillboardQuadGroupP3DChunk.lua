@@ -41,7 +41,6 @@ local function new(self, Version, Name, Shader, ZTest, ZWrite, Fog)
 end
 
 P3D.OldBillboardQuadGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Billboard_Quad_Group)
-getmetatable(P3D.OldBillboardQuadGroupP3DChunk).__call = new
 P3D.OldBillboardQuadGroupP3DChunk.new = new
 function P3D.OldBillboardQuadGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

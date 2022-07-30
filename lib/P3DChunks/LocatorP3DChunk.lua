@@ -168,7 +168,6 @@ local function new(self, Name, Position, Type, ...)
 end
 
 P3D.LocatorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Locator)
-getmetatable(P3D.LocatorP3DChunk).__call = new
 P3D.LocatorP3DChunk.new = new
 function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

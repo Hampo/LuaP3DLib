@@ -41,7 +41,6 @@ local function new(self, Version, Name, AnimationType, NumFrames, FrameRate, Cyc
 end
 
 P3D.AnimationP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation)
-getmetatable(P3D.AnimationP3DChunk).__call = new
 P3D.AnimationP3DChunk.new = new
 function P3D.AnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

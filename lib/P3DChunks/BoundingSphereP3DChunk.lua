@@ -33,7 +33,6 @@ local function new(self, Centre, Radius)
 end
 
 P3D.BoundingSphereP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Bounding_Sphere)
-getmetatable(P3D.BoundingSphereP3DChunk).__call = new
 P3D.BoundingSphereP3DChunk.new = new
 function P3D.BoundingSphereP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

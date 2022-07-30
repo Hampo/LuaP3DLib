@@ -38,7 +38,6 @@ local function new(self, Version, Name, Type, TargetName, ExpressionGroupName)
 end
 
 P3D.ExpressionMixerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Expression_Mixer)
-getmetatable(P3D.ExpressionMixerP3DChunk).__call = new
 P3D.ExpressionMixerP3DChunk.new = new
 function P3D.ExpressionMixerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

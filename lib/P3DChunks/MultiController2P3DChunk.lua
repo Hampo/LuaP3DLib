@@ -45,7 +45,6 @@ local function new(self, Version, Name, CycleMode, NumCycles, InfiniteCycle, Num
 end
 
 P3D.MultiController2P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Multi_Controller_2)
-getmetatable(P3D.MultiController2P3DChunk).__call = new
 P3D.MultiController2P3DChunk.new = new
 function P3D.MultiController2P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

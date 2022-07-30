@@ -33,7 +33,6 @@ local function new(self, Low, High)
 end
 
 P3D.BoundingBoxP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Bounding_Box)
-getmetatable(P3D.BoundingBoxP3DChunk).__call = new
 P3D.BoundingBoxP3DChunk.new = new
 function P3D.BoundingBoxP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

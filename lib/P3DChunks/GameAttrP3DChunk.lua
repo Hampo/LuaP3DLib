@@ -33,7 +33,6 @@ local function new(self, Name, Version)
 end
 
 P3D.GameAttrP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Game_Attr)
-getmetatable(P3D.GameAttrP3DChunk).__call = new
 P3D.GameAttrP3DChunk.new = new
 function P3D.GameAttrP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

@@ -31,7 +31,6 @@ local function new(self, Indices)
 end
 
 P3D.IndexListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Index_List)
-getmetatable(P3D.IndexListP3DChunk).__call = new
 P3D.IndexListP3DChunk.new = new
 function P3D.IndexListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

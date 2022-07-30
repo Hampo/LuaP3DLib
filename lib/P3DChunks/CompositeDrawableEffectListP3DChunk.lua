@@ -28,7 +28,6 @@ local function new(self)
 end
 
 P3D.CompositeDrawableEffectListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Effect_List)
-getmetatable(P3D.CompositeDrawableEffectListP3DChunk).__call = new
 P3D.CompositeDrawableEffectListP3DChunk.new = new
 function P3D.CompositeDrawableEffectListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

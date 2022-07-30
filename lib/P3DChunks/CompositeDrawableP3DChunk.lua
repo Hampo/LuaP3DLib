@@ -33,7 +33,6 @@ local function new(self, Name, SkeletonName)
 end
 
 P3D.CompositeDrawableP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable)
-getmetatable(P3D.CompositeDrawableP3DChunk).__call = new
 P3D.CompositeDrawableP3DChunk.new = new
 function P3D.CompositeDrawableP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

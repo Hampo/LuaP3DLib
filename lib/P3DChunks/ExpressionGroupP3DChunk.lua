@@ -36,7 +36,6 @@ local function new(self, Version, Name, TargetName, Stages)
 end
 
 P3D.ExpressionGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Expression_Group)
-getmetatable(P3D.ExpressionGroupP3DChunk).__call = new
 P3D.ExpressionGroupP3DChunk.new = new
 function P3D.ExpressionGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

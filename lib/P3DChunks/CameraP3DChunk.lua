@@ -47,7 +47,6 @@ local function new(self, Name, Version, FOV, AspectRatio, NearClip, FarClip, Pos
 end
 
 P3D.CameraP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Camera)
-getmetatable(P3D.CameraP3DChunk).__call = new
 P3D.CameraP3DChunk.new = new
 function P3D.CameraP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

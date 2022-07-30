@@ -43,7 +43,6 @@ local function new(self, Version, Name, FrameRate, NumAnimFrames, NumOLFrames, C
 end
 
 P3D.ParticleSystemFactoryP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Particle_System_Factory)
-getmetatable(P3D.ParticleSystemFactoryP3DChunk).__call = new
 P3D.ParticleSystemFactoryP3DChunk.new = new
 function P3D.ParticleSystemFactoryP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

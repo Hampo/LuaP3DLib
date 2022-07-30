@@ -31,7 +31,6 @@ local function new(self, Shadow)
 end
 
 P3D.LightShadowP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Shadow)
-getmetatable(P3D.LightShadowP3DChunk).__call = new
 P3D.LightShadowP3DChunk.new = new
 function P3D.LightShadowP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

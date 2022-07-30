@@ -49,7 +49,6 @@ local function new(self, SplitAxis, SplitPosition, StaticEntityLimit, StaticPhys
 end
 
 P3D.TreeNode2P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Tree_Node_2)
-getmetatable(P3D.TreeNode2P3DChunk).__call = new
 P3D.TreeNode2P3DChunk.new = new
 function P3D.TreeNode2P3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

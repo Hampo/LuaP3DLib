@@ -31,7 +31,6 @@ local function new(self, Matrix)
 end
 
 P3D.PhysicsInertiaMatrixP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Physics_Inertia_Matrix)
-getmetatable(P3D.PhysicsInertiaMatrixP3DChunk).__call = new
 P3D.PhysicsInertiaMatrixP3DChunk.new = new
 function P3D.PhysicsInertiaMatrixP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

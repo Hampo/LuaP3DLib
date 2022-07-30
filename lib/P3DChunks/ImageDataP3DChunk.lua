@@ -31,7 +31,6 @@ local function new(self, ImageData)
 end
 
 P3D.ImageDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Image_Data)
-getmetatable(P3D.ImageDataP3DChunk).__call = new
 P3D.ImageDataP3DChunk.new = new
 function P3D.ImageDataP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

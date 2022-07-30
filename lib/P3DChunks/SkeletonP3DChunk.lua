@@ -33,7 +33,6 @@ local function new(self, Name, Version)
 end
 
 P3D.SkeletonP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Skeleton)
-getmetatable(P3D.SkeletonP3DChunk).__call = new
 P3D.SkeletonP3DChunk.new = new
 function P3D.SkeletonP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

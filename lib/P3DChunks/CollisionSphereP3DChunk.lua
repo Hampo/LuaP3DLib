@@ -31,7 +31,6 @@ local function new(self, Radius)
 end
 
 P3D.CollisionSphereP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Sphere)
-getmetatable(P3D.CollisionSphereP3DChunk).__call = new
 P3D.CollisionSphereP3DChunk.new = new
 function P3D.CollisionSphereP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

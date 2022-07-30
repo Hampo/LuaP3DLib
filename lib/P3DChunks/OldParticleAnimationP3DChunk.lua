@@ -31,7 +31,6 @@ local function new(self, Version)
 end
 
 P3D.OldParticleAnimationP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Particle_Animation)
-getmetatable(P3D.OldParticleAnimationP3DChunk).__call = new
 P3D.OldParticleAnimationP3DChunk.new = new
 function P3D.OldParticleAnimationP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

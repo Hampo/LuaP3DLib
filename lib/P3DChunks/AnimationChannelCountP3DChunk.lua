@@ -35,7 +35,6 @@ local function new(self, Version, ChannelChunkID, NumKeys)
 end
 
 P3D.AnimationChannelCountP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Channel_Count)
-getmetatable(P3D.AnimationChannelCountP3DChunk).__call = new
 P3D.AnimationChannelCountP3DChunk.new = new
 function P3D.AnimationChannelCountP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

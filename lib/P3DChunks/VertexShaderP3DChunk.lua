@@ -31,7 +31,6 @@ local function new(self, VertexShaderName)
 end
 
 P3D.VertexShaderP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Vertex_Shader)
-getmetatable(P3D.VertexShaderP3DChunk).__call = new
 P3D.VertexShaderP3DChunk.new = new
 function P3D.VertexShaderP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

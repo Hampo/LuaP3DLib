@@ -31,7 +31,6 @@ local function new(self, Vector)
 end
 
 P3D.CollisionVectorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Vector)
-getmetatable(P3D.CollisionVectorP3DChunk).__call = new
 P3D.CollisionVectorP3DChunk.new = new
 function P3D.CollisionVectorP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

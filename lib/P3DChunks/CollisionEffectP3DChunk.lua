@@ -35,7 +35,6 @@ local function new(self, ClassType, PhyPropID, SoundResourceDataName)
 end
 
 P3D.CollisionEffectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Effect)
-getmetatable(P3D.CollisionEffectP3DChunk).__call = new
 P3D.CollisionEffectP3DChunk.new = new
 function P3D.CollisionEffectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

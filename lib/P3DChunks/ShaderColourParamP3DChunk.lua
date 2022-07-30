@@ -33,7 +33,6 @@ local function new(self, Param, Value)
 end
 
 P3D.ShaderColourParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Shader_Colour_Parameter)
-getmetatable(P3D.ShaderColourParameterP3DChunk).__call = new
 P3D.ShaderColourParameterP3DChunk.new = new
 function P3D.ShaderColourParameterP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

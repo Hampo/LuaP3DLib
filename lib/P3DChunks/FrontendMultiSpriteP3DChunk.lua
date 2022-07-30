@@ -47,7 +47,6 @@ local function new(self, Name, Version, Position, Dimension, Justification, Colo
 end
 
 P3D.FrontendMultiSpriteP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Multi_Sprite)
-getmetatable(P3D.FrontendMultiSpriteP3DChunk).__call = new
 P3D.FrontendMultiSpriteP3DChunk.new = new
 P3D.FrontendMultiSpriteP3DChunk.Justifications = {
 	Left = 0,

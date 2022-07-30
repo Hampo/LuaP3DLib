@@ -41,7 +41,6 @@ local function new(self, Version, ShaderName, PrimitiveType, NumVertices, NumInd
 end
 
 P3D.OldPrimitiveGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Primitive_Group)
-getmetatable(P3D.OldPrimitiveGroupP3DChunk).__call = new
 P3D.OldPrimitiveGroupP3DChunk.new = new
 P3D.OldPrimitiveGroupP3DChunk.PrimitiveTypes = {
 	TriangleList = 0,

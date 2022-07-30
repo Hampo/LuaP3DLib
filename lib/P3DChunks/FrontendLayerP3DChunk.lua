@@ -37,7 +37,6 @@ local function new(self, Name, Version, Visible, Editable, Alpha)
 end
 
 P3D.FrontendLayerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Layer)
-getmetatable(P3D.FrontendLayerP3DChunk).__call = new
 P3D.FrontendLayerP3DChunk.new = new
 function P3D.FrontendLayerP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

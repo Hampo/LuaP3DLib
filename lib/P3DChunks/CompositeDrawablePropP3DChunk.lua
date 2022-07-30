@@ -35,7 +35,6 @@ local function new(self, Name, IsTranslucent, SkeletonJointID)
 end
 
 P3D.CompositeDrawablePropP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Composite_Drawable_Prop)
-getmetatable(P3D.CompositeDrawablePropP3DChunk).__call = new
 P3D.CompositeDrawablePropP3DChunk.new = new
 function P3D.CompositeDrawablePropP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

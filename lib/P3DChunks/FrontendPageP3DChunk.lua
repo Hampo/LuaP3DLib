@@ -35,7 +35,6 @@ local function new(self, Name, Version, Resolution)
 end
 
 P3D.FrontendPageP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Page)
-getmetatable(P3D.FrontendPageP3DChunk).__call = new
 P3D.FrontendPageP3DChunk.new = new
 function P3D.FrontendPageP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

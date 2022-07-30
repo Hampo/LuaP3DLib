@@ -34,7 +34,6 @@ local function new(self, Version, Offsets, Param)
 end
 
 P3D.OldVectorOffsetListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Vector_Offset_List)
-getmetatable(P3D.OldVectorOffsetListP3DChunk).__call = new
 P3D.OldVectorOffsetListP3DChunk.new = new
 function P3D.OldVectorOffsetListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

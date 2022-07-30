@@ -33,7 +33,6 @@ local function new(self, Name, LightGroupName)
 end
 
 P3D.OldScenegraphLightGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Light_Group)
-getmetatable(P3D.OldScenegraphLightGroupP3DChunk).__call = new
 P3D.OldScenegraphLightGroupP3DChunk.new = new
 function P3D.OldScenegraphLightGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)

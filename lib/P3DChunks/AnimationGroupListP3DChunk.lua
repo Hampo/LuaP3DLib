@@ -31,7 +31,6 @@ local function new(self, Version)
 end
 
 P3D.AnimationGroupListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Animation_Group_List)
-getmetatable(P3D.AnimationGroupListP3DChunk).__call = new
 P3D.AnimationGroupListP3DChunk.new = new
 function P3D.AnimationGroupListP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
