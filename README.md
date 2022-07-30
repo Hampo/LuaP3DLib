@@ -57,7 +57,7 @@ end
 
 ### Removing all chunks of type
 ```
-for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator) do -- You can find a full list of Identifiers in `P3D2.lua`
+for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator, true) do -- You can find a full list of Identifiers in `P3D2.lua`
 	P3D:RemoveChunk(chunk)
 end
 ```
@@ -68,7 +68,7 @@ local Path = GetPath()
 local GamePath = "/GameData/" .. Path
 
 local P3DFile = P3D.P3DFile(GamePath)
-for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator) do -- You can find a full list of Identifiers in `P3D2.lua`
+for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator, true) do -- You can find a full list of Identifiers in `P3D2.lua`
 	P3D:RemoveChunk(chunk)
 end
 
