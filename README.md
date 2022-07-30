@@ -1,5 +1,5 @@
 # Lua P3D Lib (Previously Lua P3D Editor)
-This is a single Lua file you are able to add to mods in order to modify P3D files dynamically.
+This is a Lua library you are able to add to mods in order to modify P3D files dynamically.
 
 # Installation
 1. Download the latest `P3D.zip` from <https://github.com/Hampo/LuaP3DLib/releases>.
