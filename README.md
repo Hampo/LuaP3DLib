@@ -30,4 +30,45 @@ Group=LuaP3DLib
 ```
 
 # Examples
-You can find some examples in the Examples folder.
+You can find complete mods in the `Examples` folder.
+
+## Code examples
+
+### Loading a P3DFile
+```
+local Path = GetPath()
+local GamePath = "/GameData/" .. Path
+
+local P3DFile = P3D.P3DFile(GamePath)
+-- P3DFile now has `:GetChunk`, `:GetChunks`, `:GetChunkIndexed`, `:GetChunksIndexed`, `:AddChunk`, `RemoveChunk`
+
+-- After modifications
+P3DFile:Output()
+```
+
+### Changing a value in all chunks of type
+```
+for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator) do -- You can find a full list of Identifiers in `P3D2.lua`
+	chunk.Position.X = chunk.Position.X + 20
+end
+```
+
+### Removing all chunks of type
+```
+for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator) do -- You can find a full list of Identifiers in `P3D2.lua`
+	P3D:RemoveChunk(chunk)
+end
+```
+
+### Full example
+```
+local Path = GetPath()
+local GamePath = "/GameData/" .. Path
+
+local P3DFile = P3D.P3DFile(GamePath)
+for chunk in P3DFile:GetChunks(P3D.Identifiers.Locator) do -- You can find a full list of Identifiers in `P3D2.lua`
+	P3D:RemoveChunk(chunk)
+end
+
+P3DFile:Output()
+```
