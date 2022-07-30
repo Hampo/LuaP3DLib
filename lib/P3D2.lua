@@ -522,7 +522,7 @@ local function P3DChunk_new(self, Identifier, ValueStr)
 	return setmetatable(Data, self)
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunksIndexed = GetChunkIndexed}, {__call = P3DChunk})
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunksIndexed = GetChunkIndexed}, {__call = P3DChunk})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
