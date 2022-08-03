@@ -22,7 +22,6 @@ P3D.Identifiers = {
 	Anim_Dyna_Phys_Wrapper = 0x3F0000F,
 	Anim_Obj_Wrapper = 0x3F00010,
 	ATC = 0x3000602,
-	Black_Magic = 0x1025,
 	Boolean_Channel = 0x121108,
 	Bounding_Box = 0x10003,
 	Bounding_Sphere = 0x10004,
@@ -185,7 +184,6 @@ P3D.Identifiers = {
 	Static_Phys = 0x3F00001,
 	Surface_Type_List = 0x300000E,
 	Texture = 0x19000,
-	Texture_Animation = 0x3520,
 	Texture_Font = 0x22000,
 	Texture_Glyph_List = 0x22001,
 	Tree = 0x3F00004,
@@ -349,7 +347,7 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	local n = 0
 	while Pos < EndPos do
 		local Identifier, HeaderLength, Length = string_unpack("<III", Contents, Pos)
-		
+		usedChunks[Identifier] = nil
 		local class = P3D.ChunkClasses[Identifier] or P3D.P3DChunk
 		local Chunk, overwrittenHeaderLength = class:parse(Contents, Pos + 12, HeaderLength - 12, Identifier)
 		
