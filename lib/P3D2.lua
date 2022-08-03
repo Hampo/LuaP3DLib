@@ -184,6 +184,7 @@ P3D.Identifiers = {
 	Static_Phys = 0x3F00001,
 	Surface_Type_List = 0x300000E,
 	Texture = 0x19000,
+	Texture_Animation = 0x3520,
 	Texture_Font = 0x22000,
 	Texture_Glyph_List = 0x22001,
 	Tree = 0x3F00004,
