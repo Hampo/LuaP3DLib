@@ -207,7 +207,6 @@ local IdentifierIdsN = 0
 for k,v in pairs(P3D.Identifiers) do
 	IdentifierIdsN = IdentifierIdsN + 1
 	P3D.IdentifierIds[IdentifierIdsN] = v
-	if P3D.IdentifiersLookup[v] then print(k) end
 	P3D.IdentifiersLookup[v] = k
 end
 
