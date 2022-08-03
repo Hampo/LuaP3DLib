@@ -76,6 +76,7 @@ P3D.OldPrimitiveGroupP3DChunk.VertexTypes = {
 	ColourCount6 = 6<<15,
 	ColourCount7 = 7<<15,
 	ColourMask = 7<<15,
+	ColourMaskOffset = 15,
 }
 function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
