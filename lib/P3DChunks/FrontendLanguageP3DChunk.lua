@@ -134,7 +134,11 @@ function P3D.FrontendLanguageP3DChunk:GetValueFromName(Name)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
 	
 	local Hash = self:GetNameHash(Name)
-	return self:GetValueFromHash(Hash)
+	local success, result = pcall(P3D.FrontendLanguageP3DChunk.GetValueFromHash, self, Hash)
+	if success then
+		return result
+	end
+	error("Failed to get value with name: " .. Name .. "\n" .. result)
 end
 
 function P3D.FrontendLanguageP3DChunk:AddValue(Name, Value)
