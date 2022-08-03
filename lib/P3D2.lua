@@ -509,21 +509,28 @@ function P3D.P3DFile:Output()
 	Output(tostring(self))
 end
 
-local function P3DChunk_new(self, Identifier, ValueStr)
-	assert(type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
-	assert(type(ValueStr) == "string", "Arg #2 (ValueStr) must be a string")
-	
-	local Data = {
-		Chunks = {},
-		Identifier = Identifier,
-		ValueStr = ValueStr,
-	}
-	
-	self.__index = self
-	return setmetatable(Data, self)
+local function P3DChunk_new(self, ...)
+	if self.Identifier and self.new then
+		return self:new(...)
+	else
+		local args = {...}
+		local Identifier = args[1]
+		local ValueStr = args[2]
+		assert(type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
+		assert(type(ValueStr) == "string", "Arg #2 (ValueStr) must be a string")
+		
+		local Data = {
+			Chunks = {},
+			Identifier = Identifier,
+			ValueStr = ValueStr,
+		}
+		
+		self.__index = self
+		return setmetatable(Data, self)
+	end
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk})
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk_new})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
@@ -550,8 +557,7 @@ end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	self.__index = self
-	local class = setmetatable({Identifier = Identifier, parentClass = self}, self)
+	local class = setmetatable({Identifier = Identifier, parentClass = self}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end
