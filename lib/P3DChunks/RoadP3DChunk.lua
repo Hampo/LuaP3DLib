@@ -69,5 +69,5 @@ function P3D.RoadP3DChunk:__tostring()
 	local EndIntersection = P3D.MakeP3DString(self.EndIntersection)
 	
 	local headerLen = 12 + #Name + 1 + 4 + #StartIntersection + 1 + #EndIntersection + 1 + 4 + 1 + 1 + 1 + 1
-	return string_pack("<IIIs1Is1s1IBBBB", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, StartIntersection, EndIntersection, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut, 0) .. chunkData
+	return string_pack("<IIIs1Is1s1IBBBx", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, StartIntersection, EndIntersection, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut) .. chunkData
 end
