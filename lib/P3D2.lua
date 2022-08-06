@@ -720,7 +720,7 @@ end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	local class = setmetatable({Identifier = Identifier, parentClass = self}, getmetatable(self))
+	local class = setmetatable({Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end
