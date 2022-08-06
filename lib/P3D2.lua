@@ -6,6 +6,7 @@ CREDITS:
 ]]
 
 P3D = {}
+P3D.Version = "2.1"
 P3D.Identifiers = {
 	Anim = 0x3F0000C,
 	Animated_Object = 0x20001,
@@ -758,4 +759,5 @@ function P3D.LoadChunks(Path)
 	return files, classes
 end
 
+print("P3D2.lua", string.format("Lua P3D Lib v%s loaded", P3D.Version))
 return P3D
