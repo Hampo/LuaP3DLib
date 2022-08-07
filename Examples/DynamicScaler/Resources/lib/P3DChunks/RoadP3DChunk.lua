@@ -18,7 +18,7 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, Type, StartIntersection, EndIntersection, MaximumCars, Speed, Intelligence, Shortcut, Unknown)
+local function new(self, Name, Type, StartIntersection, EndIntersection, MaximumCars, Speed, Intelligence, Shortcut)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string.")
 	assert(type(Type) == "number", "Arg #2 (Type) must be a number.")
 	assert(type(StartIntersection) == "string", "Arg #3 (StartIntersection) must be a string.")
@@ -27,7 +27,6 @@ local function new(self, Name, Type, StartIntersection, EndIntersection, Maximum
 	assert(type(Speed) == "number", "Arg #6 (Speed) must be a number.")
 	assert(type(Intelligence) == "number", "Arg #7 (Intelligence) must be a number.")
 	assert(type(Shortcut) == "number", "Arg #8 (Shortcut) must be a number.")
-	assert(type(Unknown) == "number", "Arg #9 (Unknown) must be a number.")
 
 	local Data = {
 		Chunks = {},
@@ -39,7 +38,6 @@ local function new(self, Name, Type, StartIntersection, EndIntersection, Maximum
 		Speed = Speed,
 		Intelligence = Intelligence,
 		Shortcut = Shortcut,
-		Unknown = Unknown,
 	}
 	
 	self.__index = self
@@ -51,7 +49,7 @@ P3D.RoadP3DChunk.new = new
 function P3D.RoadP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Type, chunk.StartIntersection, chunk.EndIntersection, chunk.MaximumCars, chunk.Speed, chunk.Intelligence, chunk.Shortcut, chunk.Unknown = string_unpack("<s1Is1s1IBBBB", chunk.ValueStr)
+	chunk.Name, chunk.Type, chunk.StartIntersection, chunk.EndIntersection, chunk.MaximumCars, chunk.Speed, chunk.Intelligence, chunk.Shortcut = string_unpack("<s1Is1s1IBBB", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.StartIntersection = P3D.CleanP3DString(chunk.StartIntersection)
 	chunk.EndIntersection = P3D.CleanP3DString(chunk.EndIntersection)
@@ -71,5 +69,5 @@ function P3D.RoadP3DChunk:__tostring()
 	local EndIntersection = P3D.MakeP3DString(self.EndIntersection)
 	
 	local headerLen = 12 + #Name + 1 + 4 + #StartIntersection + 1 + #EndIntersection + 1 + 4 + 1 + 1 + 1 + 1
-	return string_pack("<IIIs1Is1s1IBBBB", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, StartIntersection, EndIntersection, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut, self.Unknown) .. chunkData
+	return string_pack("<IIIs1Is1s1IBBBx", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, StartIntersection, EndIntersection, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut) .. chunkData
 end

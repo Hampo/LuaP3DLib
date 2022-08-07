@@ -62,7 +62,21 @@ P3D.OldPrimitiveGroupP3DChunk.VertexTypes = {
 	Specular = 1 << 6,
 	Matrices = 1 << 7,
 	Weights = 1 << 8,
+	Size = 1 << 9,
+	W = 1 << 10,
+	BiNormal = 1 << 11,
+	Tangent = 1 << 12,
 	Position = 1 << 13,
+	Colour2 = 1 << 14,
+	ColourCount1 = 1<<15,
+	ColourCount2 = 2<<15,
+	ColourCount3 = 3<<15,
+	ColourCount4 = 4<<15,
+	ColourCount5 = 5<<15,
+	ColourCount6 = 6<<15,
+	ColourCount7 = 7<<15,
+	ColourMask = 7<<15,
+	ColourMaskOffset = 15,
 }
 function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
