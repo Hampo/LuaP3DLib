@@ -755,7 +755,7 @@ function P3D.LoadChunks(Path)
 	end)
 	
 	local classes, classesN = P3D.GetIdentifiersWithClasses()
-	print("P3D2.lua", string.format("Loaded %d files. Chunk classes: %d/%d.", files, classesN, IdentifierIdsN))
+	print("P3D2.lua", string.format("Loaded %d file%s. Chunk classes: %d/%d.", files, files == 1 and "" or "s", classesN, IdentifierIdsN))
 	return files, classes
 end
 
