@@ -6,7 +6,7 @@ CREDITS:
 ]]
 
 P3D = {}
-P3D.Version = "2.1"
+P3D.Version = "2.2"
 P3D.Identifiers = {
 	Anim = 0x3F0000C,
 	Animated_Object = 0x20001,
