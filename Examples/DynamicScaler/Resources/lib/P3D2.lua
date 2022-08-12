@@ -6,6 +6,7 @@ CREDITS:
 ]]
 
 P3D = {}
+P3D.Version = "2.1"
 P3D.Identifiers = {
 	Anim = 0x3F0000C,
 	Animated_Object = 0x20001,
@@ -22,7 +23,6 @@ P3D.Identifiers = {
 	Anim_Dyna_Phys_Wrapper = 0x3F0000F,
 	Anim_Obj_Wrapper = 0x3F00010,
 	ATC = 0x3000602,
-	Black_Magic = 0x1025,
 	Boolean_Channel = 0x121108,
 	Bounding_Box = 0x10003,
 	Bounding_Sphere = 0x10004,
@@ -89,13 +89,9 @@ P3D.Identifiers = {
 	Game_Attribute_Colour_Parameter = 0x12003,
 	Game_Attribute_Vector_Parameter = 0x12004,
 	Game_Attribute_Matrix_Parameter = 0x12005,
-	Grid = 0x1000,
-	Grid_Cell = 0x1001,
 	History = 0x7000,
 	Image = 0x19001,
-	Image_2 = 0x3510,
 	Image_Data = 0x19002,
-	Image_Data_2 = 0x3511,
 	Index_List = 0x1000A,
 	Instance_List = 0x3000008,
 	Inst_Particle_System = 0x3001001,
@@ -114,7 +110,6 @@ P3D.Identifiers = {
 	Light_Position = 0x13002,
 	Light_Shadow = 0x13004,
 	Locator = 0x3000005,
-	Locator_2 = 0x1003,
 	Locator_3 = 0x14000,
 	Locator_Matrix = 0x300000C,
 	Matrix_List = 0x1000B,
@@ -213,11 +208,13 @@ local IdentifierIdsN = 0
 for k,v in pairs(P3D.Identifiers) do
 	IdentifierIdsN = IdentifierIdsN + 1
 	P3D.IdentifierIds[IdentifierIdsN] = v
-	if P3D.IdentifiersLookup[v] then print(k) end
 	P3D.IdentifiersLookup[v] = k
 end
 
 P3D.ChunkClasses = {}
+
+local math_deg = math.deg
+local math_rad = math.rad
 
 local string_format = string.format
 local string_pack = string.pack
@@ -248,6 +245,166 @@ function P3D.CleanP3DString(str)
 	if null == nil then return str end
 	return str:sub(1, null-1)
 end
+
+local function DegToRad(self)
+	for k,v in pairs(self) do
+		if type(v) == "number" then
+			self[k] = math_rad(v)
+		end
+	end
+end
+
+local function RadToDeg(self)
+	for k,v in pairs(self) do
+		if type(v) == "number" then
+			self[k] = math_deg(v)
+		end
+	end
+end
+
+P3D.Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y)
+	assert(type(X) == "number", "Arg #1 (X) must be a number")
+	assert(type(Y) == "number", "Arg #2 (Y) must be a number")
+	
+	local Data = {
+		X = X,
+		Y = Y
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end})
+function P3D.Vector2:__tostring()
+	return string.format("{ X = %.3f, Y = %.3f }", self.X, self.Y)
+end
+
+P3D.Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y, Z)
+	assert(type(X) == "number", "Arg #1 (X) must be a number")
+	assert(type(Y) == "number", "Arg #2 (Y) must be a number")
+	assert(type(Z) == "number", "Arg #3 (Z) must be a number")
+	
+	local Data = {
+		X = X,
+		Y = Y,
+		Z = Z
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end})
+function P3D.Vector3:__tostring()
+	return string.format("{ X = %.3f, Y = %.3f, Z = %.3f }", self.X, self.Y, self.Z)
+end
+
+P3D.SymmetricMatrix3x3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, XX, XY, XZ, YY, YZ, ZZ)
+	assert(type(XX) == "number", "Arg #1 (XX) must be a number")
+	assert(type(XY) == "number", "Arg #2 (XY) must be a number")
+	assert(type(XZ) == "number", "Arg #3 (XZ) must be a number")
+	assert(type(YY) == "number", "Arg #4 (YY) must be a number")
+	assert(type(YZ) == "number", "Arg #5 (YZ) must be a number")
+	assert(type(ZZ) == "number", "Arg #6 (ZZ) must be a number")
+	
+	local Data = {
+		XX = XX,
+		XY = XY,
+		XZ = XZ,
+		YY = YY,
+		YZ = YZ,
+		ZZ = ZZ
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end})
+function P3D.SymmetricMatrix3x3:__tostring()
+	return string.format("{ XX = %.3f, XY = %.3f, XZ = %.3f, YY = %.3f, YZ = %.3f, ZZ = %.3f }", self.XX, self.XY, self.XZ, self.YY, self.YZ, self.ZZ)
+end
+
+P3D.Quaternion = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, W, X, Y, Z)
+	assert(type(W) == "number", "Arg #1 (W) must be a number")
+	assert(type(X) == "number", "Arg #2 (X) must be a number")
+	assert(type(Y) == "number", "Arg #3 (Y) must be a number")
+	assert(type(Z) == "number", "Arg #4 (Z) must be a number")
+	
+	local Data = {
+		W = W,
+		X = X,
+		Y = Y,
+		Z = Z
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end})
+function P3D.Quaternion:__tostring()
+	return string.format("{ W = %.3f, X = %.3f, Y = %.3f, Z = %.3f }", self.W, self.X, self.Y, self.Z)
+end
+
+P3D.Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
+	assert(type(M11) == "number", "Arg #1 (M11) must be a number")
+	assert(type(M12) == "number", "Arg #2 (M12) must be a number")
+	assert(type(M13) == "number", "Arg #3 (M13) must be a number")
+	assert(type(M14) == "number", "Arg #4 (M14) must be a number")
+	assert(type(M21) == "number", "Arg #5 (M21) must be a number")
+	assert(type(M22) == "number", "Arg #6 (M22) must be a number")
+	assert(type(M23) == "number", "Arg #7 (M23) must be a number")
+	assert(type(M24) == "number", "Arg #8 (M24) must be a number")
+	assert(type(M31) == "number", "Arg #9 (M31) must be a number")
+	assert(type(M32) == "number", "Arg #10 (M32) must be a number")
+	assert(type(M33) == "number", "Arg #11 (M33) must be a number")
+	assert(type(M34) == "number", "Arg #12 (M34) must be a number")
+	assert(type(M41) == "number", "Arg #13 (M41) must be a number")
+	assert(type(M42) == "number", "Arg #14 (M42) must be a number")
+	assert(type(M43) == "number", "Arg #15 (M43) must be a number")
+	assert(type(M44) == "number", "Arg #16 (M44) must be a number")
+	
+	local Data = {
+		M11 = M11,
+		M12 = M12,
+		M13 = M13,
+		M14 = M14,
+		M21 = M21,
+		M22 = M22,
+		M23 = M23,
+		M24 = M24,
+		M31 = M31,
+		M32 = M32,
+		M33 = M33,
+		M34 = M34,
+		M41 = M41,
+		M42 = M42,
+		M43 = M43,
+		M44 = M44
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end})
+function P3D.Matrix:__tostring()
+	return string.format("{ { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f } }", self.M11, self.M12, self.M13, self.M14, self.M21, self.M22, self.M23, self.M24, self.M31, self.M32, self.M33, self.M34, self.M41, self.M42, self.M43, self.M44)
+end
+
+P3D.Colour = setmetatable({}, {__call = function(self, R, G, B, A)
+	assert(type(R) == "number", "Arg #1 (R) must be a number")
+	assert(type(G) == "number", "Arg #2 (G) must be a number")
+	assert(type(B) == "number", "Arg #3 (B) must be a number")
+	assert(A == nil or type(A) == "number", "Arg #4 (A) must be a number")
+	A = A or 255
+	
+	local Data = {
+		R = R & 0xFF,
+		G = G & 0xFF,
+		B = B & 0xFF,
+		A = A & 0xFF
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end})
+function P3D.Colour:__tostring()
+	return string.format("R = %d, G = %d, B = %d, A = %d", self.R, self.G, self.B, self.A)
+end
+P3D.Color = P3D.Colour
 
 local function DecompressBlock(Source, Length, SourceIndex)
 	local Written = 0
@@ -516,21 +673,28 @@ function P3D.P3DFile:Output()
 	Output(tostring(self))
 end
 
-local function P3DChunk_new(self, Identifier, ValueStr)
-	assert(type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
-	assert(type(ValueStr) == "string", "Arg #2 (ValueStr) must be a string")
-	
-	local Data = {
-		Chunks = {},
-		Identifier = Identifier,
-		ValueStr = ValueStr,
-	}
-	
-	self.__index = self
-	return setmetatable(Data, self)
+local function P3DChunk_new(self, ...)
+	if self.Identifier and self.new then
+		return self:new(...)
+	else
+		local args = {...}
+		local Identifier = args[1]
+		local ValueStr = args[2]
+		assert(type(Identifier) == "number", "Arg #1 (Identifier) must be a number")
+		assert(type(ValueStr) == "string", "Arg #2 (ValueStr) must be a string")
+		
+		local Data = {
+			Chunks = {},
+			Identifier = Identifier,
+			ValueStr = ValueStr,
+		}
+		
+		self.__index = self
+		return setmetatable(Data, self)
+	end
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk})
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk_new})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
@@ -557,8 +721,7 @@ end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	self.__index = self
-	local class = setmetatable({Identifier = Identifier, parentClass = self}, self)
+	local class = setmetatable({Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end
@@ -591,9 +754,10 @@ function P3D.LoadChunks(Path)
 		return true
 	end)
 	
-	local classes = P3D.GetIdentifiersWithClasses()
-	print(string.format("Loaded %d files. Chunk classes: %d/%d.", files, #classes, IdentifierIdsN))
+	local classes, classesN = P3D.GetIdentifiersWithClasses()
+	print("P3D2.lua", string.format("Loaded %d files. Chunk classes: %d/%d.", files, classesN, IdentifierIdsN))
 	return files, classes
 end
 
+print("P3D2.lua", string.format("Lua P3D Lib v%s loaded", P3D.Version))
 return P3D

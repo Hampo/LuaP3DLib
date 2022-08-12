@@ -19,7 +19,7 @@ local assert = assert
 local type = type
 
 local function new(self, ImageData)
-	assert(type(Name) == "string", "Arg #1 (ImageData) must be a string")
+	assert(type(ImageData) == "string", "Arg #1 (ImageData) must be a string")
 	
 	local Data = {
 		Chunks = {},

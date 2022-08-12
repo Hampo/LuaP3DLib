@@ -18,15 +18,14 @@ local table_unpack = table.unpack
 local assert = assert
 local type = type
 
-local function new(self, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight, ImageCount, BlitBorder)
+local function new(self, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight, BlitBorder)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string.")
 	assert(type(NativeX) == "number", "Arg #2 (NativeX) must be a number.")
 	assert(type(NativeY) == "number", "Arg #3 (NativeY) must be a number.")
 	assert(type(Shader) == "string", "Arg #4 (Shader) must be a string.")
 	assert(type(ImageWidth) == "number", "Arg #5 (ImageWidth) must be a number.")
 	assert(type(ImageHeight) == "number", "Arg #6 (ImageHeight) must be a number.")
-	assert(type(ImageCount) == "number", "Arg #7 (ImageCount) must be a number.")
-	assert(type(BlitBorder) == "number", "Arg #8 (BlitBorder) must be a number.")
+	assert(type(BlitBorder) == "number", "Arg #7 (BlitBorder) must be a number.")
 
 	local Data = {
 		Chunks = {},
@@ -36,7 +35,6 @@ local function new(self, Name, NativeX, NativeY, Shader, ImageWidth, ImageHeight
 		Shader = Shader,
 		ImageWidth = ImageWidth,
 		ImageHeight = ImageHeight,
-		ImageCount = ImageCount,
 		BlitBorder = BlitBorder,
 	}
 	
@@ -49,11 +47,22 @@ P3D.SpriteP3DChunk.new = new
 function P3D.SpriteP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.NativeX, chunk.NativeY, chunk.Shader, chunk.ImageWidth, chunk.ImageHeight, chunk.ImageCount, chunk.BlitBorder = string_unpack("<s1IIs1IIII", chunk.ValueStr)
+	local ImageCount
+	chunk.Name, chunk.NativeX, chunk.NativeY, chunk.Shader, chunk.ImageWidth, chunk.ImageHeight, ImageCount, chunk.BlitBorder = string_unpack("<s1IIs1IIII", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.Shader = P3D.CleanP3DString(chunk.Shader)
 
 	return chunk
+end
+
+function P3D.SpriteP3DChunk:GetImageCount()
+	local n = 0
+	for i=1,#self.Chunks do
+		if self.Chunks[i].Identifier == P3D.Identifiers.Image then
+			n = n + 1
+		end
+	end
+	return n
 end
 
 function P3D.SpriteP3DChunk:__tostring()
@@ -67,5 +76,5 @@ function P3D.SpriteP3DChunk:__tostring()
 	local Shader = P3D.MakeP3DString(self.Shader)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + #Shader + 1 + 4 + 4 + 4 + 4
-	return string_pack("<IIIs1IIs1IIII", self.Identifier, headerLen, headerLen + #chunkData, Name, self.NativeX, self.NativeY, Shader, self.ImageWidth, self.ImageHeight, self.ImageCount, self.BlitBorder) .. chunkData
+	return string_pack("<IIIs1IIs1IIII", self.Identifier, headerLen, headerLen + #chunkData, Name, self.NativeX, self.NativeY, Shader, self.ImageWidth, self.ImageHeight, self:GetImageCount(), self.BlitBorder) .. chunkData
 end
