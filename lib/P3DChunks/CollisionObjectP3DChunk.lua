@@ -20,7 +20,7 @@ local type = type
 
 local function new(self, Name, Version, MaterialName, NumSubObject)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(FlatEnd) == "number", "Arg #2 (FlatEnd) must be a number")
+	assert(type(Version) == "number", "Arg #2 (Version) must be a number")
 	assert(type(MaterialName) == "string", "Arg #3 (MaterialName) must be a string")
 	assert(type(NumSubObject) == "number", "Arg #4 (NumSubObject) must be a number")
 	

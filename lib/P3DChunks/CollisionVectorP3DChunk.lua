@@ -19,7 +19,7 @@ local assert = assert
 local type = type
 
 local function new(self, Vector)
-	assert(type(Vector) == "number", "Arg #1 (Vector) must be a number")
+	assert(type(Vector) == "table", "Arg #1 (Vector) must be a table")
 	
 	local Data = {
 		Chunks = {},
