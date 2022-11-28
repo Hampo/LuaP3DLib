@@ -673,6 +673,29 @@ function P3D.P3DFile:Output()
 	Output(tostring(self))
 end
 
+local skip = {
+	["Chunks"] = true,
+	["Identifier"] = true,
+	["ValueStr"] = true,
+}
+local function P3DChunk_stateless_iter(self, k)
+	if not self.parentClass then
+		if k == nil then
+			return "ValueStr", self.ValueStr
+		else
+			return nil
+		end
+	end
+	local v
+	repeat
+		k, v = next(self, k)
+	until k == nil or not skip[k]
+	return k, v
+end
+local function P3DChunk_pairs(self)
+	return P3DChunk_stateless_iter, self, nil
+end
+
 local function P3DChunk_new(self, ...)
 	if self.Identifier and self.new then
 		return self:new(...)
@@ -690,6 +713,7 @@ local function P3DChunk_new(self, ...)
 		}
 		
 		self.__index = self
+		self.__pairs = P3DChunk_pairs
 		return setmetatable(Data, self)
 	end
 end
@@ -706,6 +730,7 @@ function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	end
 	
 	self.__index = self
+	self.__pairs = P3DChunk_pairs
 	return setmetatable(Data, self)
 end
 
