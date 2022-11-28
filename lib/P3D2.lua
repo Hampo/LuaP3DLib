@@ -713,12 +713,11 @@ local function P3DChunk_new(self, ...)
 		}
 		
 		self.__index = self
-		self.__pairs = P3DChunk_pairs
 		return setmetatable(Data, self)
 	end
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk_new})
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, __pairs = P3DChunk_pairs, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, {__call = P3DChunk_new})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
@@ -730,7 +729,6 @@ function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	end
 	
 	self.__index = self
-	self.__pairs = P3DChunk_pairs
 	return setmetatable(Data, self)
 end
 
@@ -746,7 +744,7 @@ end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	local class = setmetatable({Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, getmetatable(self))
+	local class = setmetatable({__pairs = P3DChunk_pairs, Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end
