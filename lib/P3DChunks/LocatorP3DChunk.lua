@@ -68,7 +68,7 @@ local function new(self, Name, Position, Type, ...)
 		local Occlusions = args[1]
 		assert(Occlusions == nil or type(Occlusions) == "number", "Arg #4 (Occlusions) must be a number")
 		
-		Data.Occlusions = Occlusinos
+		Data.Occlusions = Occlusions
 	elseif Type == 7 then -- Interior Entrance
 		local InteriorName = args[1]
 		local Right = args[2]
