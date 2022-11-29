@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, ChannelChunkID, NumKeys)
@@ -42,7 +42,7 @@ function P3D.AnimationChannelCountP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos
 	chunk.Version, chunk.ChannelChunkID, num, pos = string_unpack("<III", chunk.ValueStr)
 	
-	chunk.NumKeys = table_pack(string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos))
+	chunk.NumKeys = {string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos)}
 	chunk.NumKeys[num + 1] = nil
 
 	return chunk

@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Name, BillboardMode, Translation, Colour, Uv0, Uv1, Uv2, Uv3, Width, Height, Distance, UVOffset)

@@ -223,17 +223,17 @@ local string_unpack = string.unpack
 
 local table_concat = table.concat
 local table_move = table.move
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 function P3D.MakeP3DString(str)
 	if str == nil then return nil end
 	local diff = #str & 3
 	if diff ~= 0 then
-		str = str .. string_rep("\0", 4 - diff)
+		return str .. string_rep("\0", 4 - diff)
 	end
 	return str
 end

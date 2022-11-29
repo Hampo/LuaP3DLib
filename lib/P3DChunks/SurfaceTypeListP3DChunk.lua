@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Types)
@@ -40,7 +40,7 @@ function P3D.SurfaceTypeListP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos
 	chunk.Version, num, pos = string_unpack("<II", chunk.ValueStr)
 	
-	chunk.Types = table_pack(string_unpack("<" .. string_rep("B", num), chunk.ValueStr, pos))
+	chunk.Types = {string_unpack("<" .. string_rep("B", num), chunk.ValueStr, pos)}
 	chunk.Types[num + 1] = nil
 	
 	return chunk

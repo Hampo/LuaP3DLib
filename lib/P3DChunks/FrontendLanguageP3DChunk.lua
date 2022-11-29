@@ -12,13 +12,13 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local utf8_char = utf8.char
 local utf8_codes = utf8.codes
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Language, Modulo, Entries)
@@ -81,11 +81,11 @@ function P3D.FrontendLanguageP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Name, chunk.Language, numEntries, chunk.Modulo, bufferSize, pos = string_unpack("<s1c1III", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
-	chunk.Hashes = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
+	chunk.Hashes = {string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos)}
 	pos = chunk.Hashes[numEntries + 1]
 	chunk.Hashes[numEntries + 1] = nil
 	
-	chunk.Offsets = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
+	chunk.Offsets = {string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos)}
 	pos = chunk.Offsets[numEntries + 1]
 	chunk.Offsets[numEntries + 1] = nil
 	
