@@ -222,6 +222,7 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
+local table_move = table.move
 local table_pack = table.pack
 local table_unpack = table.unpack
 
@@ -406,76 +407,77 @@ function P3D.Colour:__tostring()
 end
 P3D.Color = P3D.Colour
 
-local function DecompressBlock(Source, Length, SourceIndex)
-	local Written = 0
-	SourceIndex = SourceIndex or 1
-	local DestTbl = {}
-	local DestinationPos = 1
-	while Written < Length do
-		local Unknown
-		Unknown, SourceIndex = string_unpack("<B", Source, SourceIndex)
-		if Unknown <= 15 then
-			if Unknown == 0 then
-				local Unknown2
-				Unknown2, SourceIndex = string_unpack("<B", Source, SourceIndex)
-				if Unknown2 == 0 then
-					repeat
-						Unknown2, SourceIndex = string_unpack("<B", Source, SourceIndex)
-						Unknown = Unknown + 255
-					until Unknown2 ~= 0
+-- LZR (Lempel - Ziv - Radical) Decompression
+local function DecompressBlock(Input, OutputSize, InputPos)
+	local Output = {}
+	local OutputPos = 1
+	
+	while OutputPos <= OutputSize do
+		local code
+		code, InputPos = string_unpack("<B", Input, InputPos)
+		
+		if code > 15 then
+			local matchLength = code & 15
+			local tmp
+			
+			if matchLength == 0 then
+				matchLength = 15
+				tmp, InputPos = string_unpack("<B", Input, InputPos)
+				while tmp == 0 do
+					matchLength = matchLength + 255
+					tmp, InputPos = string_unpack("<B", Input, InputPos)
 				end
-				Unknown = Unknown + Unknown2
-				DestTbl[DestinationPos], DestTbl[DestinationPos + 1], DestTbl[DestinationPos + 2], DestTbl[DestinationPos + 3], DestTbl[DestinationPos + 4], DestTbl[DestinationPos + 5], DestTbl[DestinationPos + 6], DestTbl[DestinationPos + 7], DestTbl[DestinationPos + 8], DestTbl[DestinationPos + 9], DestTbl[DestinationPos + 10], DestTbl[DestinationPos + 11], DestTbl[DestinationPos + 12], DestTbl[DestinationPos + 13], DestTbl[DestinationPos + 14], SourceIndex = string_unpack("<c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1", Source, SourceIndex)
-				DestinationPos = DestinationPos + 15
-				Written = Written + 15
+				matchLength = matchLength + tmp
 			end
+			
+			tmp, InputPos = string_unpack("<B", Input, InputPos)
+			local offset = (code >> 4) | tmp << 4
+			local matchPos = OutputPos - offset
+			
+			local len = matchLength >> 2
+			matchLength = matchLength - (len << 2)
+			
 			repeat
-				DestTbl[DestinationPos], SourceIndex = string_unpack("<c1", Source, SourceIndex)
-				DestinationPos = DestinationPos + 1
-				Written = Written + 1
-				Unknown = Unknown - 1
-			until Unknown <= 0
+				Output[OutputPos] = Output[matchPos]
+				Output[OutputPos + 1] = Output[matchPos + 1]
+				Output[OutputPos + 2] = Output[matchPos + 2]
+				Output[OutputPos + 3] = Output[matchPos + 3]
+				matchPos = matchPos + 4
+				OutputPos = OutputPos + 4
+				len = len - 1
+			until len == 0
+			
+			while matchLength ~= 0 do
+				Output[OutputPos] = Output[matchPos]
+				matchPos = matchPos + 1
+				OutputPos = OutputPos + 1
+				matchLength = matchLength - 1
+			end
 		else
-			local Unknown2 = Unknown % 16
-			if Unknown2 == 0 then
-				local Unknown3 = 15
-				local Unknown4
-				Unknown4, SourceIndex = string_unpack("<B", Source, SourceIndex)
-				if Unknown4 == 0 then
-					repeat
-						Unknown4, SourceIndex = string_unpack("<B", Source, SourceIndex)
-						Unknown3 = Unknown3 + 255
-					until Unknown4 ~= 0
+			local runLength = code
+			
+			if runLength == 0 then
+				code, InputPos = string_unpack("<B", Input, InputPos)
+				while code == 0 do
+					runLength = runLength + 255
+					code, InputPos = string_unpack("<B", Input, InputPos)
 				end
-				Unknown2 = Unknown2 + Unknown4 + Unknown3
+				runLength = runLength + code
+				
+				table_move({string_unpack("<c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1", Input, InputPos)}, 1, 15, OutputPos, Output)
+				InputPos = InputPos + 15
+				OutputPos = OutputPos + 15
 			end
-			local Unknown3
-			Unknown3, SourceIndex = string_unpack("<B", Source, SourceIndex)
-			local Unknown6 = DestinationPos - (math.floor(Unknown / 16) | (16 * Unknown3))
-			local Unknown5 = math.floor(Unknown2 / 4)
-			repeat
-				DestTbl[DestinationPos] = DestTbl[Unknown6]
-				DestTbl[DestinationPos + 1] = DestTbl[Unknown6 + 1]
-				DestTbl[DestinationPos + 2] = DestTbl[Unknown6 + 2]
-				DestTbl[DestinationPos + 3] = DestTbl[Unknown6 + 3]
-				Unknown6 = Unknown6 + 4
-				DestinationPos = DestinationPos + 4
-				Unknown5 = Unknown5 - 1
-			until Unknown5 <= 0
-			local Unknown7 = Unknown2 % 4
-			while Unknown7 > 0 do
-				DestTbl[DestinationPos] = DestTbl[Unknown6]
-				DestinationPos = DestinationPos + 1
-				Unknown6 = Unknown6 + 1
-				Unknown7 = Unknown7 - 1
-			end
-			Written = Written + Unknown2
+			
+			table_move({string_unpack(string_rep("c1", runLength), Input, InputPos)}, 1, runLength, OutputPos, Output)
+			InputPos = InputPos + runLength
+			OutputPos = OutputPos + runLength
 		end
 	end
-	return table_concat(DestTbl), DestinationPos
+	
+	return table_concat(Output), OutputPos
 end
 
--- Decompress a compressed P3D
 local function Decompress(File, UncompressedLength)
 	local DecompressedLength = 0
 	local pos = 9
@@ -531,7 +533,7 @@ local function LoadP3DFile(self, Path)
 		Data.Chunks = {}
 	else
 		local success, contents = pcall(ReadFile, Path)
-		assert(success, "Failed to read file at '" .. Path .. "': " .. contents)
+		assert(success, string.format("Failed to read file at '%s': %s", Path, contents))
 		
 		assert(#contents >= 12, "Specified file too short")
 		
@@ -540,7 +542,7 @@ local function LoadP3DFile(self, Path)
 			contents = Decompress(contents, HeaderLength)
 			Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
 		end
-		assert(Identifier == FileSignature, "Specified file isn't a P3D")
+		assert(Identifier == FileSignature, string.format("Specified file '%s' isn't a P3D", Path))
 		
 		ProcessSubChunks(Data, contents, Pos, Length)
 	end
