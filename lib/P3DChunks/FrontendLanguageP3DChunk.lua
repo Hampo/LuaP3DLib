@@ -45,13 +45,12 @@ local function new(self, Name, Language, Modulo, Entries)
 		Hashes[i] = hash
 		
 		local ucs2 = {}
-		local n = 0
+		local n = 1
 		for p, c in utf8_codes(value) do
 			if c == 0 then break end
-			n = n + 1
 			ucs2[n] = c
+			n = n + 1
 		end
-		n = n + 1
 		ucs2[n] = 0
 		value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
 		Buffer[i] = value
@@ -146,13 +145,12 @@ function P3D.FrontendLanguageP3DChunk:AddValue(Name, Value)
 	assert(type(Value) == "string", "Arg #2 (Value) must be a string")
 	
 	local ucs2 = {}
-	local n = 0
+	local n = 1
 	for p,c in utf8_codes(Value) do
 		if c == 0 then break end
-		n = n + 1
 		ucs2[n] = c
+		n = n + 1
 	end
-	n = n + 1
 	ucs2[n] = 0
 	
 	Value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
@@ -181,13 +179,12 @@ function P3D.FrontendLanguageP3DChunk:SetValue(Name, Value)
 	local startLen = (self.Offsets[index + 1] or #self.Buffer) - offset
 	
 	local ucs2 = {}
-	local n = 0
+	local n = 1
 	for p,c in utf8_codes(Value) do
 		if c == 0 then break end
-		n = n + 1
 		ucs2[n] = c
+		n = n + 1
 	end
-	n = n + 1
 	ucs2[n] = 0
 	
 	Value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
