@@ -95,6 +95,7 @@ end
 
 function P3D.FrontendLanguageP3DChunk:GetNameHash(Name, Modulo)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
+	assert(Modulo == nil or type(Modulo) == "number", "Arg #2 (Modulo) must be a number")
 	
 	Modulo = Modulo or self.Modulo
 	local Hash = 0
