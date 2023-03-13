@@ -226,6 +226,7 @@ local table_move = table.move
 local table_unpack = table.unpack
 
 local assert = assert
+local setmetatable = setmetatable
 local tostring = tostring
 local type = type
 
