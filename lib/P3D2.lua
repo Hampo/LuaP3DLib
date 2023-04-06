@@ -705,7 +705,7 @@ local function Clone(self, seen)
 		res[Clone(k, s)] = Clone(v, s)
 	end
 	
-	return setmetatable(res, Clone(getmetatable(self), s)) --Should definitely clone the metatable
+	return setmetatable(res, Clone(getmetatable(self), s))
 end
 
 P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Clone = Clone}, {__call = LoadP3DFile})
