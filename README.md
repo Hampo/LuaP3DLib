@@ -17,18 +17,21 @@ Name=Proddy
 Website=https://github.com/Hampo/LuaP3DLib
 Notes=P3D Class System
 Group=LuaP3DLib
+Credits=1
 
 [Author]
 Name=EnAppelsin
 Website=https://github.com/EnAppelsin
 Notes=Original P3D Lua idea
 Group=LuaP3DLib
+Credits=1
 
 [Author]
 Name=Lucas Cardellini
 Website=https://lucasstuff.com/
 Notes=P3D Chunk Structures
 Group=LuaP3DLib
+Credits=1
 ```
 
 # Examples
