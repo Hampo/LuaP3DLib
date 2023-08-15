@@ -663,6 +663,66 @@ local function GetChunkIndexed(self, Identifier, Backwards)
 	return GetChunksIndexed(self, Identifier, Backwards)()
 end
 
+local function Match(self, Filters)
+	for key, needle in pairs(Filters) do
+		local value = self[key]
+		
+		local needleType = type(needle)
+		local valueType = type(value)
+		
+		if valueType ~= needleType then
+			return false
+		end
+		
+		if needleType == "string" then
+			if not value:match(needle) and value ~= needle then
+				return false
+			end
+		elseif value ~= needle then
+			return false
+		end
+	end
+	return true
+end
+
+local function Find(self, Filters, Backwards)
+	assert(type(Filters) == "table", "Arg #1 (Filters) must be a key/value table.")
+	
+	local chunks = self.Chunks
+	local chunkN = #chunks
+	
+	if Backwards then
+		local n = chunkN
+		return function()
+			while n > 0 do
+				local Chunk = chunks[n]
+				n = n - 1
+				if Chunk:Match(Filters) then
+					return n + 1, Chunk
+				end
+			end
+			return nil
+		end
+	else
+		local n = 1
+		return function()
+			while n <= chunkN do
+				assert(chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
+				local Chunk = chunks[n]
+				n = n + 1
+				if Chunk:Match(Filters) then
+					return n - 1, Chunk
+				end
+			end
+			return nil
+		end
+	end
+end
+
+local function FindFirst(self, Filters, Backwards)
+	return Find(self, Filters, Backwards)()
+end
+
 local skip = {
 	["Chunks"] = true,
 	["Identifier"] = true,
@@ -710,7 +770,7 @@ local function Clone(self, seen)
 	return setmetatable(res, getmetatable(self))
 end
 
-P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Clone = Clone}, {__call = LoadP3DFile})
+P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone}, {__call = LoadP3DFile})
 
 function P3D.P3DFile:__tostring()
 	local chunks = {}
@@ -746,7 +806,27 @@ local function P3DChunk_new(self, ...)
 	end
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, __pairs = P3DChunk_pairs, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Clone = Clone}, {__call = P3DChunk_new})
+local function P3DChunk_Replace(self, NewChunk)
+	assert(type(NewChunk) == "table", "Arg #1 (NewChunk) must be a chunk table")
+	
+	for k in pairs(self) do
+		self[k] = nil
+	end
+	
+	for k,v in pairs(NewChunk) do
+		self[k] = v
+	end
+	
+	for i=1,#skip do
+		local key = skip[i]
+		self[key] = NewChunk[key]
+	end
+	
+	self.__index = NewChunk.__index
+	setmetatable(self, getmetatable(NewChunk))
+end
+
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, __pairs = P3DChunk_pairs, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, Replace = P3DChunk_Replace}, {__call = P3DChunk_new})
 function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
@@ -773,7 +853,7 @@ end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	local class = setmetatable({__pairs = P3DChunk_pairs, Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Clone = Clone}, getmetatable(self))
+	local class = setmetatable({__pairs = P3DChunk_pairs, Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, Replace = P3DChunk_Replace}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end
