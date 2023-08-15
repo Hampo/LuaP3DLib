@@ -609,6 +609,7 @@ local function GetChunks(self, Identifier, Backwards)
 		local n = 1
 		return function()
 			while n <= chunkN do
+				assert(chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
 				local Chunk = chunks[n]
 				n = n + 1
 				if Identifier == nil or Chunk.Identifier == Identifier then
@@ -646,6 +647,7 @@ local function GetChunksIndexed(self, Identifier, Backwards)
 		local n = 1
 		return function()
 			while n <= chunkN do
+				assert(chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
 				local Chunk = chunks[n]
 				n = n + 1
 				if Identifier == nil or Chunk.Identifier == Identifier then
