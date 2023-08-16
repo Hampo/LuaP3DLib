@@ -88,6 +88,16 @@ function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
+local function UVTypeMap = {
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs4,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs5,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs6,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs7,
+	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs8,
+}
 function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 	local vertexType = 0
 	
@@ -109,25 +119,8 @@ function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 		end
 	end
 	if uvN > 0 then
-		if uvN == 1 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs
-		elseif uvN == 2 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2
-		elseif uvN == 3 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3
-		elseif uvN == 4 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs4
-		elseif uvN == 5 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs5
-		elseif uvN == 6 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs6
-		elseif uvN == 7 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs7
-		elseif uvN == 8 then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs8
-		else
-			error("Too manu UVs")
-		end
+		assert(uvN <= 8, "Old Primitive Groups can only have a maximum of 8 UV Lists")
+		vertexType = vertexType | UVTypeMap[uvN]
 	end
 	
 	return vertexType
