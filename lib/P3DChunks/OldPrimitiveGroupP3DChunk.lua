@@ -28,12 +28,12 @@ local function new(self, Version, ShaderName, PrimitiveType, NumVertices, NumInd
 
 	local Data = {
 		Chunks = {},
-		Version = {},
-		ShaderName = {},
-		PrimitiveType = {},
-		NumVertices = {},
-		NumIndices = {},
-		NumMatrices = {},
+		Version = Version,
+		ShaderName = ShaderName,
+		PrimitiveType = PrimitiveType,
+		NumVertices = NumVertices,
+		NumIndices = NumIndices,
+		NumMatrices = NumMatrices,
 	}
 	
 	self.__index = self
@@ -88,7 +88,16 @@ function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
-local function UVTypeMap = {
+local VertexTypeMap = {
+	[P3D.Identifiers.Packed_Normal_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Normals,
+	[P3D.Identifiers.Normal_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Normals,
+	[P3D.Identifiers.Colour_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Colours,
+	[P3D.Identifiers.Matrix_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices,
+	[P3D.Identifiers.Matrix_Palette] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices,
+	[P3D.Identifiers.Weight_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Weights,
+	[P3D.Identifiers.Position_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Position,
+}
+local UVTypeMap = {
 	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs,
 	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2,
 	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3,
@@ -106,16 +115,11 @@ function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 		local identifier = self.Chunks[i].Identifier
 		if identifier == P3D.Identifiers.UV_List then
 			uvN = uvN + 1
-		elseif identifier == P3D.Identifiers.Packed_Normal_List or identifier == P3D.Identifiers.Normal_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Normals
-		elseif identifier == P3D.Identifiers.Colour_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Colours
-		elseif identifier == P3D.Identifiers.Matrix_List or identifier == P3D.Identifiers.Matrix_Palette then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices
-		elseif identifier == P3D.Identifiers.Weight_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Weights
-		elseif identifier == P3D.Identifiers.Position_List then
-			vertexType = vertexType | P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Position
+		else
+			local chunkVertexType = VertexTypeMap[identifier]
+			if chunkVertexType then
+				vertexType = vertexType | chunkVertexType
+			end
 		end
 	end
 	if uvN > 0 then
