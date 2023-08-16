@@ -55,5 +55,5 @@ function P3D.OldIndexOffsetListP3DChunk:__tostring()
 	local offsetsN = #self.Offsets
 	
 	local headerLen = 12 + 4 + 4 + offsetsN * 4
-	return string_pack("<IIIII" .. string_rep("I", offsetsN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, table_unpack(self.Offsets)) .. offsetsData .. chunkData
+	return string_pack("<IIIII" .. string_rep("I", offsetsN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, table_unpack(self.Offsets)) .. chunkData
 end

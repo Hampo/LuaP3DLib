@@ -193,7 +193,7 @@ function P3D.FrontendLanguageP3DChunk:SetValue(Name, Value)
 	self.Buffer = self.Buffer:sub(1, offset) .. Value .. self.Buffer:sub(offset + startLen + 1)
 	
 	local diff = #Value - startLen
-	for i=idx + 1,#self.Offsets do
+	for i=index + 1,#self.Offsets do
 		self.Offsets[i] = self.Offsets[i] + diff
 	end
 end
