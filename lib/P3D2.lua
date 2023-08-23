@@ -213,8 +213,12 @@ end
 
 P3D.ChunkClasses = {}
 
+local math_atan2 = math.atan2
+local math_cos = math.cos
 local math_deg = math.deg
 local math_rad = math.rad
+local math_sin = math.sin
+local math_sqrt = math.sqrt
 
 local string_format = string.format
 local string_pack = string.pack
@@ -226,6 +230,7 @@ local table_move = table.move
 local table_unpack = table.unpack
 
 local assert = assert
+local getmetatable = getmetatable
 local setmetatable = setmetatable
 local tostring = tostring
 local type = type
@@ -264,7 +269,7 @@ local function RadToDeg(self)
 	end
 end
 
-P3D.Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y)
+local Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y)
 	assert(type(X) == "number", "Arg #1 (X) must be a number")
 	assert(type(Y) == "number", "Arg #2 (Y) must be a number")
 	
@@ -276,11 +281,140 @@ P3D.Vector2 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call =
 	self.__index = self
 	return setmetatable(Data, self)
 end})
-function P3D.Vector2:__tostring()
+P3D.Vector2 = Vector2
+
+local function IsVector2(obj)
+	return getmetatable(obj) == Vector2
+end
+P3D.IsVector2 = IsVector2
+
+function Vector2:__unm()
+	return Vector2(-self.X, -self.Y)
+end
+function Vector2:__add(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return Vector2(self.X + vector.X, self.Y + vector.Y)
+end
+function Vector2:__sub(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return Vector2(self.X - vector.X, self.Y - vector.Y)
+end
+function Vector2:__mul(value)
+	if type(self) == "number" then
+		assert(IsVector2(value), "Arg #1 (value) must be a Vector2 when multiplying with a number")
+		
+		return Vector2(value.X * self, value.Y * self)
+	elseif type(value) == "number" then
+		assert(IsVector2(self), "Arg #0 (self) must be a Vector2 when multiplying with a number")
+		
+		return Vector2(self.X * value, self.Y * value)
+	else
+		assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+		assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+		return Vector2(self.X * vector.X, self.Y * vector.Y)
+	end
+end
+function Vector2:__div(value)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(type(value) == "number", "Arg #1 (value) must be a number")
+	
+	return Vector2(self.X / value, self.Y / value)
+end
+function Vector2:__eq(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	-- Not sure if should assert or return false
+	--assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	if not IsVector2(vector) then
+		return false
+	end
+	
+	return self.X == vector.X and self.Y == vector.Y
+end
+function Vector2:__tostring()
 	return string.format("{ X = %.3f, Y = %.3f }", self.X, self.Y)
 end
+function Vector2:Set(X, Y)
+	if IsVector2(X) then
+		self.X = X.X
+		self.Y = X.Y
+	else
+		assert(X == nil or type(X) == "number", "Arg #1 (X or Vector2) must be either a number or a Vector2")
+		assert(Y == nil or type(Y) == "number", "Arg #2 (Y) must be a number")
+		self.X = X or self.X
+		self.Y = Y or self.Y
+	end
+end
+function Vector2:Clone()
+	return Vector2(self.X, self.Y)
+end
+function Vector2:GetMag()
+	return math_sqrt(self.X^2 + self.Y^2)
+end
+function Vector2:GetMagSq()
+	return self.X^2 + self.Y^2
+end
+function Vector2:SetMag(mag)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(type(mag) == "number", "Arg #1 (mag) must be a number")
+	assert(self:GetMag() ~= 0, "Cannot set magnitude when direction is ambiguous")
+	
+	self:Norm()
+	local v = self * mag
+	self:Set(v)
+	return self
+end
+function Vector2:Dist(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return math_sqrt((self.X - vector.X)^2 + (self.Y - vector.Y)^2)
+end
+function Vector2:Dot(vector)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+	
+	return self.X * vector.X + self.Y * vector.Y
+end
+function Vector2:Norm()
+	local mag = self:GetMag()
+	if mag ~= 0 then
+		self:Set(self / mag)
+	end
+	return self
+end
+function Vector2:Heading()
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	return -math_atan2(self.Y, self.X)
+end
+function Vector2:Rotate(theta)
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	assert(type(theta) == "number", "Arg #1 (theta) must be a number")
+	
+	local s = math_sin(theta)
+	local c = math_cos(theta)
+	local v = Vector2(c * self.X + s * self.Y, -(s * self.X) + c * self.Y)
+	self:Set(v)
+	return self
+end
+function Vector2:Array()
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	return {self.X, self.Y}
+end
+function Vector2:Unpack()
+	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
+	
+	return self.X, self.Y
+end
 
-P3D.Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y, Z)
+local Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, X, Y, Z)
 	assert(type(X) == "number", "Arg #1 (X) must be a number")
 	assert(type(Y) == "number", "Arg #2 (Y) must be a number")
 	assert(type(Z) == "number", "Arg #3 (Z) must be a number")
@@ -294,8 +428,32 @@ P3D.Vector3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call =
 	self.__index = self
 	return setmetatable(Data, self)
 end})
-function P3D.Vector3:__tostring()
+P3D.Vector3 = Vector3
+
+local function IsVector3(obj)
+	return getmetatable(obj) == Vector3
+end
+P3D.IsVector3 = IsVector3
+
+function Vector3:__tostring()
 	return string.format("{ X = %.3f, Y = %.3f, Z = %.3f }", self.X, self.Y, self.Z)
+end
+function Vector3:Set(X, Y, Z)
+	if IsVector3(X) then
+		self.X = X.X
+		self.Y = X.Y
+		self.Z = X.Z
+	else
+		assert(X == nil or type(X) == "number", "Arg #1 (X or Vector3) must be either a number or a Vector3")
+		assert(Y == nil or type(Y) == "number", "Arg #2 (Y) must be a number")
+		assert(Z == nil or type(Z) == "number", "Arg #3 (Z) must be a number")
+		self.X = X or self.X
+		self.Y = Y or self.Y
+		self.Z = Z or self.Z
+	end
+end
+function Vector3:Clone()
+	return Vector3(self.X, self.Y, self.Z)
 end
 
 P3D.SymmetricMatrix3x3 = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, XX, XY, XZ, YY, YZ, ZZ)
@@ -667,8 +825,8 @@ local function Match(self, Filters)
 	for key, needle in pairs(Filters) do
 		local value = self[key]
 		
-		local needleType = type(needle)
 		local valueType = type(value)
+		local needleType = type(needle)
 		
 		if valueType ~= needleType then
 			return false
