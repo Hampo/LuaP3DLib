@@ -37,9 +37,9 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.EntityChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_2_Channel)
-P3D.EntityChannelP3DChunk.new = new
-function P3D.EntityChannelP3DChunk:parse(Contents, Pos, DataLength)
+P3D.Float2ChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_2_Channel)
+P3D.Float2ChannelP3DChunk.new = new
+function P3D.Float2ChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	local numFrames, pos
@@ -59,7 +59,7 @@ function P3D.EntityChannelP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
-function P3D.EntityChannelP3DChunk:__tostring()
+function P3D.Float2ChannelP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
