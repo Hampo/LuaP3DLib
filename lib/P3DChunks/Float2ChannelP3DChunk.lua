@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Param, Frames, Values)
@@ -37,15 +37,15 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.EntityChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_2_Channel)
-P3D.EntityChannelP3DChunk.new = new
-function P3D.EntityChannelP3DChunk:parse(Contents, Pos, DataLength)
+P3D.Float2ChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Float_2_Channel)
+P3D.Float2ChannelP3DChunk.new = new
+function P3D.Float2ChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	local numFrames, pos
 	chunk.Version, chunk.Param, numFrames, pos = string_unpack("<Ic4I", chunk.ValueStr)
 	
-	chunk.Frames = table_pack(string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos))
+	chunk.Frames = {string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos)}
 	pos = chunk.Frames[numFrames + 1]
 	chunk.Frames[numFrames + 1] = nil
 	
@@ -59,7 +59,7 @@ function P3D.EntityChannelP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
-function P3D.EntityChannelP3DChunk:__tostring()
+function P3D.Float2ChannelP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])

@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Param, StartState, Values)
@@ -44,7 +44,7 @@ function P3D.BooleanChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local numFrames, pos
 	chunk.Version, chunk.Param, chunk.StartState, numFrames, pos = string_unpack("<Ic4HI", chunk.ValueStr)
 	
-	chunk.Values = table_pack(string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos))
+	chunk.Values = {string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos)}
 	chunk.Values[numFrames + 1] = nil
 	
 	return chunk

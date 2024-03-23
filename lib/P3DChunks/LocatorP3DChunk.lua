@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Position, Type, ...)
@@ -68,7 +68,7 @@ local function new(self, Name, Position, Type, ...)
 		local Occlusions = args[1]
 		assert(Occlusions == nil or type(Occlusions) == "number", "Arg #4 (Occlusions) must be a number")
 		
-		Data.Occlusions = Occlusinos
+		Data.Occlusions = Occlusions
 	elseif Type == 7 then -- Interior Entrance
 		local InteriorName = args[1]
 		local Right = args[2]

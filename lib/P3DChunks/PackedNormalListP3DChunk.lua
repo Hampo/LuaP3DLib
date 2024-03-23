@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Normals)
@@ -37,7 +37,7 @@ function P3D.PackedNormalListP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos = string_unpack("<I", chunk.ValueStr)
 	
-	chunk.Normals = table_pack(string_unpack("<" .. string_rep("B", num), chunk.ValueStr, pos))
+	chunk.Normals = {string_unpack("<" .. string_rep("B", num), chunk.ValueStr, pos)}
 	chunk.Normals[num + 1] = nil
 	
 	return chunk

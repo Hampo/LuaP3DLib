@@ -12,15 +12,15 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Version)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(Version) == "string", "Arg #2 (Version) must be a number")
+	assert(type(Version) == "number", "Arg #2 (Version) must be a number")
 	
 	local Data = {
 		Chunks = {},

@@ -12,10 +12,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Indices, Positions, Normals)
@@ -43,7 +43,7 @@ function P3D.IntersectP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos = string_unpack("<I", chunk.ValueStr)
 	
-	chunk.Indices = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
+	chunk.Indices = {string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos)}
 	pos = chunk.Indices[num + 1]
 	chunk.Indices[num + 1] = nil
 	

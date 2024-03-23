@@ -11,10 +11,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Offsets)
@@ -39,7 +39,7 @@ function P3D.OldIndexOffsetListP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos
 	chunk.Version, num, pos = string_unpack("<II", chunk.ValueStr)
 	
-	chunk.Offsets = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
+	chunk.Offsets = {string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos)}
 	chunk.Offsets[num + 1] = nil
 	
 	return chunk
@@ -55,5 +55,5 @@ function P3D.OldIndexOffsetListP3DChunk:__tostring()
 	local offsetsN = #self.Offsets
 	
 	local headerLen = 12 + 4 + 4 + offsetsN * 4
-	return string_pack("<IIIII" .. string_rep("I", offsetsN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, table_unpack(self.Offsets)) .. offsetsData .. chunkData
+	return string_pack("<IIIII" .. string_rep("I", offsetsN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, table_unpack(self.Offsets)) .. chunkData
 end
