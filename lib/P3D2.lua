@@ -711,7 +711,7 @@ end
 
 local function AddChunk(self, Chunk, Index)
 	assert(type(Chunk) == "table" and Chunk.Identifier, "Arg #1 (Chunk) must be a valid chunk")
-	assert(Index == nil or (type(Index) == "number" and Index <= #self.Chunks), "Arg #2 (Index) must be a number smaller than the chunk count")
+	assert(Index == nil or (type(Index) == "number" and Index <= #self.Chunks + 1), "Arg #2 (Index) must be a number smaller than the chunk count")
 	
 	if Index then
 		table.insert(self.Chunks, Index, Chunk)
