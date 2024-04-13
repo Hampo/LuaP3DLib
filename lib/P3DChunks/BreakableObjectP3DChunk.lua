@@ -34,6 +34,35 @@ end
 
 P3D.BreakableObjectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Breakable_Object)
 P3D.BreakableObjectP3DChunk.new = new
+P3D.BreakableObjectP3DChunk.Indexes = {
+	Null = -1,
+	HydrantBreaking = 3,
+	MailboxBreaking = 5,
+	ParkingMeterBreaking = 6,
+	WoodenCratesBreaking = 7,
+	TommacoPlantsBreaking = 8,
+	PowerCouplingBreaking = 9,
+	PineTreeBreaking = 14,
+	OakTreeBreaking = 15,
+	BigBarrierBreaking = 16,
+	RailCrossBreaking = 17,
+	SpaceNeedleBreaking = 18,
+	KrustyGlassBreaking = 19,
+	CypressTreeBreaking = 20,
+	DeadTreeBreaking = 21,
+	SkeletonBreaking = 22,
+	Willow = 23,
+	CarExplosion = 24,
+	GlobeLight = 25,
+	TreeMorn = 26,
+	PalmTreeSmall = 27,
+	PalmTreeLarge = 28,
+	Stopsign = 29,
+	Pumpkin = 30,
+	PumpkinMed = 31,
+	PumpkinSmall = 32,
+	CasinoJump = 33,
+}
 function P3D.BreakableObjectP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
