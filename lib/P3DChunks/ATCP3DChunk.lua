@@ -51,6 +51,27 @@ function P3D.ATCP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
+function P3D.ATCP3DChunk:AddEntry(SourceResourceDataName, Particle, BreakableObject, Friction, Mass, Elasticity)
+	assert(type(SourceResourceDataName) == "string", "Arg #1 (SourceResourceDataName) must be a string")
+	assert(type(Particle) == "string", "Arg #2 (Particle) must be a string")
+	assert(type(BreakableObject) == "string", "Arg #3 (BreakableObject) must be a string")
+	assert(type(Friction) == "number", "Arg #4 (Friction) must be a number")
+	assert(type(Mass) == "number", "Arg #5 (Mass) must be a number")
+	assert(type(Elasticity) == "number", "Arg #6 (Elasticity) must be a number")
+	
+	local newEntry = {
+		SoundResourceDataName = SoundResourceDataName,
+		Particle = Particle,
+		BreakableObject = BreakableObject,
+		Friction = Friction,
+		Mass = Mass,
+		Elasticity = Elasticity
+	}
+	self.Entries[#self.Entries + 1] = newEntry
+	
+	return newEntry
+end
+
 function P3D.ATCP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
