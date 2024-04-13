@@ -59,7 +59,7 @@ function P3D.ATCP3DChunk:AddEntry(SourceResourceDataName, Particle, BreakableObj
 	assert(type(Mass) == "number", "Arg #5 (Mass) must be a number")
 	assert(type(Elasticity) == "number", "Arg #6 (Elasticity) must be a number")
 	
-	local newIndex = #self.Entries + 1
+	local newIndex = #self.Entries
 	local newEntry = {
 		SoundResourceDataName = SoundResourceDataName,
 		Particle = Particle,
@@ -68,9 +68,9 @@ function P3D.ATCP3DChunk:AddEntry(SourceResourceDataName, Particle, BreakableObj
 		Mass = Mass,
 		Elasticity = Elasticity
 	}
-	self.Entries[newIndex] = newEntry
+	self.Entries[newIndex + 1] = newEntry
 	
-	-- Note: Internal game table is 0-based, but there's a default inserted at the start, so 1-based index aligns correctly
+	-- Note: Returns 0-based index as that's what the game expects for reference
 	return newIndex, newEntry
 end
 
