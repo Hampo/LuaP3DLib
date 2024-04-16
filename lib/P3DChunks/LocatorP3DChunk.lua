@@ -170,6 +170,23 @@ end
 
 P3D.LocatorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Locator)
 P3D.LocatorP3DChunk.new = new
+P3D.LocatorP3DChunk.Types = {
+	Event = 0,
+	Script = 1,
+	Generic = 2,
+	CarStart = 3,
+	Spline = 4,
+	DynamicZone = 5,
+	Occlusion = 6,
+	InteriorEntrance = 7,
+	Directional = 8,
+	Action = 9,
+	FOV = 10,
+	BreakableCamera = 11,
+	StaticCamera = 12,
+	PedGroup = 13,
+	Coin = 14,
+}
 function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
