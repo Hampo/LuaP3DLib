@@ -21,6 +21,7 @@ local type = type
 
 local function new(self, Param, Value)
 	assert(type(Param) == "string", "Arg #1 (Param) must be a string.")
+	assert(#Param <= 4, "Arg #1 (Param) must be 4 characters or less.")
 	assert(type(Value) == "string", "Arg #2 (Value) must be a string.")
 
 	local Data = {

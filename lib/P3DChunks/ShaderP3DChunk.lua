@@ -65,6 +65,82 @@ function P3D.ShaderP3DChunk:GetParameter(Param)
 	end
 end
 
+function P3D.ShaderP3DChunk:SetColourParameter(Param, Value)
+	assert(type(Param) == "string", "Arg #1 (Param) must be a string.")
+	assert(#Param <= 4, "Arg #1 (Param) must be 4 characters or less.")
+	assert(type(Value) == "table", "Arg #2 (Value) must be a table.")
+	
+	local chunk = self:GetParameter(Name)
+	if chunk then
+		if chunk.Identifier == P3D.Identifiers.Shader_Colour_Parameter then
+			chunk.Value = Value
+			return
+		else
+			self:RemoveChunk(chunk)
+		end
+	end
+	
+	chunk = P3D.ShaderColourParameterP3DChunk(Param, Value)
+	self:AddChunk(chunk)
+end
+
+function P3D.ShaderP3DChunk:SetFloatParameter(Param, Value)
+	assert(type(Param) == "string", "Arg #1 (Param) must be a string.")
+	assert(#Param <= 4, "Arg #1 (Param) must be 4 characters or less.")
+	assert(type(Value) == "number", "Arg #2 (Value) must be a number.")
+	
+	local chunk = self:GetParameter(Name)
+	if chunk then
+		if chunk.Identifier == P3D.Identifiers.Shader_Float_Parameter then
+			chunk.Value = Value
+			return
+		else
+			self:RemoveChunk(chunk)
+		end
+	end
+	
+	chunk = P3D.ShaderFloatParameterP3DChunk(Param, Value)
+	self:AddChunk(chunk)
+end
+
+function P3D.ShaderP3DChunk:SetIntegerParameter(Param, Value)
+	assert(type(Param) == "string", "Arg #1 (Param) must be a string.")
+	assert(#Param <= 4, "Arg #1 (Param) must be 4 characters or less.")
+	assert(type(Value) == "number", "Arg #2 (Value) must be a number.")
+	
+	local chunk = self:GetParameter(Name)
+	if chunk then
+		if chunk.Identifier == P3D.Identifiers.Shader_Integer_Parameter then
+			chunk.Value = Value
+			return
+		else
+			self:RemoveChunk(chunk)
+		end
+	end
+	
+	chunk = P3D.ShaderIntegerParameterP3DChunk(Param, Value)
+	self:AddChunk(chunk)
+end
+
+function P3D.ShaderP3DChunk:SetTextureParameter(Param, Value)
+	assert(type(Param) == "string", "Arg #1 (Param) must be a string.")
+	assert(#Param <= 4, "Arg #1 (Param) must be 4 characters or less.")
+	assert(type(Value) == "string", "Arg #2 (Value) must be a string.")
+	
+	local chunk = self:GetParameter(Name)
+	if chunk then
+		if chunk.Identifier == P3D.Identifiers.Shader_Texture_Parameter then
+			chunk.Value = Value
+			return
+		else
+			self:RemoveChunk(chunk)
+		end
+	end
+	
+	chunk = P3D.ShaderTextureParameterP3DChunk(Param, Value)
+	self:AddChunk(chunk)
+end
+
 function P3D.ShaderP3DChunk:__tostring()
 	local chunks = {}
 	local chunksN = #self.Chunks
