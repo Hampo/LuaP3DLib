@@ -39,9 +39,9 @@ local function new(self, Index, MinMagnitude, MaxMagnitude, Elevation, TargetOff
 	return setmetatable(Data, self)
 end
 
-P3D.TriggerVolumeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Walker_Camera_Data)
-P3D.TriggerVolumeP3DChunk.new = new
-function P3D.TriggerVolumeP3DChunk:parse(Contents, Pos, DataLength)
+P3D.WalkerCameraDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Walker_Camera_Data)
+P3D.WalkerCameraDataP3DChunk.new = new
+function P3D.WalkerCameraDataP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.TargetOffset = {}
@@ -50,7 +50,7 @@ function P3D.TriggerVolumeP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
-function P3D.TriggerVolumeP3DChunk:__tostring()
+function P3D.WalkerCameraDataP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
