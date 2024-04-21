@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FrontendLanguageP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,13 +14,13 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local utf8_char = utf8.char
 local utf8_codes = utf8.codes
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Language, Modulo, Entries)
@@ -45,13 +47,12 @@ local function new(self, Name, Language, Modulo, Entries)
 		Hashes[i] = hash
 		
 		local ucs2 = {}
-		local n = 0
+		local n = 1
 		for p, c in utf8_codes(value) do
 			if c == 0 then break end
-			n = n + 1
 			ucs2[n] = c
+			n = n + 1
 		end
-		n = n + 1
 		ucs2[n] = 0
 		value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
 		Buffer[i] = value
@@ -81,11 +82,11 @@ function P3D.FrontendLanguageP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Name, chunk.Language, numEntries, chunk.Modulo, bufferSize, pos = string_unpack("<s1c1III", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
-	chunk.Hashes = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
+	chunk.Hashes = {string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos)}
 	pos = chunk.Hashes[numEntries + 1]
 	chunk.Hashes[numEntries + 1] = nil
 	
-	chunk.Offsets = table_pack(string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos))
+	chunk.Offsets = {string_unpack("<" .. string_rep("I", numEntries), chunk.ValueStr, pos)}
 	pos = chunk.Offsets[numEntries + 1]
 	chunk.Offsets[numEntries + 1] = nil
 	
@@ -96,6 +97,7 @@ end
 
 function P3D.FrontendLanguageP3DChunk:GetNameHash(Name, Modulo)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
+	assert(Modulo == nil or type(Modulo) == "number", "Arg #2 (Modulo) must be a number")
 	
 	Modulo = Modulo or self.Modulo
 	local Hash = 0
@@ -146,13 +148,12 @@ function P3D.FrontendLanguageP3DChunk:AddValue(Name, Value)
 	assert(type(Value) == "string", "Arg #2 (Value) must be a string")
 	
 	local ucs2 = {}
-	local n = 0
+	local n = 1
 	for p,c in utf8_codes(Value) do
 		if c == 0 then break end
-		n = n + 1
 		ucs2[n] = c
+		n = n + 1
 	end
-	n = n + 1
 	ucs2[n] = 0
 	
 	Value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
@@ -181,13 +182,12 @@ function P3D.FrontendLanguageP3DChunk:SetValue(Name, Value)
 	local startLen = (self.Offsets[index + 1] or #self.Buffer) - offset
 	
 	local ucs2 = {}
-	local n = 0
+	local n = 1
 	for p,c in utf8_codes(Value) do
 		if c == 0 then break end
-		n = n + 1
 		ucs2[n] = c
+		n = n + 1
 	end
-	n = n + 1
 	ucs2[n] = 0
 	
 	Value = string_pack("<" .. string_rep("H", n), table_unpack(ucs2))
@@ -195,7 +195,7 @@ function P3D.FrontendLanguageP3DChunk:SetValue(Name, Value)
 	self.Buffer = self.Buffer:sub(1, offset) .. Value .. self.Buffer:sub(offset + startLen + 1)
 	
 	local diff = #Value - startLen
-	for i=idx + 1,#self.Offsets do
+	for i=index + 1,#self.Offsets do
 		self.Offsets[i] = self.Offsets[i] + diff
 	end
 end

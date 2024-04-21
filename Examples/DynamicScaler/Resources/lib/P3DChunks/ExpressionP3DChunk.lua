@@ -3,7 +3,9 @@ CREDITS:
 	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.ExpressionP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -11,10 +13,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Name, Keys, Indices)
@@ -45,11 +47,11 @@ function P3D.ExpressionP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Version, chunk.Name, num, pos = string_unpack("<Is1I", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
-	chunk.Keys = table_pack(string_unpack("<" .. string_rep("f", num), chunk.ValueStr, pos))
+	chunk.Keys = {string_unpack("<" .. string_rep("f", num), chunk.ValueStr, pos)}
 	pos = chunk.Keys[num + 1]
 	chunk.Keys[num + 1] = nil
 	
-	chunk.Indices = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
+	chunk.Indices = {string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos)}
 	chunk.Indices[num + 1] = nil
 	
 	return chunk

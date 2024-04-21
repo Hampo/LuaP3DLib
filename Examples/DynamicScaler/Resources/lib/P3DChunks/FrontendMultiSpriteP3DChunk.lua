@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FrontendMultiSpriteP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Version, Position, Dimension, Justification, Colour, Translucency, RotationValue, ImageNames)
@@ -66,7 +68,7 @@ function P3D.FrontendMultiSpriteP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Name, chunk.Version, chunk.Position.X, chunk.Position.Y, chunk.Dimension.X, chunk.Dimension.Y, chunk.Justification.X, chunk.Justification.Y, chunk.Colour.B, chunk.Colour.G, chunk.Colour.R, chunk.Colour.A, chunk.Translucency, chunk.RotationValue, num, pos = string_unpack("<s1IiiIIIIBBBBIfI", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
-	chunk.ImageNames = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
+	chunk.ImageNames = {string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos)}
 	chunk.ImageNames[num + 1] = nil
 	for i=1,num do
 		chunk.ImageNames[i] = P3D.CleanP3DString(chunk.ImageNames[i])

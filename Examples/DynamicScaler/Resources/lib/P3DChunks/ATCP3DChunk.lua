@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.ATCP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Entries)
@@ -49,6 +51,29 @@ function P3D.ATCP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Entries = Entries
 	
 	return chunk
+end
+
+function P3D.ATCP3DChunk:AddEntry(SourceResourceDataName, Particle, BreakableObject, Friction, Mass, Elasticity)
+	assert(type(SourceResourceDataName) == "string", "Arg #1 (SourceResourceDataName) must be a string")
+	assert(type(Particle) == "string", "Arg #2 (Particle) must be a string")
+	assert(type(BreakableObject) == "string", "Arg #3 (BreakableObject) must be a string")
+	assert(type(Friction) == "number", "Arg #4 (Friction) must be a number")
+	assert(type(Mass) == "number", "Arg #5 (Mass) must be a number")
+	assert(type(Elasticity) == "number", "Arg #6 (Elasticity) must be a number")
+	
+	local newIndex = #self.Entries
+	local newEntry = {
+		SoundResourceDataName = SoundResourceDataName,
+		Particle = Particle,
+		BreakableObject = BreakableObject,
+		Friction = Friction,
+		Mass = Mass,
+		Elasticity = Elasticity
+	}
+	self.Entries[newIndex + 1] = newEntry
+	
+	-- Note: Returns 0-based index as that's what the game expects for reference
+	return newIndex, newEntry
 end
 
 function P3D.ATCP3DChunk:__tostring()

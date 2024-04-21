@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.FollowCameraDataP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Index, Rotation, Elevation, Magnitude, TargetOffset)
@@ -38,9 +40,9 @@ local function new(self, Index, Rotation, Elevation, Magnitude, TargetOffset)
 	return setmetatable(Data, self)
 end
 
-P3D.TriggerVolumeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Follow_Camera_Data)
-P3D.TriggerVolumeP3DChunk.new = new
-function P3D.TriggerVolumeP3DChunk:parse(Contents, Pos, DataLength)
+P3D.FollowCameraDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Follow_Camera_Data)
+P3D.FollowCameraDataP3DChunk.new = new
+function P3D.FollowCameraDataP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.TargetOffset = {}
@@ -49,7 +51,7 @@ function P3D.TriggerVolumeP3DChunk:parse(Contents, Pos, DataLength)
 	return chunk
 end
 
-function P3D.TriggerVolumeP3DChunk:__tostring()
+function P3D.FollowCameraDataP3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])

@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.AnimationChannelCountP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, ChannelChunkID, NumKeys)
@@ -42,7 +44,7 @@ function P3D.AnimationChannelCountP3DChunk:parse(Contents, Pos, DataLength)
 	local num, pos
 	chunk.Version, chunk.ChannelChunkID, num, pos = string_unpack("<III", chunk.ValueStr)
 	
-	chunk.NumKeys = table_pack(string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos))
+	chunk.NumKeys = {string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos)}
 	chunk.NumKeys[num + 1] = nil
 
 	return chunk

@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.IndexListP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Indices)
@@ -37,7 +39,7 @@ function P3D.IndexListP3DChunk:parse(Contents, Pos, DataLength)
 	
 	local num, pos = string_unpack("<I", chunk.ValueStr)
 	
-	chunk.Indices = table_pack(string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos))
+	chunk.Indices = {string_unpack("<" .. string_rep("I", num), chunk.ValueStr, pos)}
 	chunk.Indices[num + 1] = nil
 	
 	return chunk
