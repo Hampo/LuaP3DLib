@@ -54,7 +54,7 @@ function P3D.Float2ChannelP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Values = {}
 	for i=1,numFrames do
 		local value = {}
-		value.X, value.Y, pos = string_unpack("ff", chunk.ValueStr, pos)
+		value.X, value.Y, pos = string_unpack("<ff", chunk.ValueStr, pos)
 		chunk.Values[i] = value
 	end
 	

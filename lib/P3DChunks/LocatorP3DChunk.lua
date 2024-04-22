@@ -239,7 +239,7 @@ function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
 		pos = pos + #chunk.JointName + 4 - (#chunk.JointName & 3)
 		chunk.ActionName = string_unpack("<z", chunk.ValueStr, pos)
 		pos = pos + #chunk.ActionName + 4 - (#chunk.ActionName & 3)
-		chunk.ButtonInput, chunk.ShouldTransform = string_unpack("II", chunk.ValueStr, pos)
+		chunk.ButtonInput, chunk.ShouldTransform = string_unpack("<II", chunk.ValueStr, pos)
 	elseif chunk.Type == 10 then -- FOV
 		chunk.FOV, chunk.Type, chunk.Rate = string_unpack("<fff", chunk.ValueStr, pos)
 	elseif chunk.Type == 11 then -- Breakable Camera
@@ -263,7 +263,7 @@ function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
 		chunk.Data = string_unpack("<c" ..dataLen * 4, chunk.ValueStr, pos)
 	end
 	pos = pos + dataLen * 4
-	chunk.Position.X, chunk.Position.Y, chunk.Position.Z = string_unpack("fff", chunk.ValueStr, pos)
+	chunk.Position.X, chunk.Position.Y, chunk.Position.Z = string_unpack("<fff", chunk.ValueStr, pos)
 	
 	return chunk
 end
