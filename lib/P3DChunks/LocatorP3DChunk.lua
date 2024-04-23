@@ -174,7 +174,8 @@ end
 
 local function ReadLocationDataString(Endian, str, pos)
 	if Endian == "<" then
-		return string_unpack("<z", str, pos)
+		local output = string_unpack("<z", str, pos)
+		return output, pos + #output + 4 - (#output & 3)
 	end
 	
 	local output = {}
@@ -189,7 +190,7 @@ local function ReadLocationDataString(Endian, str, pos)
 		end
 	end
 	
-	return P3D.CleanP3DString(table_concat(output))
+	return P3D.CleanP3DString(table_concat(output)), pos
 end
 
 P3D.LocatorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Locator)
@@ -258,12 +259,9 @@ function P3D.LocatorP3DChunk:parse(Endian, Contents, Pos, DataLength)
 		chunk.Right.X, chunk.Right.Y, chunk.Right.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z, chunk.Front.X, chunk.Front.Y, chunk.Front.Z = string_unpack(Endian .. "fffffffff", chunk.ValueStr, pos)
 	elseif chunk.Type == 9 then -- Action
 		local pos = pos
-		chunk.ObjectName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
-		pos = pos + #chunk.ObjectName + 4 - (#chunk.ObjectName & 3)
-		chunk.JointName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
-		pos = pos + #chunk.JointName + 4 - (#chunk.JointName & 3)
-		chunk.ActionName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
-		pos = pos + #chunk.ActionName + 4 - (#chunk.ActionName & 3)
+		chunk.ObjectName, pos = ReadLocationDataString(Endian, chunk.ValueStr, pos)
+		chunk.JointName, pos = ReadLocationDataString(Endian, chunk.ValueStr, pos)
+		chunk.ActionName, pos = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 		chunk.ButtonInput, chunk.ShouldTransform = string_unpack(Endian .. "II", chunk.ValueStr, pos)
 	elseif chunk.Type == 10 then -- FOV
 		chunk.FOV, chunk.Type, chunk.Rate = string_unpack(Endian .. "fff", chunk.ValueStr, pos)
@@ -315,7 +313,7 @@ local function MakeLocationDataString(str, Endian)
 		str = string_gsub(str, "(.)(.)(.)(.)", "%4%3%2%1")
 	end
 	
-	return str
+	return str, #str
 end
 
 function P3D.LocatorP3DChunk:__tostring()
@@ -336,15 +334,13 @@ function P3D.LocatorP3DChunk:__tostring()
 			data = string_pack(self.Endian .. "II", 1, self.Event)
 		end
 	elseif self.Type == 1 then -- Script
-		local Key = MakeLocationDataString(self.Key, self.Endian)
-		local len = #Key
+		local Key, len = MakeLocationDataString(self.Key, self.Endian)
 		data = string_pack(self.Endian .. "Ic" .. len, len / 4, Key)
 	elseif self.Type == 2 then -- Generic
 		data = string_pack(self.Endian .. "I", 0)
 	elseif self.Type == 3 then -- Car Start
 		if self.FreeCar then
-			local FreeCar = MakeLocationDataString(self.FreeCar, self.Endian)
-			local len = #FreeCar
+			local FreeCar, len = MakeLocationDataString(self.FreeCar, self.Endian)
 			data = string_pack(self.Endian .. "IfIc" .. len, 2 + len / 4, self.Rotation, self.ParkedCar, FreeCar)
 		elseif self.ParkedCar then
 			data = string_pack(self.Endian .. "IfI", 2, self.Rotation, self.ParkedCar)
@@ -354,8 +350,7 @@ function P3D.LocatorP3DChunk:__tostring()
 	elseif self.Type == 4 then -- Spline
 		data = string_pack(self.Endian .. "I", 0)
 	elseif self.Type == 5 then -- Dynamic Zone
-		local DynaLoadData = MakeLocationDataString(self.DynaLoadData, self.Endian)
-		local len = #DynaLoadData
+		local DynaLoadData, len = MakeLocationDataString(self.DynaLoadData, self.Endian)
 		data = string_pack(self.Endian .. "Ic" .. len, len / 4, DynaLoadData)
 	elseif self.Type == 6 then -- Occlusion
 		if self.Occlusions then
@@ -364,18 +359,14 @@ function P3D.LocatorP3DChunk:__tostring()
 			data = string_pack(self.Endian .. "I", 0)
 		end
 	elseif self.Type == 7 then -- Interior Entrance
-		local InteriorName = MakeLocationDataString(self.InteriorName, self.Endian)
-		local len = #InteriorName
+		local InteriorName, len = MakeLocationDataString(self.InteriorName, self.Endian)
 		data = string_pack(self.Endian .. "Ic" .. len .. "fffffffff", 9 + len / 4, InteriorName, self.Right.X, self.Right.Y, self.Right.Z, self.Up.X, self.Up.Y, self.Up.Z, self.Front.X, self.Front.Y, self.Front.Z)
 	elseif self.Type == 8 then -- Directional
 		data = string_pack(self.Endian .. "Ifffffffff", 9, self.Right.X, self.Right.Y, self.Right.Z, self.Up.X, self.Up.Y, self.Up.Z, self.Front.X, self.Front.Y, self.Front.Z)
 	elseif self.Type == 9 then -- Action
-		local ObjectName = MakeLocationDataString(self.ObjectName, self.Endian)
-		local JointName = MakeLocationDataString(self.JointName, self.Endian)
-		local ActionName = MakeLocationDataString(self.ActionName, self.Endian)
-		local objectNameLen = #ObjectName
-		local jointNameLen = #JointName
-		local actionNameLen = #ActionName
+		local ObjectName, objectNameLen = MakeLocationDataString(self.ObjectName, self.Endian)
+		local JointName, jointNameLen = MakeLocationDataString(self.JointName, self.Endian)
+		local ActionName, actionNameLen = MakeLocationDataString(self.ActionName, self.Endian)
 		data = string_pack(self.Endian .. "Ic" .. objectNameLen .. "c" .. jointNameLen .. "c" .. actionNameLen .. "II", objectNameLen / 4 + jointNameLen / 4 + actionNameLen / 4 + 2, ObjectName, JointName, ActionName, self.ButtonInput, self.ShouldTransform)
 	elseif self.Type == 10 then -- FOV
 		data = string_pack(self.Endian .. "Ifff", 3, self.FOV, self.Time, self.Rate)
@@ -396,8 +387,7 @@ function P3D.LocatorP3DChunk:__tostring()
 	elseif self.Type == 14 then -- Coin
 		data = string_pack(self.Endian .. "I", 0)
 	else
-		local Data = MakeLocationDataString(self.Data, self.Endian)
-		local len = #Data
+		local Data, len = MakeLocationDataString(self.Data, self.Endian)
 		data = string_pack(self.Endian .. "Ic" .. len, len / 4, Data)
 	end
 	
