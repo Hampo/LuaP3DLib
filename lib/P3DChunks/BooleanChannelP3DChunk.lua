@@ -64,11 +64,12 @@ function P3D.BooleanChannelP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 	end
 	
 	local valuesN = #self.Values
 	local headerLen = 12 + 4 + 4 + 2 + 4 + valuesN * 2
-	return string_pack(self.Endian .. "IIIIc4HI" .. string_rep("H", valuesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, self.StartState, valuesN, table_unpack(self.Values)) .. chunkData
+	return string_pack(self.Endian .. "IIIIc4HI" .. string_rep("H", valuesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Param, self.StartState, valuesN, table_unpack(self.Values)) .. chunkData
 end

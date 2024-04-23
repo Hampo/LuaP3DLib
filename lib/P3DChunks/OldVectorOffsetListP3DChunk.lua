@@ -65,8 +65,9 @@ function P3D.OldVectorOffsetListP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 	end
 	
 	local offsetsN = #self.Offsets
@@ -78,5 +79,5 @@ function P3D.OldVectorOffsetListP3DChunk:__tostring()
 	local offsetsData = table_concat(offsets)
 	
 	local headerLen = 12 + 4 + 4 + 4 + offsetsN * 12
-	return string_pack(self.Endian .. "IIIIIc4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, self.Param) .. offsetsData .. chunkData
+	return string_pack(self.Endian .. "IIIIIc4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, Param) .. offsetsData .. chunkData
 end

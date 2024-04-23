@@ -58,11 +58,12 @@ function P3D.ShaderTextureParameterP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	local Value = P3D.MakeP3DString(self.Value)
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 	end
 	
 	local headerLen = 12 + 4 + #Value + 1
-	return string_pack(self.Endian .. "IIIc4s1", self.Identifier, headerLen, headerLen + #chunkData, self.Param, Value) .. chunkData
+	return string_pack(self.Endian .. "IIIc4s1", self.Identifier, headerLen, headerLen + #chunkData, Param, Value) .. chunkData
 end

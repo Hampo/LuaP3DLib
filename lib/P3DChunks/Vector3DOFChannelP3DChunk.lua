@@ -73,8 +73,9 @@ function P3D.Vector3DOFChannelP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 	end
 	
 	local num = #self.Frames
@@ -88,5 +89,5 @@ function P3D.Vector3DOFChannelP3DChunk:__tostring()
 	end
 	
 	local headerLen = 12 + 4 + 4 + 4 + num * 2 + num * 12
-	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", num) .. string_rep("c12", num), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, num, table_unpack(values)) .. chunkData
+	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", num) .. string_rep("c12", num), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Param, num, table_unpack(values)) .. chunkData
 end

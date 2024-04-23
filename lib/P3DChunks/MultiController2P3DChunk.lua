@@ -70,10 +70,11 @@ function P3D.MultiController2P3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	local CycleMode = self.CycleMode
 	if self.Endian == ">" then
-		self.CycleMode = string_reverse(self.CycleMode)
+		CycleMode = string_reverse(CycleMode)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 4
-	return string_pack(self.Endian .. "IIIIs1c4IIffI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.CycleMode, self.NumCycles, self.InfiniteCycle, self.NumFrames, self.FrameRate, self.NumTracks) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4IIffI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, CycleMode, self.NumCycles, self.InfiniteCycle, self.NumFrames, self.FrameRate, self.NumTracks) .. chunkData
 end

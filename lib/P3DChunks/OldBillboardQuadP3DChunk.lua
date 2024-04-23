@@ -88,15 +88,16 @@ function P3D.OldBillboardQuadP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	local BillboardMode = self.BillboardMode
 	
 	local Colour = {}
 	if self.Endian == ">" then
-		self.BillboardMode = string_reverse(self.BillboardMode)
+		BillboardMode = string_reverse(BillboardMode)
 		Colour.B, Colour.G, Colour.R, Colour.A = self.Colour.A, self.Colour.R, self.Colour.G, self.Colour.B
 	else
 		Colour.B, Colour.G, Colour.R, Colour.A = self.Colour.B, self.Colour.G, self.Colour.R, self.Colour.A
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 12 + 4 + 8 + 8 + 8 + 8 + 4 + 4 + 4 + 8
-	return string_pack(self.Endian .. "IIIIs1c4fffBBBBfffffffffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.BillboardMode, self.Translation.X, self.Translation.Y, self.Translation.Z, Colour.B, Colour.G, Colour.R, Colour.A, self.Uv0.X, self.Uv0.Y, self.Uv1.X, self.Uv1.Y, self.Uv2.X, self.Uv2.Y, self.Uv3.X, self.Uv3.Y, self.Width, self.Height, self.Distance, self.UVOffset.X, self.UVOffset.Y) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4fffBBBBfffffffffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, BillboardMode, self.Translation.X, self.Translation.Y, self.Translation.Z, Colour.B, Colour.G, Colour.R, Colour.A, self.Uv0.X, self.Uv0.Y, self.Uv1.X, self.Uv1.Y, self.Uv2.X, self.Uv2.Y, self.Uv3.X, self.Uv3.Y, self.Width, self.Height, self.Distance, self.UVOffset.X, self.UVOffset.Y) .. chunkData
 end

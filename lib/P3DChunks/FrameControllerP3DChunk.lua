@@ -76,11 +76,13 @@ function P3D.FrameControllerP3DChunk:__tostring()
 	local HierarchyName = P3D.MakeP3DString(self.HierarchyName)
 	local AnimationName = P3D.MakeP3DString(self.AnimationName)
 	
+	local Type = self.Type
+	local CycleMode = self.CycleMode
 	if self.Endian == ">" then
-		self.Type = string_reverse(self.Type)
-		self.CycleMode = string_reverse(self.CycleMode)
+		Type = string_reverse(Type)
+		CycleMode = string_reverse(CycleMode)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4 + 4 + 4 + #HierarchyName + 1 + #AnimationName + 1
-	return string_pack(self.Endian .. "IIIIs1c4c4IIs1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type, self.CycleMode, self.NumCycles, self.InfiniteCycle, HierarchyName, AnimationName) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4c4IIs1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, Type, CycleMode, self.NumCycles, self.InfiniteCycle, HierarchyName, AnimationName) .. chunkData
 end

@@ -60,10 +60,11 @@ function P3D.MultiControllerTrackP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	local Type = self.Type
 	if self.Endian == ">" then
-		self.Type = string_reverse(self.Type)
+		Type = string_reverse(Type)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4
-	return string_pack(self.Endian .. "IIIIs1c4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, Type) .. chunkData
 end

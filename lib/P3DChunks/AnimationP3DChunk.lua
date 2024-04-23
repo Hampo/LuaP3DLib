@@ -66,10 +66,11 @@ function P3D.AnimationP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	local AnimationType = self.AnimationType
 	if self.Endian == ">" then
-		self.AnimationType = string_reverse(self.AnimationType)
+		AnimationType = string_reverse(AnimationType)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4 + 4 + 4
-	return string_pack(self.Endian .. "IIIIs1c4ffI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.AnimationType, self.NumFrames, self.FrameRate, self.Cyclic) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4ffI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, AnimationType, self.NumFrames, self.FrameRate, self.Cyclic) .. chunkData
 end

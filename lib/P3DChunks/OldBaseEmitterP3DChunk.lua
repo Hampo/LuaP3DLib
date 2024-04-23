@@ -77,11 +77,13 @@ function P3D.OldBaseEmitterP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	local ParticleType = self.ParticleType
+	local GeneratorType = self.GeneratorType
 	if self.Endian == ">" then
-		self.ParticleType = string_reverse(self.ParticleType)
-		self.GeneratorType = string_reverse(self.GeneratorType)
+		ParticleType = string_reverse(ParticleType)
+		GeneratorType = string_reverse(GeneratorType)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4 + 4
-	return string_pack(self.Endian .. "IIIIs1c4c4IIIIIff", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.ParticleType, self.GeneratorType, self.ZTest, self.ZWrite, self.Fog, self.MaxParticles, self.InfiniteLife, self.RotationalCohesion, self.TranslationalCohesion) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4c4IIIIIff", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ParticleType, GeneratorType, self.ZTest, self.ZWrite, self.Fog, self.MaxParticles, self.InfiniteLife, self.RotationalCohesion, self.TranslationalCohesion) .. chunkData
 end

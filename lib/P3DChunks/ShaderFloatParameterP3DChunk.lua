@@ -57,10 +57,11 @@ function P3D.ShaderFloatParameterP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 	end
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack(self.Endian .. "IIIc4f", self.Identifier, headerLen, headerLen + #chunkData, self.Param, self.Value) .. chunkData
+	return string_pack(self.Endian .. "IIIc4f", self.Identifier, headerLen, headerLen + #chunkData, Param, self.Value) .. chunkData
 end

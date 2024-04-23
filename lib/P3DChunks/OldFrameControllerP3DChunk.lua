@@ -70,10 +70,11 @@ function P3D.OldFrameControllerP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	local HierarchyName = P3D.MakeP3DString(self.HierarchyName)
 	local AnimationName = P3D.MakeP3DString(self.AnimationName)
+	local Type = self.Type
 	if self.Endian == ">" then
-		self.Type = string_reverse(self.Type)
+		Type = string_reverse(Type)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4 + #HierarchyName + 1 + #AnimationName + 1
-	return string_pack(self.Endian .. "IIIIs1c4fs1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type, self.FrameOffset, HierarchyName, AnimationName) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4fs1s1", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, Type, self.FrameOffset, HierarchyName, AnimationName) .. chunkData
 end

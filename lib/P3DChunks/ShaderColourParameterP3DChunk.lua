@@ -59,14 +59,15 @@ function P3D.ShaderColourParameterP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	local Value = {}
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 		Value.B, Value.G, Value.R, Value.A = self.Value.A, self.Value.R, self.Value.G, self.Value.B
 	else
 		Value.B, Value.G, Value.R, Value.A = self.Value.B, self.Value.G, self.Value.R, self.Value.A
 	end
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack(self.Endian .. "IIIc4BBBB", self.Identifier, headerLen, headerLen + #chunkData, self.Param, Value.B, Value.G, Value.R, Value.A) .. chunkData
+	return string_pack(self.Endian .. "IIIc4BBBB", self.Identifier, headerLen, headerLen + #chunkData, Param, Value.B, Value.G, Value.R, Value.A) .. chunkData
 end

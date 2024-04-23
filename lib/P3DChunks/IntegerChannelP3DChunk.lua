@@ -69,8 +69,9 @@ function P3D.IntegerChannelP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	local Param = self.Param
 	if self.Endian == ">" then
-		self.Param = string_reverse(self.Param)
+		Param = string_reverse(Param)
 	end
 	
 	local framesN = #self.Frames
@@ -83,5 +84,5 @@ function P3D.IntegerChannelP3DChunk:__tostring()
 	end
 	
 	local headerLen = 12 + 4 + 4 + 4 + framesN * 2 + framesN * 4
-	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", framesN) .. string_rep("I", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, framesN, table_unpack(values)) .. chunkData
+	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", framesN) .. string_rep("I", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Param, framesN, table_unpack(values)) .. chunkData
 end

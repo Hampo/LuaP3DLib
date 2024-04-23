@@ -73,11 +73,13 @@ function P3D.OldSpriteEmitterP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	local ShaderName = P3D.MakeP3DString(self.ShaderName)
+	local AngleMode = self.AngleMode
+	local TextureAnimMode = self.TextureAnimMode
 	if self.Endian == ">" then
 		self.AngleMode = string_reverse(self.AngleMode)
 		self.TextureAnimMode = string_reverse(self.TextureAnimMode)
 	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + #ShaderName + 1 + 4 + 4 + 4 + 4 + 4
-	return string_pack(self.Endian .. "IIIIs1s1c4fc4II", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ShaderName, self.AngleMode, self.Angle, self.TextureAnimMode, self.NumTextureFrames, self.TextureFrameRate) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1s1c4fc4II", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ShaderName, AngleMode, self.Angle, TextureAnimMode, self.NumTextureFrames, self.TextureFrameRate) .. chunkData
 end

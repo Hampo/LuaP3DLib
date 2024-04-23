@@ -65,10 +65,12 @@ function P3D.OldBillboardDisplayInfoP3DChunk:__tostring()
 		chunks[i] = tostring(self.Chunks[i])
 	end
 	local chunkData = table_concat(chunks)
+	
+	local CutOffMode = self.CutOffMode
 	if self.Endian == ">" then
-		self.CutOffMode = string_reverse(self.CutOffMode)
+		CutOffMode = string_reverse(CutOffMode)
 	end
 	
 	local headerLen = 12 + 4 + 16 + 4 + 8 + 4 + 4
-	return string_pack(self.Endian .. "IIIIffffc4ffff", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Rotation.W, self.Rotation.X, self.Rotation.Y, self.Rotation.Z, self.CutOffMode, self.UVOffsetRange.X, self.UVOffsetRange.Y, self.SourceRange, self.EdgeRange) .. chunkData
+	return string_pack(self.Endian .. "IIIIffffc4ffff", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Rotation.W, self.Rotation.X, self.Rotation.Y, self.Rotation.Z, CutOffMode, self.UVOffsetRange.X, self.UVOffsetRange.Y, self.SourceRange, self.EdgeRange) .. chunkData
 end
