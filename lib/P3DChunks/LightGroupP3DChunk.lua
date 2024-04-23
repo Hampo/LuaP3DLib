@@ -11,6 +11,7 @@ assert(P3D.LightGroupP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -25,6 +26,7 @@ local function new(self, Name, Lights)
 	assert(type(Lights) == "table", "Arg #2 (Lights) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Lights = Lights
@@ -36,14 +38,14 @@ end
 
 P3D.LightGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Group)
 P3D.LightGroupP3DChunk.new = new
-function P3D.LightGroupP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.LightGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos
-	chunk.Name, num, pos = string_unpack("<s1I", chunk.ValueStr)
+	chunk.Name, num, pos = string_unpack(Endian .. "s1I", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
-	chunk.Lights = {string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos)}
+	chunk.Lights = {string_unpack(Endian .. string_rep("s1", num), chunk.ValueStr, pos)}
 	chunk.Lights[num + 1] = nil
 	for i=1,num do
 		chunk.Lights[i] = P3D.CleanP3DString(chunk.Lights[i])
@@ -64,10 +66,10 @@ function P3D.LightGroupP3DChunk:__tostring()
 	local lights = {}
 	local lightsN = #self.Lights
 	for i=1,lightsN do
-		lights[i] = string_pack("<s1", P3D.MakeP3DString(self.Lights[i]))
+		lights[i] = string_pack(self.Endian .. "s1", P3D.MakeP3DString(self.Lights[i]))
 	end
 	local lightsData = table_concat(lights)
 	
 	local headerLen = 12 + #Name + 1 + 4 + #lightsData
-	return string_pack("<IIIs1I", self.Identifier, headerLen, headerLen + #chunkData, Name, lightsN) .. lightsData .. chunkData
+	return string_pack(self.Endian .. "IIIs1I", self.Identifier, headerLen, headerLen + #chunkData, Name, lightsN) .. lightsData .. chunkData
 end

@@ -11,6 +11,7 @@ assert(P3D.FrontendProjectP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -30,6 +31,7 @@ local function new(self, Name, Version, Resolution, Platform, PagePath, Resource
 	assert(type(ScreenPath) == "string", "Arg #7 (ScreenPath) must be a string")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Version = Version,
@@ -46,11 +48,11 @@ end
 
 P3D.FrontendProjectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Frontend_Project)
 P3D.FrontendProjectP3DChunk.new = new
-function P3D.FrontendProjectP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.FrontendProjectP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Resolution = {}
-	chunk.Name, chunk.Version, chunk.Resolution.X, chunk.Resolution.Y, chunk.Platform, chunk.PagePath, chunk.ResourcePath, chunk.ScreenPath = string_unpack("<s1IIIs1s1s1s1", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.Resolution.X, chunk.Resolution.Y, chunk.Platform, chunk.PagePath, chunk.ResourcePath, chunk.ScreenPath = string_unpack(Endian .. "s1IIIs1s1s1s1", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.Platform = P3D.CleanP3DString(chunk.Platform)
 	chunk.PagePath = P3D.CleanP3DString(chunk.PagePath)
@@ -74,5 +76,5 @@ function P3D.FrontendProjectP3DChunk:__tostring()
 	local ScreenPath = P3D.MakeP3DString(self.ScreenPath)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + #Platform + 1 + #PagePath + 1 + #ResourcePath + 1 + #ScreenPath + 1
-	return string_pack("<IIIs1IIIs1s1s1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Resolution.X, self.Resolution.Y, Platform, PagePath, ResourcePath, ScreenPath) .. chunkData
+	return string_pack(self.Endian .. "IIIs1IIIs1s1s1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Resolution.X, self.Resolution.Y, Platform, PagePath, ResourcePath, ScreenPath) .. chunkData
 end

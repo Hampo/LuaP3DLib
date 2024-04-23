@@ -653,6 +653,7 @@ end
 
 local FileSignature = 0xFF443350
 local CompressedFileSignature = 0x5A443350
+local BigEndianFileSignature = 0x503344FF
 function P3D.DecompressFile(File)
 	assert(type(File) == "string", "Arg #1 (File) must be a string")
 	
@@ -671,10 +672,10 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	Parent.Chunks = Parent.Chunks or {}
 	local n = 0
 	while Pos < EndPos do
-		local Identifier, HeaderLength, Length = string_unpack("<III", Contents, Pos)
+		local Identifier, HeaderLength, Length = string_unpack(Parent.Endian .. "III", Contents, Pos)
 		
 		local class = P3D.ChunkClasses[Identifier] or P3D.P3DChunk
-		local Chunk, overwrittenHeaderLength = class:parse(Contents, Pos + 12, HeaderLength - 12, Identifier)
+		local Chunk, overwrittenHeaderLength = class:parse(Parent.Endian, Contents, Pos + 12, HeaderLength - 12, Identifier)
 		
 		HeaderLength = overwrittenHeaderLength or HeaderLength
 		
@@ -687,7 +688,9 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 end
 
 local function LoadP3DFile(self, Path)
-	local Data = {}
+	local Data = {
+		Endian = "<"
+	}
 	if Path == nil then
 		Data.Chunks = {}
 	else
@@ -700,6 +703,9 @@ local function LoadP3DFile(self, Path)
 		if Identifier == CompressedFileSignature then
 			contents = Decompress(contents, HeaderLength)
 			Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
+		elseif Identifier == BigEndianFileSignature then
+			Identifier, HeaderLength, Length, Pos = string_unpack(">III", contents)
+			Data.Endian = ">"
 		end
 		assert(Identifier == FileSignature, string.format("Specified file '%s' isn't a P3D", Path))
 		
@@ -928,7 +934,21 @@ local function Clone(self, seen)
 	return setmetatable(res, getmetatable(self))
 end
 
-P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone}, {__call = LoadP3DFile})
+local function SetLittleEndian(self)
+	self.Endian = "<"
+	for i=1,#self.Chunks do
+		self.Chunks[i]:SetLittleEndian()
+	end
+end
+
+local function SetBigEndian(self)
+	self.Endian = ">"
+	for i=1,#self.Chunks do
+		self.Chunks[i]:SetBigEndian()
+	end
+end
+
+P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian}, {__call = LoadP3DFile})
 
 function P3D.P3DFile:__tostring()
 	local chunks = {}
@@ -936,7 +956,7 @@ function P3D.P3DFile:__tostring()
 		chunks[i] = tostring(self.Chunks[i])
 	end
 	local chunkData = table_concat(chunks)
-	return string_pack("<III", FileSignature, 12, 12 + #chunkData) .. chunkData
+	return string_pack(self.Endian .. "III", FileSignature, 12, 12 + #chunkData) .. chunkData
 end
 
 function P3D.P3DFile:Output()
@@ -984,10 +1004,11 @@ local function P3DChunk_Replace(self, NewChunk)
 	setmetatable(self, getmetatable(NewChunk))
 end
 
-P3D.P3DChunk = setmetatable({new = P3DChunk_new, __pairs = P3DChunk_pairs, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, Replace = P3DChunk_Replace}, {__call = P3DChunk_new})
-function P3D.P3DChunk:parse(Contents, Pos, DataLength, Identifier)
+P3D.P3DChunk = setmetatable({new = P3DChunk_new, __pairs = P3DChunk_pairs, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian, Replace = P3DChunk_Replace}, {__call = P3DChunk_new})
+function P3D.P3DChunk:parse(Endian, Contents, Pos, DataLength, Identifier)
 	local Data = {}
 	
+	Data.Endian = Endian
 	Data.Identifier = Identifier
 	if DataLength > 0 then
 		Data.ValueStr = Contents:sub(Pos, Pos + DataLength - 1)
@@ -1006,12 +1027,12 @@ function P3D.P3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	local headerLen = 12 + #self.ValueStr
-	return string_pack("<III", self.Identifier, headerLen, headerLen + #chunkData) .. self.ValueStr .. chunkData
+	return string_pack(self.Endian .. "III", self.Identifier, headerLen, headerLen + #chunkData) .. self.ValueStr .. chunkData
 end
 
 function P3D.P3DChunk:newChildClass(Identifier)
 	assert(type(Identifier) == "number", "Identifier must be a number")
-	local class = setmetatable({__pairs = P3DChunk_pairs, Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, Replace = P3DChunk_Replace}, getmetatable(self))
+	local class = setmetatable({__pairs = P3DChunk_pairs, Identifier = Identifier, parentClass = self, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian, Replace = P3DChunk_Replace}, getmetatable(self))
 	P3D.ChunkClasses[Identifier] = class
 	return class
 end

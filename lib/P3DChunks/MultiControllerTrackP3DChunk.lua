@@ -11,6 +11,7 @@ assert(P3D.MultiControllerTrackP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -26,6 +27,7 @@ local function new(self, Version, Name, Type)
 	assert(type(Type) == "string", "Arg #3 (Type) must be a string.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Name = Name,
@@ -38,11 +40,14 @@ end
 
 P3D.MultiControllerTrackP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Multi_Controller_Track)
 P3D.MultiControllerTrackP3DChunk.new = new
-function P3D.MultiControllerTrackP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.MultiControllerTrackP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Name, chunk.Type = string_unpack("<Is1c4", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.Type = string_unpack(Endian .. "Is1c4", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
+	if Endian == ">" then
+		chunk.Type = string_reverse(chunk.Type)
+	end
 
 	return chunk
 end
@@ -55,7 +60,10 @@ function P3D.MultiControllerTrackP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Name = P3D.MakeP3DString(self.Name)
+	if self.Endian == ">" then
+		self.Type = string_reverse(self.Type)
+	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4
-	return string_pack("<IIIIs1c4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1c4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.Type) .. chunkData
 end

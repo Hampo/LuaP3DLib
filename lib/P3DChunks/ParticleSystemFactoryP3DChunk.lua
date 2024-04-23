@@ -11,6 +11,7 @@ assert(P3D.ParticleSystemFactoryP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -30,6 +31,7 @@ local function new(self, Version, Name, FrameRate, NumAnimFrames, NumOLFrames, C
 	assert(type(EnableSorting) == "number", "Arg #7 (EnableSorting) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Name = Name,
@@ -46,10 +48,10 @@ end
 
 P3D.ParticleSystemFactoryP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Particle_System_Factory)
 P3D.ParticleSystemFactoryP3DChunk.new = new
-function P3D.ParticleSystemFactoryP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.ParticleSystemFactoryP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Name, chunk.FrameRate, chunk.NumAnimFrames, chunk.NumOLFrames, chunk.CycleAnim, chunk.EnableSorting = string_unpack("<Is1fIIHH", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.FrameRate, chunk.NumAnimFrames, chunk.NumOLFrames, chunk.CycleAnim, chunk.EnableSorting = string_unpack(Endian .. "Is1fIIHH", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
@@ -75,5 +77,5 @@ function P3D.ParticleSystemFactoryP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + 4 + #Name + 1 + 4 + 4 + 4 + 2 + 2 + 4
-	return string_pack("<IIIIs1fIIHHI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.FrameRate, self.NumAnimFrames, self.NumOLFrames, self.CycleAnim, self.EnableSorting, self:GetNumEmitters()) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1fIIHHI", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, self.FrameRate, self.NumAnimFrames, self.NumOLFrames, self.CycleAnim, self.EnableSorting, self:GetNumEmitters()) .. chunkData
 end

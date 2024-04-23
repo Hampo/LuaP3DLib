@@ -11,6 +11,7 @@ assert(P3D.ShaderTextureParameterP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -26,6 +27,7 @@ local function new(self, Param, Value)
 	assert(type(Value) == "string", "Arg #2 (Value) must be a string.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Param = Param,
 		Value = Value,
@@ -37,11 +39,14 @@ end
 
 P3D.ShaderTextureParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Shader_Texture_Parameter)
 P3D.ShaderTextureParameterP3DChunk.new = new
-function P3D.ShaderTextureParameterP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.ShaderTextureParameterP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Param, chunk.Value = string_unpack("<c4s1", chunk.ValueStr)
+	chunk.Param, chunk.Value = string_unpack(Endian .. "c4s1", chunk.ValueStr)
 	chunk.Value = P3D.CleanP3DString(chunk.Value)
+	if Endian == ">" then
+		chunk.Param = string_reverse(chunk.Param)
+	end
 
 	return chunk
 end
@@ -54,7 +59,10 @@ function P3D.ShaderTextureParameterP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local Value = P3D.MakeP3DString(self.Value)
+	if self.Endian == ">" then
+		self.Param = string_reverse(self.Param)
+	end
 	
 	local headerLen = 12 + 4 + #Value + 1
-	return string_pack("<IIIc4s1", self.Identifier, headerLen, headerLen + #chunkData, self.Param, Value) .. chunkData
+	return string_pack(self.Endian .. "IIIc4s1", self.Identifier, headerLen, headerLen + #chunkData, self.Param, Value) .. chunkData
 end

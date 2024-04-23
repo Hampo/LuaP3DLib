@@ -11,6 +11,7 @@ assert(P3D.RoadP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -31,6 +32,7 @@ local function new(self, Name, Type, StartIntersection, EndIntersection, Maximum
 	assert(type(Shortcut) == "number", "Arg #8 (Shortcut) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Type = Type,
@@ -48,10 +50,10 @@ end
 
 P3D.RoadP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Road)
 P3D.RoadP3DChunk.new = new
-function P3D.RoadP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.RoadP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Type, chunk.StartIntersection, chunk.EndIntersection, chunk.MaximumCars, chunk.Speed, chunk.Intelligence, chunk.Shortcut = string_unpack("<s1Is1s1IBBB", chunk.ValueStr)
+	chunk.Name, chunk.Type, chunk.StartIntersection, chunk.EndIntersection, chunk.MaximumCars, chunk.Speed, chunk.Intelligence, chunk.Shortcut = string_unpack(Endian .. "s1Is1s1IBBB", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.StartIntersection = P3D.CleanP3DString(chunk.StartIntersection)
 	chunk.EndIntersection = P3D.CleanP3DString(chunk.EndIntersection)
@@ -71,5 +73,5 @@ function P3D.RoadP3DChunk:__tostring()
 	local EndIntersection = P3D.MakeP3DString(self.EndIntersection)
 	
 	local headerLen = 12 + #Name + 1 + 4 + #StartIntersection + 1 + #EndIntersection + 1 + 4 + 1 + 1 + 1 + 1
-	return string_pack("<IIIs1Is1s1IBBBx", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, StartIntersection, EndIntersection, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut) .. chunkData
+	return string_pack(self.Endian .. "IIIs1Is1s1IBBBx", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, StartIntersection, EndIntersection, self.MaximumCars, self.Speed, self.Intelligence, self.Shortcut) .. chunkData
 end

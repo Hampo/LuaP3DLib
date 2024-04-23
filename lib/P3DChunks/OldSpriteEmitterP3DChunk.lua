@@ -11,6 +11,7 @@ assert(P3D.OldSpriteEmitterP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -31,6 +32,7 @@ local function new(self, Version, Name, ShaderName, AngleMode, Angle, TextureAni
 	assert(type(TextureFrameRate) == "number", "Arg #8 (TextureFrameRate) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Name = Name,
@@ -48,12 +50,16 @@ end
 
 P3D.OldSpriteEmitterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Sprite_Emitter)
 P3D.OldSpriteEmitterP3DChunk.new = new
-function P3D.OldSpriteEmitterP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldSpriteEmitterP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Name, chunk.ShaderName, chunk.AngleMode, chunk.Angle, chunk.TextureAnimMode, chunk.NumTextureFrames, chunk.TextureFrameRate = string_unpack("<Is1s1c4fc4II", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.ShaderName, chunk.AngleMode, chunk.Angle, chunk.TextureAnimMode, chunk.NumTextureFrames, chunk.TextureFrameRate = string_unpack(Endian .. "Is1s1c4fc4II", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.ShaderName = P3D.CleanP3DString(chunk.ShaderName)
+	if Endian == ">" then
+		chunk.AngleMode = string_reverse(chunk.AngleMode)
+		chunk.TextureAnimMode = string_reverse(chunk.TextureAnimMode)
+	end
 
 	return chunk
 end
@@ -67,7 +73,11 @@ function P3D.OldSpriteEmitterP3DChunk:__tostring()
 	
 	local Name = P3D.MakeP3DString(self.Name)
 	local ShaderName = P3D.MakeP3DString(self.ShaderName)
+	if self.Endian == ">" then
+		self.AngleMode = string_reverse(self.AngleMode)
+		self.TextureAnimMode = string_reverse(self.TextureAnimMode)
+	end
 	
 	local headerLen = 12 + 4 + #Name + 1 + #ShaderName + 1 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIIs1s1c4fc4II", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ShaderName, self.AngleMode, self.Angle, self.TextureAnimMode, self.NumTextureFrames, self.TextureFrameRate) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1s1c4fc4II", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ShaderName, self.AngleMode, self.Angle, self.TextureAnimMode, self.NumTextureFrames, self.TextureFrameRate) .. chunkData
 end

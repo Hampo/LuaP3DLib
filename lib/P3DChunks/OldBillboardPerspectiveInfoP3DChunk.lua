@@ -11,6 +11,7 @@ assert(P3D.OldBillboardPerspectiveInfoP3DChunk == nil, "Chunk type already loade
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -25,6 +26,7 @@ local function new(self, Version, Perspective)
 	assert(type(Perspective) == "number", "Arg #2 (Perspective) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Perspective = Perspective,
@@ -36,10 +38,10 @@ end
 
 P3D.OldBillboardPerspectiveInfoP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Billboard_Perspective_Info)
 P3D.OldBillboardPerspectiveInfoP3DChunk.new = new
-function P3D.OldBillboardPerspectiveInfoP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldBillboardPerspectiveInfoP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Perspective = string_unpack("<II", chunk.ValueStr)
+	chunk.Version, chunk.Perspective = string_unpack(Endian .. "II", chunk.ValueStr)
 
 	return chunk
 end
@@ -52,5 +54,5 @@ function P3D.OldBillboardPerspectiveInfoP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack("<IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Perspective) .. chunkData
+	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Perspective) .. chunkData
 end

@@ -11,6 +11,7 @@ assert(P3D.ShaderFloatParameterP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -26,6 +27,7 @@ local function new(self, Param, Value)
 	assert(type(Value) == "number", "Arg #2 (Value) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Param = Param,
 		Value = Value,
@@ -37,10 +39,13 @@ end
 
 P3D.ShaderFloatParameterP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Shader_Float_Parameter)
 P3D.ShaderFloatParameterP3DChunk.new = new
-function P3D.ShaderFloatParameterP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.ShaderFloatParameterP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Param, chunk.Value = string_unpack("<c4f", chunk.ValueStr)
+	chunk.Param, chunk.Value = string_unpack(Endian .. "c4f", chunk.ValueStr)
+	if Endian == ">" then
+		chunk.Param = string_reverse(chunk.Param)
+	end
 
 	return chunk
 end
@@ -52,6 +57,10 @@ function P3D.ShaderFloatParameterP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	if self.Endian == ">" then
+		self.Param = string_reverse(self.Param)
+	end
+	
 	local headerLen = 12 + 4 + 4
-	return string_pack("<IIIc4f", self.Identifier, headerLen, headerLen + #chunkData, self.Param, self.Value) .. chunkData
+	return string_pack(self.Endian .. "IIIc4f", self.Identifier, headerLen, headerLen + #chunkData, self.Param, self.Value) .. chunkData
 end

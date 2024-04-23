@@ -11,6 +11,7 @@ assert(P3D.LightDirectionP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -24,6 +25,7 @@ local function new(self, Direction)
 	assert(type(Direction) == "table", "Arg #1 (Direction) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Direction = Direction
 	}
@@ -34,11 +36,11 @@ end
 
 P3D.LightDirectionP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Direction)
 P3D.LightDirectionP3DChunk.new = new
-function P3D.LightDirectionP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.LightDirectionP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.Direction = {}
-	chunk.Direction.X, chunk.Direction.Y, chunk.Direction.Z = string_unpack("<fff", chunk.ValueStr)
+	chunk.Direction.X, chunk.Direction.Y, chunk.Direction.Z = string_unpack(Endian .. "fff", chunk.ValueStr)
 	
 	return chunk
 end
@@ -51,5 +53,5 @@ function P3D.LightDirectionP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 12
-	return string_pack("<IIIfff", self.Identifier, headerLen, headerLen + #chunkData, self.Direction.X, self.Direction.Y, self.Direction.Z) .. chunkData
+	return string_pack(self.Endian .. "IIIfff", self.Identifier, headerLen, headerLen + #chunkData, self.Direction.X, self.Direction.Y, self.Direction.Z) .. chunkData
 end

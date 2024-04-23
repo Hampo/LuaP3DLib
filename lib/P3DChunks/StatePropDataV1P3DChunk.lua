@@ -11,6 +11,7 @@ assert(P3D.StatePropDataV1P3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -26,6 +27,7 @@ local function new(self, Version, Name, ObjectFactoryName)
 	assert(type(ObjectFactoryName) == "string", "Arg #3 (ObjectFactoryName) must be a string.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Name = Name,
@@ -38,10 +40,10 @@ end
 
 P3D.StatePropDataV1P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.State_Prop_Data_V1)
 P3D.StatePropDataV1P3DChunk.new = new
-function P3D.StatePropDataV1P3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.StatePropDataV1P3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Name, chunk.ObjectFactoryName = string_unpack("<Is1s1", chunk.ValueStr)
+	chunk.Version, chunk.Name, chunk.ObjectFactoryName = string_unpack(Endian .. "Is1s1", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.ObjectFactoryName = P3D.CleanP3DString(chunk.ObjectFactoryName)
 
@@ -69,5 +71,5 @@ function P3D.StatePropDataV1P3DChunk:__tostring()
 	local ObjectFactoryName = P3D.MakeP3DString(self.ObjectFactoryName)
 	
 	local headerLen = 12 + 4 + #Name + 1 + #ObjectFactoryName + 1 + 4
-	return string_pack("<IIIIs1s1I", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ObjectFactoryName, self:GetNumStates()) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1s1I", self.Identifier, headerLen, headerLen + #chunkData, self.Version, Name, ObjectFactoryName, self:GetNumStates()) .. chunkData
 end

@@ -11,6 +11,7 @@ assert(P3D.BreakableObjectP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -25,6 +26,7 @@ local function new(self, Index, MaxInstances)
 	assert(type(MaxInstances) == "number", "Arg #2 (MaxInstances) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Index = Index,
 		MaxInstances = MaxInstances
@@ -65,10 +67,10 @@ P3D.BreakableObjectP3DChunk.Indexes = {
 	PumpkinSmall = 32,
 	CasinoJump = 33,
 }
-function P3D.BreakableObjectP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.BreakableObjectP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Index, chunk.MaxInstances = string_unpack("<II", chunk.ValueStr)
+	chunk.Index, chunk.MaxInstances = string_unpack(Endian .. "II", chunk.ValueStr)
 	
 	return chunk
 end
@@ -81,5 +83,5 @@ function P3D.BreakableObjectP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack("<IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MaxInstances) .. chunkData
+	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MaxInstances) .. chunkData
 end

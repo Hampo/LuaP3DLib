@@ -11,6 +11,7 @@ assert(P3D.OldPrimitiveGroupP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -29,6 +30,7 @@ local function new(self, Version, ShaderName, PrimitiveType, NumVertices, NumInd
 	assert(type(NumMatrices) == "number", "Arg #6 (NumMatrices) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		ShaderName = ShaderName,
@@ -80,11 +82,11 @@ P3D.OldPrimitiveGroupP3DChunk.VertexTypes = {
 	ColourMask = 7<<15,
 	ColourMaskOffset = 15,
 }
-function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldPrimitiveGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num
-	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack("<Is1IIIII", chunk.ValueStr)
+	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack(Endian .. "Is1IIIII", chunk.ValueStr)
 	chunk.ShaderName = P3D.CleanP3DString(chunk.ShaderName)
 
 	return chunk
@@ -142,5 +144,5 @@ function P3D.OldPrimitiveGroupP3DChunk:__tostring()
 	local ShaderName = P3D.MakeP3DString(self.ShaderName)
 	
 	local headerLen = 12 + 4 + #ShaderName + 1 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIIs1IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, ShaderName, self.PrimitiveType, self:GetVertexType(), self.NumVertices, self.NumIndices, self.NumMatrices) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, ShaderName, self.PrimitiveType, self:GetVertexType(), self.NumVertices, self.NumIndices, self.NumMatrices) .. chunkData
 end

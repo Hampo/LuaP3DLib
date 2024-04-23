@@ -11,6 +11,7 @@ assert(P3D.InstStatEntityP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -26,6 +27,7 @@ local function new(self, Name, Version, HasAlpha)
 	assert(type(HasAlpha) == "number", "Arg #3 (HasAlpha) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Version = Version,
@@ -38,10 +40,10 @@ end
 
 P3D.InstStatEntityP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Inst_Stat_Entity)
 P3D.InstStatEntityP3DChunk.new = new
-function P3D.InstStatEntityP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.InstStatEntityP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Version, chunk.HasAlpha = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.HasAlpha = string_unpack(Endian .. "s1II", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	
 	return chunk
@@ -57,5 +59,5 @@ function P3D.InstStatEntityP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4
-	return string_pack("<IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.HasAlpha) .. chunkData
+	return string_pack(self.Endian .. "IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.HasAlpha) .. chunkData
 end

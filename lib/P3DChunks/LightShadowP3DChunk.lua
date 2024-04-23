@@ -11,6 +11,7 @@ assert(P3D.LightShadowP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -24,6 +25,7 @@ local function new(self, Shadow)
 	assert(type(Shadow) == "number", "Arg #1 (Shadow) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Shadow = Shadow
 	}
@@ -34,10 +36,10 @@ end
 
 P3D.LightShadowP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Light_Shadow)
 P3D.LightShadowP3DChunk.new = new
-function P3D.LightShadowP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.LightShadowP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Shadow = string_unpack("<I", chunk.ValueStr)
+	chunk.Shadow = string_unpack(Endian .. "I", chunk.ValueStr)
 	
 	return chunk
 end
@@ -50,5 +52,5 @@ function P3D.LightShadowP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4
-	return string_pack("<IIII", self.Identifier, headerLen, headerLen + #chunkData, self.Shadow) .. chunkData
+	return string_pack(self.Endian .. "IIII", self.Identifier, headerLen, headerLen + #chunkData, self.Shadow) .. chunkData
 end

@@ -11,6 +11,7 @@ assert(P3D.CollisionEffectP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -26,6 +27,7 @@ local function new(self, ClassType, PhyPropID, SoundResourceDataName)
 	assert(type(SoundResourceDataName) == "string", "Arg #3 (SoundResourceDataName) must be a string")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		ClassType = ClassType,
 		PhyPropID = PhyPropID,
@@ -38,10 +40,10 @@ end
 
 P3D.CollisionEffectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Effect)
 P3D.CollisionEffectP3DChunk.new = new
-function P3D.CollisionEffectP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.CollisionEffectP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.ClassType, chunk.PhyPropID, chunk.SoundResourceDataName = string_unpack("<IIs1", chunk.ValueStr)
+	chunk.ClassType, chunk.PhyPropID, chunk.SoundResourceDataName = string_unpack(Endian .. "IIs1", chunk.ValueStr)
 	chunk.SoundResourceDataName = P3D.CleanP3DString(chunk.SoundResourceDataName)
 	
 	return chunk
@@ -57,5 +59,5 @@ function P3D.CollisionEffectP3DChunk:__tostring()
 	local SoundResourceDataName = P3D.MakeP3DString(self.SoundResourceDataName)
 	
 	local headerLen = 12 + 4 + 4 + #SoundResourceDataName + 1
-	return string_pack("<IIIIIs1", self.Identifier, headerLen, headerLen + #chunkData, self.ClassType, self.PhyPropID, SoundResourceDataName) .. chunkData
+	return string_pack(self.Endian .. "IIIIIs1", self.Identifier, headerLen, headerLen + #chunkData, self.ClassType, self.PhyPropID, SoundResourceDataName) .. chunkData
 end

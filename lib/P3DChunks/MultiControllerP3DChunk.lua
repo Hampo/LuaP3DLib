@@ -11,6 +11,7 @@ assert(P3D.MultiControllerP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -27,6 +28,7 @@ local function new(self, Name, Version, Length, Framerate)
 	assert(type(Framerate) == "number", "Arg #4 (Framerate) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Version = Version,
@@ -40,10 +42,10 @@ end
 
 P3D.MultiControllerP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Multi_Controller)
 P3D.MultiControllerP3DChunk.new = new
-function P3D.MultiControllerP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.MultiControllerP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Version, chunk.Length, chunk.Framerate = string_unpack("<s1Iff", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.Length, chunk.Framerate = string_unpack(Endian .. "s1Iff", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
@@ -70,5 +72,5 @@ function P3D.MultiControllerP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + 4 + 4
-	return string_pack("<IIIs1IffI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Length, self.Framerate, self:GetNumTracks()) .. chunkData
+	return string_pack(self.Endian .. "IIIs1IffI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, self.Length, self.Framerate, self:GetNumTracks()) .. chunkData
 end

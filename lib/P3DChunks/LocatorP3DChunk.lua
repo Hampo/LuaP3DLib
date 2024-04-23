@@ -9,8 +9,10 @@ assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
 assert(P3D.LocatorP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
+local string_gsub = string.gsub
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -27,6 +29,7 @@ local function new(self, Name, Position, Type, ...)
 	local args = {...}
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		Position = Position,
@@ -169,6 +172,26 @@ local function new(self, Name, Position, Type, ...)
 	return setmetatable(Data, self)
 end
 
+local function ReadLocationDataString(Endian, str, pos)
+	if Endian == "<" then
+		return string_unpack("<z", str, pos)
+	end
+	
+	local output = {}
+	
+	local part
+	while true do
+		part, pos = string_unpack(">c4", str, pos)
+		part = string_gsub(part, "(.)(.)(.)(.)", "%4%3%2%1")
+		output[#output + 1] = part
+		if part:sub(-1) == "\0" then
+			break
+		end
+	end
+	
+	return P3D.CleanP3DString(table_concat(output))
+end
+
 P3D.LocatorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Locator)
 P3D.LocatorP3DChunk.new = new
 P3D.LocatorP3DChunk.Types = {
@@ -188,82 +211,87 @@ P3D.LocatorP3DChunk.Types = {
 	PedGroup = 13,
 	Coin = 14,
 }
-function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.LocatorP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local pos, dataLen
-	chunk.Name, chunk.Type, dataLen, pos = string_unpack("<s1II", chunk.ValueStr)
+	chunk.Name, chunk.Type, dataLen, pos = string_unpack(Endian .. "s1II", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.Position = {}
 	if chunk.Type == 0 then -- Event
-		chunk.Event = string_unpack("<I", chunk.ValueStr, pos)
+		chunk.Event = string_unpack(Endian .. "I", chunk.ValueStr, pos)
 		if dataLen == 2 then
-			chunk.Parameter = string_unpack("<I", chunk.ValueStr, pos + 4)
+			chunk.Parameter = string_unpack(Endian .. "I", chunk.ValueStr, pos + 4)
 		end
 	elseif chunk.Type == 1 then -- Script
-		chunk.Key = string_unpack("<z", chunk.ValueStr, pos)
+		chunk.Key = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 	elseif chunk.Type == 2 then -- Generic
 		-- No extra data
 	elseif chunk.Type == 3 then -- Car Start
 		if dataLen == 1 then
-			chunk.Rotation = string_unpack("<f", chunk.ValueStr, pos)
+			chunk.Rotation = string_unpack(Endian .. "f", chunk.ValueStr, pos)
 		elseif dataLen == 2 then
-			chunk.Rotation, chunk.ParkedCar = string_unpack("<fI", chunk.ValueStr, pos)
+			chunk.Rotation, chunk.ParkedCar = string_unpack(Endian .. "fI", chunk.ValueStr, pos)
 		else
-			chunk.Rotation, chunk.ParkedCar, chunk.FreeCar = string_unpack("<fIz", chunk.ValueStr, pos)
+			local pos = pos
+			chunk.Rotation, chunk.ParkedCar, pos = string_unpack(Endian .. "fI", chunk.ValueStr, pos)
+			chunk.FreeCar = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 		end
 	elseif chunk.Type == 4 then -- Spline
 		-- No extra data
 	elseif chunk.Type == 5 then -- Dynamic Zone
-		chunk.DynaLoadData = string_unpack("<z", chunk.ValueStr, pos)
+		chunk.DynaLoadData = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 	elseif chunk.Type == 6 then -- Occlusion
 		if dataLen ~= 0 then
-			chunk.Occlusions = string_unpack("<I", chunk.ValueStr, pos)
+			chunk.Occlusions = string_unpack(Endian .. "I", chunk.ValueStr, pos)
 		end
 	elseif chunk.Type == 7 then -- Interior Entrance
-		chunk.InteriorName = string_unpack("<z", chunk.ValueStr, pos)
+		chunk.InteriorName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 		chunk.Right = {}
 		chunk.Up = {}
 		chunk.Front = {}
-		chunk.Right.X, chunk.Right.Y, chunk.Right.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z, chunk.Front.X, chunk.Front.Y, chunk.Front.Z = string_unpack("<fffffffff", chunk.ValueStr, pos + #chunk.InteriorName + 4 - (#chunk.InteriorName & 3))
+		chunk.Right.X, chunk.Right.Y, chunk.Right.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z, chunk.Front.X, chunk.Front.Y, chunk.Front.Z = string_unpack(Endian .. "fffffffff", chunk.ValueStr, pos + #chunk.InteriorName + 4 - (#chunk.InteriorName & 3))
 	elseif chunk.Type == 8 then -- Directional
 		chunk.Right = {}
 		chunk.Up = {}
 		chunk.Front = {}
-		chunk.Right.X, chunk.Right.Y, chunk.Right.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z, chunk.Front.X, chunk.Front.Y, chunk.Front.Z = string_unpack("<fffffffff", chunk.ValueStr, pos)
+		chunk.Right.X, chunk.Right.Y, chunk.Right.Z, chunk.Up.X, chunk.Up.Y, chunk.Up.Z, chunk.Front.X, chunk.Front.Y, chunk.Front.Z = string_unpack(Endian .. "fffffffff", chunk.ValueStr, pos)
 	elseif chunk.Type == 9 then -- Action
 		local pos = pos
-		chunk.ObjectName = string_unpack("<z", chunk.ValueStr, pos)
+		chunk.ObjectName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 		pos = pos + #chunk.ObjectName + 4 - (#chunk.ObjectName & 3)
-		chunk.JointName = string_unpack("<z", chunk.ValueStr, pos)
+		chunk.JointName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 		pos = pos + #chunk.JointName + 4 - (#chunk.JointName & 3)
-		chunk.ActionName = string_unpack("<z", chunk.ValueStr, pos)
+		chunk.ActionName = ReadLocationDataString(Endian, chunk.ValueStr, pos)
 		pos = pos + #chunk.ActionName + 4 - (#chunk.ActionName & 3)
-		chunk.ButtonInput, chunk.ShouldTransform = string_unpack("<II", chunk.ValueStr, pos)
+		chunk.ButtonInput, chunk.ShouldTransform = string_unpack(Endian .. "II", chunk.ValueStr, pos)
 	elseif chunk.Type == 10 then -- FOV
-		chunk.FOV, chunk.Type, chunk.Rate = string_unpack("<fff", chunk.ValueStr, pos)
+		chunk.FOV, chunk.Type, chunk.Rate = string_unpack(Endian .. "fff", chunk.ValueStr, pos)
 	elseif chunk.Type == 11 then -- Breakable Camera
 		-- No extra data
 	elseif chunk.Type == 12 then -- Static Camera
 		chunk.TargetPosition = {}
 		if dataLen >= 9 then
-			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer, chunk.TransitionTargetRate, chunk.Flags, chunk.CutInOut, chunk.Data = string_unpack("<fffffIfIII", chunk.ValueStr, pos)
+			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer, chunk.TransitionTargetRate, chunk.Flags, chunk.CutInOut, chunk.Data = string_unpack(Endian .. "fffffIfIII", chunk.ValueStr, pos)
 		elseif dataLen >= 8 then
-			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer, chunk.TransitionTargetRate, chunk.Flags = string_unpack("<fffffIfI", chunk.ValueStr, pos)
+			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer, chunk.TransitionTargetRate, chunk.Flags = string_unpack(Endian .. "fffffIfI", chunk.ValueStr, pos)
 		elseif dataLen >= 7 then
-			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer, chunk.TransitionTargetRate = string_unpack("<fffffIf", chunk.ValueStr, pos)
+			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer, chunk.TransitionTargetRate = string_unpack(Endian .. "fffffIf", chunk.ValueStr, pos)
 		else
-			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer = string_unpack("<fffffI", chunk.ValueStr, pos)
+			chunk.TargetPosition.X, chunk.TargetPosition.Y, chunk.TargetPosition.Z, chunk.FOV, chunk.TargetLag, chunk.FollowPlayer = string_unpack(Endian .. "fffffI", chunk.ValueStr, pos)
 		end
 	elseif chunk.Type == 13 then -- Ped Group
-		chunk.GroupNum = string_unpack("<I", chunk.ValueStr, pos)
+		chunk.GroupNum = string_unpack(Endian .. "I", chunk.ValueStr, pos)
 	elseif chunk.Type == 14 then -- Coin
 		-- No extra data
 	else
-		chunk.Data = string_unpack("<c" ..dataLen * 4, chunk.ValueStr, pos)
+		chunk.Data = string_unpack(Endian .. "c" ..dataLen * 4, chunk.ValueStr, pos)
+		if Endian == ">" then
+			chunk.Data = string_gsub(chunk.Data, "(.)(.)(.)(.)", "%4%3%2%1")
+		end
 	end
 	pos = pos + dataLen * 4
-	chunk.Position.X, chunk.Position.Y, chunk.Position.Z = string_unpack("<fff", chunk.ValueStr, pos)
+	chunk.Position.X, chunk.Position.Y, chunk.Position.Z = string_unpack(Endian .. "fff", chunk.ValueStr, pos)
 	
 	return chunk
 end
@@ -276,6 +304,18 @@ function P3D.LocatorP3DChunk:getTriggerCount()
 		end
 	end
 	return triggerCount
+end
+
+local function MakeLocationDataString(str, Endian)
+	if str == nil then return nil end
+	local diff = #str & 3
+	str = str .. string_rep("\0", 4 - diff)
+	
+	if Endian == ">" then
+		str = string_gsub(str, "(.)(.)(.)(.)", "%4%3%2%1")
+	end
+	
+	return str
 end
 
 function P3D.LocatorP3DChunk:__tostring()
@@ -291,74 +331,76 @@ function P3D.LocatorP3DChunk:__tostring()
 	local data
 	if self.Type == 0 then -- Event
 		if self.Parameter then
-			data = string_pack("<III", 2, self.Event, self.Parameter)
+			data = string_pack(self.Endian .. "III", 2, self.Event, self.Parameter)
 		else
-			data = string_pack("<II", 1, self.Event)
+			data = string_pack(self.Endian .. "II", 1, self.Event)
 		end
 	elseif self.Type == 1 then -- Script
-		local len = #self.Key
-		len = len + 4 - (len & 3)
-		data = string_pack("<Ic" .. len, len / 4, self.Key)
+		local Key = MakeLocationDataString(self.Key, self.Endian)
+		local len = #Key
+		data = string_pack(self.Endian .. "Ic" .. len, len / 4, Key)
 	elseif self.Type == 2 then -- Generic
-		data = string_pack("<I", 0)
+		data = string_pack(self.Endian .. "I", 0)
 	elseif self.Type == 3 then -- Car Start
 		if self.FreeCar then
-			local len = #self.FreeCar
-			len = len + 4 - (len & 3)
-			data = string_pack("<IfIc" .. len, 2 + len / 4, self.Rotation, self.ParkedCar, self.FreeCar)
+			local FreeCar = MakeLocationDataString(self.FreeCar, self.Endian)
+			local len = #FreeCar
+			data = string_pack(self.Endian .. "IfIc" .. len, 2 + len / 4, self.Rotation, self.ParkedCar, FreeCar)
 		elseif self.ParkedCar then
-			data = string_pack("<IfI", 2, self.Rotation, self.ParkedCar)
+			data = string_pack(self.Endian .. "IfI", 2, self.Rotation, self.ParkedCar)
 		else
-			data = string_pack("<If", 1, self.Rotation)
+			data = string_pack(self.Endian .. "If", 1, self.Rotation)
 		end
 	elseif self.Type == 4 then -- Spline
-		data = string_pack("<I", 0)
+		data = string_pack(self.Endian .. "I", 0)
 	elseif self.Type == 5 then -- Dynamic Zone
-		local len = #self.DynaLoadData
-		len = len + 4 - (len & 3)
-		data = string_pack("<Ic" .. len, len / 4, self.DynaLoadData)
+		local DynaLoadData = MakeLocationDataString(self.DynaLoadData, self.Endian)
+		local len = #DynaLoadData
+		data = string_pack(self.Endian .. "Ic" .. len, len / 4, DynaLoadData)
 	elseif self.Type == 6 then -- Occlusion
 		if self.Occlusions then
-			data = string_pack("<II", 1, self.Occlusions)
+			data = string_pack(self.Endian .. "II", 1, self.Occlusions)
 		else
-			data = string_pack("<I", 0)
+			data = string_pack(self.Endian .. "I", 0)
 		end
 	elseif self.Type == 7 then -- Interior Entrance
-		local len = #self.InteriorName
-		len = len + 4 - (len & 3)
-		data = string_pack("<Ic" .. len .. "fffffffff", 9 + len / 4, self.InteriorName, self.Right.X, self.Right.Y, self.Right.Z, self.Up.X, self.Up.Y, self.Up.Z, self.Front.X, self.Front.Y, self.Front.Z)
+		local InteriorName = MakeLocationDataString(self.InteriorName, self.Endian)
+		local len = #InteriorName
+		data = string_pack(self.Endian .. "Ic" .. len .. "fffffffff", 9 + len / 4, InteriorName, self.Right.X, self.Right.Y, self.Right.Z, self.Up.X, self.Up.Y, self.Up.Z, self.Front.X, self.Front.Y, self.Front.Z)
 	elseif self.Type == 8 then -- Directional
-		data = string_pack("<Ifffffffff", 9, self.Right.X, self.Right.Y, self.Right.Z, self.Up.X, self.Up.Y, self.Up.Z, self.Front.X, self.Front.Y, self.Front.Z)
+		data = string_pack(self.Endian .. "Ifffffffff", 9, self.Right.X, self.Right.Y, self.Right.Z, self.Up.X, self.Up.Y, self.Up.Z, self.Front.X, self.Front.Y, self.Front.Z)
 	elseif self.Type == 9 then -- Action
-		local objectNameLen = #self.ObjectName
-		objectNameLen = objectNameLen + 4 - (objectNameLen & 3)
-		local jointNameLen = #self.JointName
-		jointNameLen = jointNameLen + 4 - (jointNameLen & 3)
-		local actionNameLen = #self.ActionName
-		actionNameLen = actionNameLen + 4 - (actionNameLen & 3)
-		data = string_pack("<Ic" .. objectNameLen .. "c" .. jointNameLen .. "c" .. actionNameLen .. "II", objectNameLen / 4 + jointNameLen / 4 + actionNameLen / 4 + 2, self.ObjectName, self.JointName, self.ActionName, self.ButtonInput, self.ShouldTransform)
+		local ObjectName = MakeLocationDataString(self.ObjectName, self.Endian)
+		local JointName = MakeLocationDataString(self.JointName, self.Endian)
+		local ActionName = MakeLocationDataString(self.ActionName, self.Endian)
+		local objectNameLen = #ObjectName
+		local jointNameLen = #JointName
+		local actionNameLen = #ActionName
+		data = string_pack(self.Endian .. "Ic" .. objectNameLen .. "c" .. jointNameLen .. "c" .. actionNameLen .. "II", objectNameLen / 4 + jointNameLen / 4 + actionNameLen / 4 + 2, ObjectName, JointName, ActionName, self.ButtonInput, self.ShouldTransform)
 	elseif self.Type == 10 then -- FOV
-		data = string_pack("<Ifff", 3, self.FOV, self.Time, self.Rate)
+		data = string_pack(self.Endian .. "Ifff", 3, self.FOV, self.Time, self.Rate)
 	elseif self.Type == 11 then -- Breakable Camera
-		data = string_pack("<I", 0)
+		data = string_pack(self.Endian .. "I", 0)
 	elseif self.Type == 12 then -- Static Camera
 		if self.CutInOut and self.Data then
-			data = string_pack("<IfffffIfIII", 10, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer, self.TransitionTargetRate, self.Flags, self.CutInOut, self.Data)
+			data = string_pack(self.Endian .. "IfffffIfIII", 10, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer, self.TransitionTargetRate, self.Flags, self.CutInOut, self.Data)
 		elseif self.Flags then
-			data = string_pack("<IfffffIfI", 8, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer, self.TransitionTargetRate, self.Flags)
+			data = string_pack(self.Endian .. "IfffffIfI", 8, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer, self.TransitionTargetRate, self.Flags)
 		elseif self.TransitionTargetRate then
-			data = string_pack("<IfffffIf", 7, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer, self.TransitionTargetRate)
+			data = string_pack(self.Endian .. "IfffffIf", 7, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer, self.TransitionTargetRate)
 		else
-			data = string_pack("<IfffffI", 6, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer)
+			data = string_pack(self.Endian .. "IfffffI", 6, self.TargetPosition.X, self.TargetPosition.Y, self.TargetPosition.Z, self.FOV, self.TargetLag, self.FollowPlayer)
 		end
 	elseif self.Type == 13 then -- Ped Group
-		data = string_pack("<II", 1, self.GroupNum)
+		data = string_pack(self.Endian .. "II", 1, self.GroupNum)
 	elseif self.Type == 14 then -- Coin
-		data = string_pack("<I", 0)
+		data = string_pack(self.Endian .. "I", 0)
 	else
-		local dataLen = #self.Data
-		data = string_pack("<Ic" .. dataLen, dataLen / 4, self.Data)
+		local Data = MakeLocationDataString(self.Data, self.Endian)
+		local len = #Data
+		data = string_pack(self.Endian .. "Ic" .. len, len / 4, Data)
 	end
+	
 	headerLen = headerLen + #data
-	return string_pack("<IIIs1Ic" .. #data .. "fffI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, data, self.Position.X, self.Position.Y, self.Position.Z, self:getTriggerCount()) .. chunkData
+	return string_pack(self.Endian .. "IIIs1Ic" .. #data .. "fffI", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Type, data, self.Position.X, self.Position.Y, self.Position.Z, self:getTriggerCount()) .. chunkData
 end

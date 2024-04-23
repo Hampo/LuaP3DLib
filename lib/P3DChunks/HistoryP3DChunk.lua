@@ -11,6 +11,7 @@ assert(P3D.HistoryP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -24,6 +25,7 @@ local function new(self, History)
 	assert(type(History) == "table", "Arg #1 (History) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		History = History
 	}
@@ -34,11 +36,11 @@ end
 
 P3D.HistoryP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.History)
 P3D.HistoryP3DChunk.new = new
-function P3D.HistoryP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.HistoryP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	local num, pos = string_unpack("<H", chunk.ValueStr)
-	chunk.History = {string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos)}
+	local num, pos = string_unpack(Endian .. "H", chunk.ValueStr)
+	chunk.History = {string_unpack(Endian .. string_rep("s1", num), chunk.ValueStr, pos)}
 	chunk.History[num + 1] = nil
 	for i=1,num do
 		chunk.History[i] = P3D.CleanP3DString(chunk.History[i])
@@ -57,10 +59,10 @@ function P3D.HistoryP3DChunk:__tostring()
 	local history = {}
 	local historyN = #self.History
 	for i=1,historyN do
-		history[i] = string_pack("<s1", P3D.MakeP3DString(self.History[i]))
+		history[i] = string_pack(self.Endian .. "s1", P3D.MakeP3DString(self.History[i]))
 	end
 	local historyData = table_concat(history)
 	
 	local headerLen = 12 + 2 + #historyData
-	return string_pack("<IIIH", self.Identifier, headerLen, headerLen + #chunkData, historyN) .. historyData .. chunkData
+	return string_pack(self.Endian .. "IIIH", self.Identifier, headerLen, headerLen + #chunkData, historyN) .. historyData .. chunkData
 end

@@ -11,6 +11,7 @@ assert(P3D.EntityChannelP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -28,6 +29,7 @@ local function new(self, Version, Param, Frames, Values)
 	assert(#Frames == #Values, "Arg #3 (Frames) and Arg #4 (Values) must have the same length")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Param = Param,
@@ -41,17 +43,20 @@ end
 
 P3D.EntityChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Entity_Channel)
 P3D.EntityChannelP3DChunk.new = new
-function P3D.EntityChannelP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.EntityChannelP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local numFrames, pos
-	chunk.Version, chunk.Param, numFrames, pos = string_unpack("<Ic4I", chunk.ValueStr)
+	chunk.Version, chunk.Param, numFrames, pos = string_unpack(Endian .. "Ic4I", chunk.ValueStr)
+	if Endian == ">" then
+		chunk.Param = string_reverse(chunk.Param)
+	end
 	
-	chunk.Frames = {string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos)}
+	chunk.Frames = {string_unpack(Endian .. string_rep("H", numFrames), chunk.ValueStr, pos)}
 	pos = chunk.Frames[numFrames + 1]
 	chunk.Frames[numFrames + 1] = nil
 	
-	chunk.Values = {string_unpack("<" .. string_rep("s1", numFrames), chunk.ValueStr, pos)}
+	chunk.Values = {string_unpack(Endian .. string_rep("s1", numFrames), chunk.ValueStr, pos)}
 	chunk.Values[numFrames + 1] = nil
 	for i=1,numFrames do
 		chunk.Values[i] = P3D.CleanP3DString(chunk.Values[i])
@@ -67,13 +72,17 @@ function P3D.EntityChannelP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	if self.Endian == ">" then
+		self.Param = string_reverse(self.Param)
+	end
+	
 	local framesN = #self.Frames
 	local values = {}
 	for i=1,framesN do
-		values[i] = string_pack("<s1", P3D.MakeP3DString(self.Values[i]))
+		values[i] = string_pack(self.Endian .. "s1", P3D.MakeP3DString(self.Values[i]))
 	end
 	local valuesData = table_concat(values)
 	
 	local headerLen = 12 + 4 + 4 + 4 + framesN * 2 + #valuesData
-	return string_pack("<IIIIc4I" .. string_rep("H", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, framesN, table_unpack(self.Frames)) .. valuesData .. chunkData
+	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Param, framesN, table_unpack(self.Frames)) .. valuesData .. chunkData
 end

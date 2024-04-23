@@ -10,6 +10,7 @@ assert(P3D.OldVectorOffsetListP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -25,6 +26,7 @@ local function new(self, Version, Offsets, Param)
 	assert(type(Param) == "string", "Arg #3 (Param) must be a string")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		Offsets = Offsets,
@@ -37,16 +39,19 @@ end
 
 P3D.OldVectorOffsetListP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Vector_Offset_List)
 P3D.OldVectorOffsetListP3DChunk.new = new
-function P3D.OldVectorOffsetListP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldVectorOffsetListP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos
-	chunk.Version, num, chunk.Param, pos = string_unpack("<IIc4", chunk.ValueStr)
+	chunk.Version, num, chunk.Param, pos = string_unpack(Endian .. "IIc4", chunk.ValueStr)
+	if Endian == ">" then
+		chunk.Param = string_reverse(chunk.Param)
+	end
 	
 	chunk.Offsets = {}
 	for i=1,num do
 		local offset = {}
-		offset.X, offset.Y, offset.Z, pos = string_unpack("<fff", chunk.ValueStr, pos)
+		offset.X, offset.Y, offset.Z, pos = string_unpack(Endian .. "fff", chunk.ValueStr, pos)
 		chunk.Offsets[i] = offset
 	end
 	
@@ -60,14 +65,18 @@ function P3D.OldVectorOffsetListP3DChunk:__tostring()
 	end
 	local chunkData = table_concat(chunks)
 	
+	if self.Endian == ">" then
+		self.Param = string_reverse(self.Param)
+	end
+	
 	local offsetsN = #self.Offsets
 	local offsets = {}
 	for i=1,offsetsN do
 		local offset = self.Offsets[i]
-		offsets[i] = string_pack("<fff", offset.X, offset.Y, offset.Z)
+		offsets[i] = string_pack(self.Endian .. "fff", offset.X, offset.Y, offset.Z)
 	end
 	local offsetsData = table_concat(offsets)
 	
 	local headerLen = 12 + 4 + 4 + 4 + offsetsN * 12
-	return string_pack("<IIIIIc4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, self.Param) .. offsetsData .. chunkData
+	return string_pack(self.Endian .. "IIIIIc4", self.Identifier, headerLen, headerLen + #chunkData, self.Version, offsetsN, self.Param) .. offsetsData .. chunkData
 end

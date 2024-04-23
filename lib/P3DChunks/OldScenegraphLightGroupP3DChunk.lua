@@ -11,6 +11,7 @@ assert(P3D.OldScenegraphLightGroupP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -25,6 +26,7 @@ local function new(self, Name, LightGroupName)
 	assert(type(LightGroupName) == "string", "Arg #2 (LightGroupName) must be a string.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Name = Name,
 		LightGroupName = LightGroupName,
@@ -36,10 +38,10 @@ end
 
 P3D.OldScenegraphLightGroupP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Old_Scenegraph_Light_Group)
 P3D.OldScenegraphLightGroupP3DChunk.new = new
-function P3D.OldScenegraphLightGroupP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldScenegraphLightGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.LightGroupName = string_unpack("<s1s1", chunk.ValueStr)
+	chunk.Name, chunk.LightGroupName = string_unpack(Endian .. "s1s1", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.LightGroupName = P3D.CleanP3DString(chunk.LightGroupName)
 
@@ -57,5 +59,5 @@ function P3D.OldScenegraphLightGroupP3DChunk:__tostring()
 	local LightGroupName = P3D.MakeP3DString(self.LightGroupName)
 	
 	local headerLen = 12 + #Name + 1 + #LightGroupName + 1
-	return string_pack("<IIIs1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, LightGroupName) .. chunkData
+	return string_pack(self.Endian .. "IIIs1s1", self.Identifier, headerLen, headerLen + #chunkData, Name, LightGroupName) .. chunkData
 end

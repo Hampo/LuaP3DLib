@@ -11,6 +11,7 @@ assert(P3D.WalkerCameraDataP3DChunk == nil, "Chunk type already loaded.")
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -28,6 +29,7 @@ local function new(self, Index, MinMagnitude, MaxMagnitude, Elevation, TargetOff
 	assert(type(TargetOffset) == "table", "Arg #5 (TargetOffset) must be a table")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Index = Index,
 		MinMagnitude = MinMagnitude,
@@ -42,11 +44,11 @@ end
 
 P3D.WalkerCameraDataP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Walker_Camera_Data)
 P3D.WalkerCameraDataP3DChunk.new = new
-function P3D.WalkerCameraDataP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.WalkerCameraDataP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	chunk.TargetOffset = {}
-	chunk.Index, chunk.MinMagnitude, chunk.MaxMagnitude, chunk.Elevation, chunk.TargetOffset.X, chunk.TargetOffset.Y, chunk.TargetOffset.Z = string_unpack("<Iffffff", chunk.ValueStr)
+	chunk.Index, chunk.MinMagnitude, chunk.MaxMagnitude, chunk.Elevation, chunk.TargetOffset.X, chunk.TargetOffset.Y, chunk.TargetOffset.Z = string_unpack(Endian .. "Iffffff", chunk.ValueStr)
 	
 	return chunk
 end
@@ -59,5 +61,5 @@ function P3D.WalkerCameraDataP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4 + 4 + 4 + 12
-	return string_pack("<IIIIffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MinMagnitude, self.MaxMagnitude, self.Elevation, self.TargetOffset.X, self.TargetOffset.Y, self.TargetOffset.Z) .. chunkData
+	return string_pack(self.Endian .. "IIIIffffff", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MinMagnitude, self.MaxMagnitude, self.Elevation, self.TargetOffset.X, self.TargetOffset.Y, self.TargetOffset.Z) .. chunkData
 end

@@ -11,6 +11,7 @@ assert(P3D.CollisionObjectAttributeP3DChunk == nil, "Chunk type already loaded."
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -32,6 +33,7 @@ local function new(self, StaticAttribute, DefaultArea, CanRoll, CanSlide, CanSpi
 	assert(type(ExtraAttribute3) == "number", "Arg #9 (ExtraAttribute3) must be a number")
 	
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		StaticAttribute = StaticAttribute,
 		DefaultArea = DefaultArea,
@@ -50,10 +52,10 @@ end
 
 P3D.CollisionObjectAttributeP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Object_Attribute)
 P3D.CollisionObjectAttributeP3DChunk.new = new
-function P3D.CollisionObjectAttributeP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.CollisionObjectAttributeP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.StaticAttribute, chunk.DefaultArea, chunk.CanRoll, chunk.CanSlide, chunk.CanSpin, chunk.CanBounce, chunk.ExtraAttribute1, chunk.ExtraAttribute2, chunk.ExtraAttribute3 = string_unpack("<HIHHHHIII", chunk.ValueStr)
+	chunk.StaticAttribute, chunk.DefaultArea, chunk.CanRoll, chunk.CanSlide, chunk.CanSpin, chunk.CanBounce, chunk.ExtraAttribute1, chunk.ExtraAttribute2, chunk.ExtraAttribute3 = string_unpack(Endian .. "HIHHHHIII", chunk.ValueStr)
 	
 	return chunk
 end
@@ -66,5 +68,5 @@ function P3D.CollisionObjectAttributeP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 2 + 4 + 2 + 2 + 2 + 2 + 4 + 4 + 4
-	return string_pack("<IIIHIHHHHIII", self.Identifier, headerLen, headerLen + #chunkData, self.StaticAttribute, self.DefaultArea, self.CanRoll, self.CanSlide, self.CanSpin, self.CanBounce, self.ExtraAttribute1, self.ExtraAttribute2, self.ExtraAttribute3) .. chunkData
+	return string_pack(self.Endian .. "IIIHIHHHHIII", self.Identifier, headerLen, headerLen + #chunkData, self.StaticAttribute, self.DefaultArea, self.CanRoll, self.CanSlide, self.CanSpin, self.CanBounce, self.ExtraAttribute1, self.ExtraAttribute2, self.ExtraAttribute3) .. chunkData
 end
