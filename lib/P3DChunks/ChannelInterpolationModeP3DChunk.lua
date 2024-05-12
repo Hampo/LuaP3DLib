@@ -41,7 +41,7 @@ P3D.ChannelInterpolationModeP3DChunk.new = new
 function P3D.ChannelInterpolationModeP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Version, chunk.Interpolate = string_unpack(Endian .. "II", chunk.ValueStr)
+	chunk.Version, chunk.Interpolate = string_unpack(Endian .. "Ii", chunk.ValueStr)
 	
 	return chunk
 end
@@ -54,5 +54,5 @@ function P3D.ChannelInterpolationModeP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Interpolate) .. chunkData
+	return string_pack(self.Endian .. "IIIIi", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self.Interpolate) .. chunkData
 end
