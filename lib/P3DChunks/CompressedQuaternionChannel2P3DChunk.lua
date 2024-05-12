@@ -6,7 +6,7 @@ CREDITS:
 
 local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
-assert(P3D.NewCompressedQuaternionChannelP3DChunk == nil, "Chunk type already loaded.")
+assert(P3D.CompressedQuaternionChannel2P3DChunk == nil, "Chunk type already loaded.")
 
 local math_floor = math.floor
 local math_sqrt = math.sqrt
@@ -44,9 +44,9 @@ local function new(self, Version, Param, Frames, Values)
 	return setmetatable(Data, self)
 end
 
-P3D.NewCompressedQuaternionChannelP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.New_Compressed_Quaternion_Channel)
-P3D.NewCompressedQuaternionChannelP3DChunk.new = new
-function P3D.NewCompressedQuaternionChannelP3DChunk:parse(Endian, Contents, Pos, DataLength)
+P3D.CompressedQuaternionChannel2P3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Compressed_Quaternion_Channel_2)
+P3D.CompressedQuaternionChannel2P3DChunk.new = new
+function P3D.CompressedQuaternionChannel2P3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local numFrames, pos
@@ -77,7 +77,7 @@ local function round(val)
 	return math_floor(val + 0.5)
 end
 
-function P3D.NewCompressedQuaternionChannelP3DChunk:__tostring()
+function P3D.CompressedQuaternionChannel2P3DChunk:__tostring()
 	local chunks = {}
 	for i=1,#self.Chunks do
 		chunks[i] = tostring(self.Chunks[i])
