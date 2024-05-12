@@ -995,8 +995,7 @@ local function P3DChunk_Replace(self, NewChunk)
 		self[k] = v
 	end
 	
-	for i=1,#skip do
-		local key = skip[i]
+	for key in pairs(skip) do
 		self[key] = NewChunk[key]
 	end
 	
