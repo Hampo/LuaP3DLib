@@ -56,7 +56,7 @@ function P3D.IntegerChannelP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	pos = chunk.Frames[numFrames + 1]
 	chunk.Frames[numFrames + 1] = nil
 	
-	chunk.Values = {string_unpack(Endian .. string_rep("I", numFrames), chunk.ValueStr, pos)}
+	chunk.Values = {string_unpack(Endian .. string_rep("i", numFrames), chunk.ValueStr, pos)}
 	chunk.Values[numFrames + 1] = nil
 	
 	return chunk
@@ -84,5 +84,5 @@ function P3D.IntegerChannelP3DChunk:__tostring()
 	end
 	
 	local headerLen = 12 + 4 + 4 + 4 + framesN * 2 + framesN * 4
-	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", framesN) .. string_rep("I", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Param, framesN, table_unpack(values)) .. chunkData
+	return string_pack(self.Endian .. "IIIIc4I" .. string_rep("H", framesN) .. string_rep("i", framesN), self.Identifier, headerLen, headerLen + #chunkData, self.Version, Param, framesN, table_unpack(values)) .. chunkData
 end
