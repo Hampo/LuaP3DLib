@@ -501,7 +501,7 @@ function P3D.Quaternion:__tostring()
 	return string.format("{ W = %.3f, X = %.3f, Y = %.3f, Z = %.3f }", self.W, self.X, self.Y, self.Z)
 end
 
-P3D.Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
+local Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = function(self, M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44)
 	assert(type(M11) == "number", "Arg #1 (M11) must be a number")
 	assert(type(M12) == "number", "Arg #2 (M12) must be a number")
 	assert(type(M13) == "number", "Arg #3 (M13) must be a number")
@@ -541,7 +541,14 @@ P3D.Matrix = setmetatable({DegToRad = DegToRad, RadToDeg = RadToDeg}, {__call = 
 	self.__index = self
 	return setmetatable(Data, self)
 end})
-function P3D.Matrix:__tostring()
+P3D.Matrix = Matrix
+
+local function IsMatrix(obj)
+	return getmetatable(obj) == Matrix
+end
+P3D.IsMatrix = Matrix
+
+function Matrix:__tostring()
 	return string.format("{ { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f }, { %.3f, %.3f, %.3f, %.3f } }", self.M11, self.M12, self.M13, self.M14, self.M21, self.M22, self.M23, self.M24, self.M31, self.M32, self.M33, self.M34, self.M41, self.M42, self.M43, self.M44)
 end
 
