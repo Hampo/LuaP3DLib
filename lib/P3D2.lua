@@ -766,31 +766,27 @@ local function GetChunks(self, Identifier, Backwards, Name)
 	local chunks = self.Chunks
 	local chunkN = #chunks
 	
+	local index, finish, step
 	if Backwards then
-		local n = chunkN
-		return function()
-			while n > 0 do
-				local Chunk = chunks[n]
-				n = n - 1
-				if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
-					return Chunk
-				end
-			end
-			return nil
-		end
+		index = chunkN
+		finish = 0
+		step = -1
 	else
-		local n = 1
-		return function()
-			while n <= chunkN do
-				assert(chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
-				local Chunk = chunks[n]
-				n = n + 1
-				if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
-					return Chunk
-				end
+		index = 1
+		finish = chunkN + 1
+		step = 1
+	end
+	
+	return function()
+		while index ~= finish do
+			assert(Backwards or chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
+			local Chunk = chunks[index]
+			index = index + step
+			if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
+				return Chunk
 			end
-			return nil
 		end
+		return nil
 	end
 end
 
@@ -805,31 +801,27 @@ local function GetChunksIndexed(self, Identifier, Backwards, Name)
 	local chunks = self.Chunks
 	local chunkN = #chunks
 	
+	local index, finish, step
 	if Backwards then
-		local n = chunkN
-		return function()
-			while n > 0 do
-				local Chunk = chunks[n]
-				n = n - 1
-				if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
-					return n + 1, Chunk
-				end
-			end
-			return nil
-		end
+		index = chunkN
+		finish = 0
+		step = -1
 	else
-		local n = 1
-		return function()
-			while n <= chunkN do
-				assert(chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
-				local Chunk = chunks[n]
-				n = n + 1
-				if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
-					return n - 1, Chunk
-				end
+		index = 1
+		finish = chunkN + 1
+		step = 1
+	end
+	
+	return function()
+		while index ~= finish do
+			assert(Backwards or chunkN == #chunks, string_format("Chunk count changed from %d to %d. To add or remove chunks whilst iterating, you must iterate backwards", chunkN, #chunks))
+			local Chunk = chunks[index]
+			index = index + step
+			if (Identifier == nil or Chunk.Identifier == Identifier) and (Name == nil or Chunk.Name == Name) then
+				return index - step, Chunk
 			end
-			return nil
 		end
+		return nil
 	end
 end
 
