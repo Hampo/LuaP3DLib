@@ -55,8 +55,8 @@ function P3D.ATCP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	return chunk
 end
 
-function P3D.ATCP3DChunk:AddEntry(SourceResourceDataName, Particle, BreakableObject, Friction, Mass, Elasticity)
-	assert(type(SourceResourceDataName) == "string", "Arg #1 (SourceResourceDataName) must be a string")
+function P3D.ATCP3DChunk:AddEntry(SoundResourceDataName, Particle, BreakableObject, Friction, Mass, Elasticity)
+	assert(type(SoundResourceDataName) == "string", "Arg #1 (SoundResourceDataName) must be a string")
 	assert(type(Particle) == "string", "Arg #2 (Particle) must be a string")
 	assert(type(BreakableObject) == "string", "Arg #3 (BreakableObject) must be a string")
 	assert(type(Friction) == "number", "Arg #4 (Friction) must be a number")
