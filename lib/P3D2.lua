@@ -315,9 +315,9 @@ function Vector2:__mul(value)
 		return Vector2(self.X * value, self.Y * value)
 	else
 		assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
-		assert(IsVector2(vector), "Arg #1 (vector) must be a Vector2")
+		assert(IsVector2(value), "Arg #1 (value) must be a Vector2")
 	
-		return Vector2(self.X * vector.X, self.Y * vector.Y)
+		return Vector2(self.X * value.X, self.Y * value.Y)
 	end
 end
 function Vector2:__div(value)
