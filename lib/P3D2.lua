@@ -695,32 +695,39 @@ local function ProcessSubChunks(Parent, Contents, Pos, EndPos)
 	end
 end
 
-local function LoadP3DFile(self, Path)
+local function LoadP3DFileFromData(self, contents)
+	assert(type(contents) == "string" and #contents >= 12, "Contents too short")
+	
 	local Data = {
 		Endian = "<"
 	}
+	
+	local Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
+	if Identifier == CompressedFileSignature then
+		contents = Decompress(contents, HeaderLength)
+		Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
+	elseif Identifier == BigEndianFileSignature then
+		Identifier, HeaderLength, Length, Pos = string_unpack(">III", contents)
+		Data.Endian = ">"
+	end
+	assert(Identifier == FileSignature, string.format("Specified file '%s' isn't a P3D", Path))
+	
+	ProcessSubChunks(Data, contents, Pos, Length)
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end
+
+local function LoadP3DFile(self, Path)
 	if Path == nil then
-		Data.Chunks = {}
+		self.__index = self
+		return setmetatable({ Endian = "<", Chunks = {} }, self)
 	else
 		local success, contents = pcall(ReadFile, Path)
 		assert(success, string.format("Failed to read file at '%s': %s", Path, contents))
 		
-		assert(#contents >= 12, "Specified file too short")
-		
-		local Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
-		if Identifier == CompressedFileSignature then
-			contents = Decompress(contents, HeaderLength)
-			Identifier, HeaderLength, Length, Pos = string_unpack("<III", contents)
-		elseif Identifier == BigEndianFileSignature then
-			Identifier, HeaderLength, Length, Pos = string_unpack(">III", contents)
-			Data.Endian = ">"
-		end
-		assert(Identifier == FileSignature, string.format("Specified file '%s' isn't a P3D", Path))
-		
-		ProcessSubChunks(Data, contents, Pos, Length)
+		return LoadP3DFileFromData(self, contents)
 	end
-	self.__index = self
-	return setmetatable(Data, self)
 end
 
 local function AddChunk(self, Chunk, Index)
@@ -950,7 +957,7 @@ local function SetBigEndian(self)
 	end
 end
 
-P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian}, {__call = LoadP3DFile})
+P3D.P3DFile = setmetatable({load = LoadP3DFile, new = LoadP3DFile, LoadFromData = LoadP3DFileFromData, AddChunk = AddChunk, SetChunk = SetChunk, RemoveChunk = RemoveChunk, GetChunks = GetChunks, GetChunk = GetChunk, GetChunksIndexed = GetChunksIndexed, GetChunkIndexed = GetChunkIndexed, Match = Match, Find = Find, FindFirst = FindFirst, Clone = Clone, SetLittleEndian = SetLittleEndian, SetBigEndian = SetBigEndian}, {__call = LoadP3DFile})
 
 function P3D.P3DFile:__tostring()
 	local chunks = {}
