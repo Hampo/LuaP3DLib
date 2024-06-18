@@ -40,6 +40,19 @@ end
 
 P3D.CollisionEffectP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Collision_Effect)
 P3D.CollisionEffectP3DChunk.new = new
+P3D.CollisionEffectP3DChunk.ClassTypes = {
+	WTF = 0,
+	Ground = 1,
+	Prop_Static = 2,
+	Prop_Moveable = 3,
+	Prop_Breakable = 4,
+	Animated_BV = 5,
+	Drawable = 6,
+	Static = 7,
+	Prop_Drawable = 8,
+	Prop_Anim_Breakable = 9,
+	Prop_Onetime_Moveable = 10
+}
 function P3D.CollisionEffectP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
