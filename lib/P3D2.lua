@@ -710,7 +710,7 @@ local function LoadP3DFileFromData(self, contents)
 		Identifier, HeaderLength, Length, Pos = string_unpack(">III", contents)
 		Data.Endian = ">"
 	end
-	assert(Identifier == FileSignature, string.format("Specified file '%s' isn't a P3D", Path))
+	assert(Identifier == FileSignature, "Contents is not a valid P3D file")
 	
 	ProcessSubChunks(Data, contents, Pos, Length)
 	
