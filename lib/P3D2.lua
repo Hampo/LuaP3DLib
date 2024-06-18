@@ -214,7 +214,7 @@ end
 
 P3D.ChunkClasses = {}
 
-local math_atan2 = math.atan2
+local math_atan = math.atan
 local math_cos = math.cos
 local math_deg = math.deg
 local math_rad = math.rad
@@ -392,7 +392,7 @@ end
 function Vector2:Heading()
 	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
 	
-	return -math_atan2(self.Y, self.X)
+	return -math_atan(self.Y, self.X)
 end
 function Vector2:Rotate(theta)
 	assert(IsVector2(self), "Arg #0 (self) must be a Vector2")
