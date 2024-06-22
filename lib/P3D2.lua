@@ -572,6 +572,22 @@ end})
 function P3D.Colour:__tostring()
 	return string.format("R = %d, G = %d, B = %d, A = %d", self.R, self.G, self.B, self.A)
 end
+function P3D.Colour:ToArgb()
+	return (self.A << 24) | (self.R << 16) | (self.G << 8) | self.B
+end
+function P3D.Colour:FromArgb(ARGB)
+	assert(type(RGBA) == "number", "Arg #1 (ARGB) must be a number")
+	
+	local Data = {
+		R = (ARGB >> 16) & 0xFF,
+		G = (ARGB >> 8) & 0xFF,
+		B = ARGB & 0xFF,
+		A = (ARGB >> 24) & 0xFF
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end
 P3D.Color = P3D.Colour
 
 -- LZR (Lempel - Ziv - Radical) Decompression
