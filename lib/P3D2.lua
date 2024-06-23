@@ -576,7 +576,7 @@ function P3D.Colour:ToArgb()
 	return (self.A << 24) | (self.R << 16) | (self.G << 8) | self.B
 end
 function P3D.Colour:FromArgb(ARGB)
-	assert(type(RGBA) == "number", "Arg #1 (ARGB) must be a number")
+	assert(type(ARGB) == "number", "Arg #1 (ARGB) must be a number")
 	
 	local Data = {
 		R = (ARGB >> 16) & 0xFF,
