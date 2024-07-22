@@ -217,6 +217,9 @@ P3D.ChunkClasses = {}
 local math_atan = math.atan
 local math_cos = math.cos
 local math_deg = math.deg
+local math_floor = math.floor
+local math_max = math.max
+local math_min = math.min
 local math_rad = math.rad
 local math_sin = math.sin
 local math_sqrt = math.sqrt
@@ -588,6 +591,67 @@ function P3D.Colour:FromArgb(ARGB)
 		G = (ARGB >> 8) & 0xFF,
 		B = ARGB & 0xFF,
 		A = (ARGB >> 24) & 0xFF
+	}
+	
+	self.__index = self
+	return setmetatable(Data, self)
+end
+function P3D.Colour:ToHSL()
+	local R, G, B = self.R / 255, self.G / 255, self.B / 255
+	local max, min = math_max(R, G, B), math_min(R, G, B)
+	local H, S, L = 0, 0, (max + min) / 2
+
+	if max ~= min then
+		local delta = max - min
+		S = L > 0.5 and delta / (2 - max - min) or delta / (max + min)
+		
+		if max == R then
+			H = (G - B) / delta + (G < B and 6 or 0)
+		elseif max == G then
+			H = (B - R) / delta + 2
+		elseif max == B then
+			H = (R - G) / delta + 4
+		end
+		
+		H = H / 6
+	end
+
+	return H * 360, S * 100, L * 100
+end
+function P3D.Colour:FromHSL(H, S, L, A)
+	assert(type(H) == "number", "Arg #1 (H) must be a number")
+	assert(type(S) == "number", "Arg #2 (S) must be a number")
+	assert(type(L) == "number", "Arg #3 (L) must be a number")
+	assert(A == nil or type(A) == "number", "Arg #4 (A) must be a number")
+
+	H, S, L = H / 360, S / 100, L / 100
+	local R, G, B
+
+	if S == 0 then
+		R, G, B = L, L, L
+	else
+		local function hue2rgb(p, q, t)
+			if t < 0 then t = t + 1 end
+			if t > 1 then t = t - 1 end
+			if t < 1/6 then return p + (q - p) * 6 * t end
+			if t < 1/2 then return q end
+			if t < 2/3 then return p + (q - p) * (2/3 - t) * 6 end
+			return p
+		end
+
+		local q = L < 0.5 and L * (1 + S) or L + S - L * S
+		local p = 2 * L - q
+		R = hue2rgb(p, q, H + 1/3)
+		G = hue2rgb(p, q, H)
+		B = hue2rgb(p, q, H - 1/3)
+	end
+	A = A or 255
+	
+	local Data = {
+		R = math_floor(R * 255) & 0xFF,
+		G = math_floor(G * 255) & 0xFF,
+		B = math_floor(B * 255) & 0xFF,
+		A = A & 0xFF
 	}
 	
 	self.__index = self
