@@ -44,6 +44,16 @@ function P3D.AnimationGroupListP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	return chunk
 end
 
+function P3D.AnimationGroupListP3DChunk:GetNumGroups()
+	local n = 0
+	for i=1,#self.Chunks do
+		if self.Chunks[i].Identifier == P3D.Identifiers.Animation_Group then
+			n = n + 1
+		end
+	end
+	return n
+end
+
 function P3D.AnimationGroupListP3DChunk:__tostring()
 	local chunks = {}
 	local chunkN = #self.Chunks
@@ -53,5 +63,5 @@ function P3D.AnimationGroupListP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, chunkN) .. chunkData
+	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, self:GetNumGroups()) .. chunkData
 end
