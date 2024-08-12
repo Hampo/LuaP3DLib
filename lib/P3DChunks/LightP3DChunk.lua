@@ -34,7 +34,14 @@ local function new(self, Name, Version, Type, Colour, Constant, Linear, Squard, 
 	local Data = {
 		Endian = "<",
 		Chunks = {},
-		Name = Name
+		Name = Name,
+		Version = Version,
+		Type = Type,
+		Colour = Colour,
+		Constant = Constant,
+		Linear = Linear,
+		Squard = Squard,
+		Enabled = Enabled,
 	}
 	
 	self.__index = self
