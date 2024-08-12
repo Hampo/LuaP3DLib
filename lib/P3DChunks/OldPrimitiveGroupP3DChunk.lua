@@ -72,14 +72,14 @@ P3D.OldPrimitiveGroupP3DChunk.VertexTypes = {
 	Tangent = 1 << 12,
 	Position = 1 << 13,
 	Colour2 = 1 << 14,
-	ColourCount1 = 1<<15,
-	ColourCount2 = 2<<15,
-	ColourCount3 = 3<<15,
-	ColourCount4 = 4<<15,
-	ColourCount5 = 5<<15,
-	ColourCount6 = 6<<15,
-	ColourCount7 = 7<<15,
-	ColourMask = 7<<15,
+	ColourCount1 = 1 << 15,
+	ColourCount2 = 2 << 15,
+	ColourCount3 = 3 << 15,
+	ColourCount4 = 4 << 15,
+	ColourCount5 = 5 << 15,
+	ColourCount6 = 6 << 15,
+	ColourCount7 = 7 << 15,
+	ColourMask = 7 << 15,
 	ColourMaskOffset = 15,
 }
 function P3D.OldPrimitiveGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
@@ -101,16 +101,6 @@ local VertexTypeMap = {
 	[P3D.Identifiers.Weight_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Weights,
 	[P3D.Identifiers.Position_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Position,
 }
-local UVTypeMap = {
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs4,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs5,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs6,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs7,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs8,
-}
 function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 	local vertexType = 0
 	
@@ -128,7 +118,7 @@ function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 	end
 	if uvN > 0 then
 		assert(uvN <= 8, "Old Primitive Groups can only have a maximum of 8 UV Lists")
-		vertexType = vertexType | UVTypeMap[uvN]
+		vertexType = vertexType | uvN
 	end
 	
 	return vertexType
