@@ -33,6 +33,8 @@ local function new(self, Name, Version, Visible, Editable, Alpha)
 		Chunks = {},
 		Name = Name,
 		Version = Version,
+		Visible = Visible,
+		Editable = Editable,
 		Alpha = Alpha,
 	}
 	
