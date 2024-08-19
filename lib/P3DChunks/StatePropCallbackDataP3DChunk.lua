@@ -43,7 +43,7 @@ P3D.StatePropCallbackDataP3DChunk.new = new
 function P3D.StatePropCallbackDataP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.EventEnum, chunk.OnFrame = string_unpack(Endian .. "s1if", chunk.ValueStr)
+	chunk.Name, chunk.EventEnum, chunk.OnFrame = string_unpack(Endian .. "s1If", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 
 	return chunk
@@ -59,5 +59,5 @@ function P3D.StatePropCallbackDataP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4
-	return string_pack(self.Endian .. "IIIs1if", self.Identifier, headerLen, headerLen + #chunkData, Name, self.EventEnum, self.OnFrame) .. chunkData
+	return string_pack(self.Endian .. "IIIs1If", self.Identifier, headerLen, headerLen + #chunkData, Name, self.EventEnum, self.OnFrame) .. chunkData
 end
