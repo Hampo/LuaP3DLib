@@ -21,7 +21,7 @@ local assert = assert
 local tostring = tostring
 local type = type
 
-local function new(self, Version, Name, CycleMode, NumCycles, InfiniteCycle, NumFrames, FrameRate, NumTracks)
+local function new(self, Version, Name, CycleMode, NumCycles, InfiniteCycle, NumFrames, FrameRate)
 	assert(type(Version) == "number", "Arg #1 (Version) must be a number.")
 	assert(type(Name) == "string", "Arg #2 (Name) must be a string.")
 	assert(type(CycleMode) == "string", "Arg #3 (CycleMode) must be a string.")
@@ -29,7 +29,6 @@ local function new(self, Version, Name, CycleMode, NumCycles, InfiniteCycle, Num
 	assert(type(InfiniteCycle) == "number", "Arg #5 (InfiniteCycle) must be a number.")
 	assert(type(NumFrames) == "number", "Arg #6 (NumFrames) must be a number.")
 	assert(type(FrameRate) == "number", "Arg #7 (FrameRate) must be a number.")
-	assert(type(NumTracks) == "number", "Arg #8 (NumTracks) must be a number.")
 
 	local Data = {
 		Endian = "<",
