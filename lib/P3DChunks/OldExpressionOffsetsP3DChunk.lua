@@ -20,17 +20,12 @@ local assert = assert
 local tostring = tostring
 local type = type
 
-local function new(self, NumPrimGroups, NumOffsetLists, PrimGroupIndices)
-	assert(type(NumPrimGroups) == "number", "Arg #1 (NumPrimGroups) must be a number")
-	assert(type(NumOffsetLists) == "number", "Arg #2 (NumOffsetLists) must be a number")
-	assert(type(PrimGroupIndices) == "table", "Arg #3 (PrimGroupIndices) must be a table")
-	assert(NumPrimGroups == #PrimGroupIndices, "Arg #1 (NumPrimGroups) must match the length of Arg #3 (PrimGroupIndices)")
+local function new(self, PrimGroupIndices)
+	assert(type(PrimGroupIndices) == "table", "Arg #1 (PrimGroupIndices) must be a table")
 	
 	local Data = {
 		Endian = "<",
 		Chunks = {},
-		NumPrimGroups = NumPrimGroups,
-		NumOffsetLists = NumOffsetLists,
 		PrimGroupIndices = PrimGroupIndices,
 	}
 	
@@ -43,13 +38,22 @@ P3D.OldExpressionOffsetsP3DChunk.new = new
 function P3D.OldExpressionOffsetsP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	local pos
-	chunk.NumPrimGroups, chunk.NumOffsetLists, pos = string_unpack(Endian .. "II", chunk.ValueStr)
+	local numPrimGroups, numOffsetLists, pos = string_unpack(Endian .. "II", chunk.ValueStr)
 	
-	chunk.PrimGroupIndices = {string_unpack(Endian .. string_rep("I", chunk.NumPrimGroups), chunk.ValueStr, pos)}
-	chunk.PrimGroupIndices[chunk.NumPrimGroups + 1] = nil
+	chunk.PrimGroupIndices = {string_unpack(Endian .. string_rep("I", numPrimGroups), chunk.ValueStr, pos)}
+	chunk.PrimGroupIndices[numPrimGroups + 1] = nil
 	
 	return chunk
+end
+
+function P3D.OldExpressionOffsetsP3DChunk:GetNumOffsetLists()
+	local n = 0
+	for i=1,#self.Chunks do
+		if self.Chunks[i].Identifier == P3D.Identifiers.Old_Offset_list then
+			n = n + 1
+		end
+	end
+	return n
 end
 
 function P3D.OldExpressionOffsetsP3DChunk:__tostring()
@@ -62,5 +66,5 @@ function P3D.OldExpressionOffsetsP3DChunk:__tostring()
 	local primGroupIndicesN = #self.PrimGroupIndices
 	
 	local headerLen = 12 + 4 + 4 + primGroupIndicesN * 4
-	return string_pack(self.Endian .. "IIIII" .. string_rep("I", primGroupIndicesN), self.Identifier, headerLen, headerLen + #chunkData, self.NumPrimGroups, self.NumOffsetLists, table_unpack(self.PrimGroupIndices)) .. chunkData
+	return string_pack(self.Endian .. "IIIII" .. string_rep("I", primGroupIndicesN), self.Identifier, headerLen, headerLen + #chunkData, primGroupIndicesN, self:GetNumOffsetLists(), table_unpack(self.PrimGroupIndices)) .. chunkData
 end
