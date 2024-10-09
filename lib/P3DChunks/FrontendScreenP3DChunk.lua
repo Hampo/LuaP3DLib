@@ -49,6 +49,9 @@ function P3D.FrontendScreenP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	
 	chunk.PageNames = {string_unpack(Endian .. string_rep("s1", num), chunk.ValueStr, pos)}
 	chunk.PageNames[num + 1] = nil
+	for i=1,num do
+		chunk.PageNames[i] = P3D.CleanP3DString(chunk.PageNames[i])
+	end
 	
 	return chunk
 end
@@ -63,7 +66,11 @@ function P3D.FrontendScreenP3DChunk:__tostring()
 	local Name = P3D.MakeP3DString(self.Name)
 	local num = #self.PageNames
 	
-	local valuesData = string_pack(self.Endian .. string_rep("s1", num), table_unpack(self.PageNames))
+	local pageNames = {}
+	for i=1,num do
+		pageNames[i] = P3D.MakeP3DString(self.PageNames[i])
+	end
+	local valuesData = string_pack(self.Endian .. string_rep("s1", num), table_unpack(pageNames))
 	
 	local headerLen = 12 + #Name + 1 + 4 + 4 + #valuesData
 	return string_pack(self.Endian .. "IIIs1II", self.Identifier, headerLen, headerLen + #chunkData, Name, self.Version, num) .. valuesData .. chunkData
