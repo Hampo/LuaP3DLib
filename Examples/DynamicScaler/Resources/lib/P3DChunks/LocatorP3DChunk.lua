@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.LocatorP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Name, Position, Type, ...)
@@ -68,7 +70,7 @@ local function new(self, Name, Position, Type, ...)
 		local Occlusions = args[1]
 		assert(Occlusions == nil or type(Occlusions) == "number", "Arg #4 (Occlusions) must be a number")
 		
-		Data.Occlusions = Occlusinos
+		Data.Occlusions = Occlusions
 	elseif Type == 7 then -- Interior Entrance
 		local InteriorName = args[1]
 		local Right = args[2]
@@ -169,6 +171,23 @@ end
 
 P3D.LocatorP3DChunk = P3D.P3DChunk:newChildClass(P3D.Identifiers.Locator)
 P3D.LocatorP3DChunk.new = new
+P3D.LocatorP3DChunk.Types = {
+	Event = 0,
+	Script = 1,
+	Generic = 2,
+	CarStart = 3,
+	Spline = 4,
+	DynamicZone = 5,
+	Occlusion = 6,
+	InteriorEntrance = 7,
+	Directional = 8,
+	Action = 9,
+	FOV = 10,
+	BreakableCamera = 11,
+	StaticCamera = 12,
+	PedGroup = 13,
+	Coin = 14,
+}
 function P3D.LocatorP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	

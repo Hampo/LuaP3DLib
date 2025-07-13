@@ -4,11 +4,14 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.OldPrimitiveGroupP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
 local string_rep = string.rep
+local string_reverse = string.reverse
 local string_unpack = string.unpack
 
 local table_concat = table.concat
@@ -27,6 +30,7 @@ local function new(self, Version, ShaderName, PrimitiveType, NumVertices, NumInd
 	assert(type(NumMatrices) == "number", "Arg #6 (NumMatrices) must be a number.")
 
 	local Data = {
+		Endian = "<",
 		Chunks = {},
 		Version = Version,
 		ShaderName = ShaderName,
@@ -68,21 +72,21 @@ P3D.OldPrimitiveGroupP3DChunk.VertexTypes = {
 	Tangent = 1 << 12,
 	Position = 1 << 13,
 	Colour2 = 1 << 14,
-	ColourCount1 = 1<<15,
-	ColourCount2 = 2<<15,
-	ColourCount3 = 3<<15,
-	ColourCount4 = 4<<15,
-	ColourCount5 = 5<<15,
-	ColourCount6 = 6<<15,
-	ColourCount7 = 7<<15,
-	ColourMask = 7<<15,
+	ColourCount1 = 1 << 15,
+	ColourCount2 = 2 << 15,
+	ColourCount3 = 3 << 15,
+	ColourCount4 = 4 << 15,
+	ColourCount5 = 5 << 15,
+	ColourCount6 = 6 << 15,
+	ColourCount7 = 7 << 15,
+	ColourMask = 7 << 15,
 	ColourMaskOffset = 15,
 }
-function P3D.OldPrimitiveGroupP3DChunk:parse(Contents, Pos, DataLength)
-	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
+function P3D.OldPrimitiveGroupP3DChunk:parse(Endian, Contents, Pos, DataLength)
+	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
 	local num
-	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack("<Is1IIIII", chunk.ValueStr)
+	chunk.Version, chunk.ShaderName, chunk.PrimitiveType, num, chunk.NumVertices, chunk.NumIndices, chunk.NumMatrices = string_unpack(Endian .. "Is1IIIII", chunk.ValueStr)
 	chunk.ShaderName = P3D.CleanP3DString(chunk.ShaderName)
 
 	return chunk
@@ -96,16 +100,6 @@ local VertexTypeMap = {
 	[P3D.Identifiers.Matrix_Palette] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Matrices,
 	[P3D.Identifiers.Weight_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Weights,
 	[P3D.Identifiers.Position_List] = P3D.OldPrimitiveGroupP3DChunk.VertexTypes.Position,
-}
-local UVTypeMap = {
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs2,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs3,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs4,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs5,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs6,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs7,
-	P3D.OldPrimitiveGroupP3DChunk.VertexTypes.UVs8,
 }
 function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 	local vertexType = 0
@@ -124,7 +118,7 @@ function P3D.OldPrimitiveGroupP3DChunk:GetVertexType()
 	end
 	if uvN > 0 then
 		assert(uvN <= 8, "Old Primitive Groups can only have a maximum of 8 UV Lists")
-		vertexType = vertexType | UVTypeMap[uvN]
+		vertexType = vertexType | uvN
 	end
 	
 	return vertexType
@@ -140,5 +134,5 @@ function P3D.OldPrimitiveGroupP3DChunk:__tostring()
 	local ShaderName = P3D.MakeP3DString(self.ShaderName)
 	
 	local headerLen = 12 + 4 + #ShaderName + 1 + 4 + 4 + 4 + 4 + 4
-	return string_pack("<IIIIs1IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, ShaderName, self.PrimitiveType, self:GetVertexType(), self.NumVertices, self.NumIndices, self.NumMatrices) .. chunkData
+	return string_pack(self.Endian .. "IIIIs1IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Version, ShaderName, self.PrimitiveType, self:GetVertexType(), self.NumVertices, self.NumIndices, self.NumMatrices) .. chunkData
 end

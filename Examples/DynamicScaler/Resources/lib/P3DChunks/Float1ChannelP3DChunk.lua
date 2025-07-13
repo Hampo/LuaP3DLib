@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.Float1ChannelP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Param, Frames, Values)
@@ -45,11 +47,11 @@ function P3D.Float1ChannelP3DChunk:parse(Contents, Pos, DataLength)
 	local numFrames, pos
 	chunk.Version, chunk.Param, numFrames, pos = string_unpack("<Ic4I", chunk.ValueStr)
 	
-	chunk.Frames = table_pack(string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos))
+	chunk.Frames = {string_unpack("<" .. string_rep("H", numFrames), chunk.ValueStr, pos)}
 	pos = chunk.Frames[numFrames + 1]
 	chunk.Frames[numFrames + 1] = nil
 	
-	chunk.Values = table_pack(string_unpack("<" .. string_rep("f", numFrames), chunk.ValueStr, pos))
+	chunk.Values = {string_unpack("<" .. string_rep("f", numFrames), chunk.ValueStr, pos)}
 	chunk.Values[numFrames + 1] = nil
 	
 	return chunk

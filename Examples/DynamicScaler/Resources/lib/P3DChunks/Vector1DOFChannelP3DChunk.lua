@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.Vector1DOFChannelP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, Version, Param, Mapping, Constants, Frames, Values)
@@ -50,11 +52,11 @@ function P3D.Vector1DOFChannelP3DChunk:parse(Contents, Pos, DataLength)
 	chunk.Constants = {}
 	chunk.Version, chunk.Param, chunk.Mapping, chunk.Constants.X, chunk.Constants.Y, chunk.Constants.Z, num, pos = string_unpack("<Ic4HfffI", chunk.ValueStr)
 	
-	chunk.Frames = table_pack(string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos))
+	chunk.Frames = {string_unpack("<" .. string_rep("H", num), chunk.ValueStr, pos)}
 	pos = chunk.Frames[num + 1]
 	chunk.Frames[num + 1] = nil
 	
-	chunk.Values = table_pack(string_unpack("<" .. string_rep("f", num), chunk.ValueStr, pos))
+	chunk.Values = {string_unpack("<" .. string_rep("f", num), chunk.ValueStr, pos)}
 	chunk.Values[num + 1] = nil
 	
 	return chunk

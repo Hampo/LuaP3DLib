@@ -3,7 +3,9 @@ CREDITS:
 	Proddy#7272				- Converting to Lua, P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.OldExpressionOffsetsP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -11,10 +13,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, NumPrimGroups, NumOffsetLists, PrimGroupIndices)
@@ -42,7 +44,7 @@ function P3D.OldExpressionOffsetsP3DChunk:parse(Contents, Pos, DataLength)
 	local pos
 	chunk.NumPrimGroups, chunk.NumOffsetLists, pos = string_unpack("<II", chunk.ValueStr)
 	
-	chunk.PrimGroupIndices = table_pack(string_unpack("<" .. string_rep("I", chunk.NumPrimGroups), chunk.ValueStr, pos))
+	chunk.PrimGroupIndices = {string_unpack("<" .. string_rep("I", chunk.NumPrimGroups), chunk.ValueStr, pos)}
 	chunk.PrimGroupIndices[chunk.NumPrimGroups + 1] = nil
 	
 	return chunk

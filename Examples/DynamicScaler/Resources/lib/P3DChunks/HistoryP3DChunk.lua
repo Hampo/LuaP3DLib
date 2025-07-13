@@ -4,7 +4,9 @@ CREDITS:
 	luca$ Cardellini#5473	- P3D Chunk Structure
 ]]
 
+local P3D = P3D
 assert(P3D and P3D.ChunkClasses, "This file must be called after P3D2.lua")
+assert(P3D.HistoryP3DChunk == nil, "Chunk type already loaded.")
 
 local string_format = string.format
 local string_pack = string.pack
@@ -12,10 +14,10 @@ local string_rep = string.rep
 local string_unpack = string.unpack
 
 local table_concat = table.concat
-local table_pack = table.pack
 local table_unpack = table.unpack
 
 local assert = assert
+local tostring = tostring
 local type = type
 
 local function new(self, History)
@@ -36,7 +38,7 @@ function P3D.HistoryP3DChunk:parse(Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Contents, Pos, DataLength, self.Identifier)
 	
 	local num, pos = string_unpack("<H", chunk.ValueStr)
-	chunk.History = table_pack(string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos))
+	chunk.History = {string_unpack("<" .. string_rep("s1", num), chunk.ValueStr, pos)}
 	chunk.History[num + 1] = nil
 	for i=1,num do
 		chunk.History[i] = P3D.CleanP3DString(chunk.History[i])
