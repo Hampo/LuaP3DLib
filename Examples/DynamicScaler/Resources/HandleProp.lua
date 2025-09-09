@@ -65,7 +65,7 @@ local function ProcessCollisionVolume(CollisionVolumeChunk)
 	end
 	
 	for chunk in CollisionVolumeChunk:GetChunks(P3D.Identifiers.Collision_Sphere) do
-		chunk.SphereRadius = chunk.SphereRadius * ScaleMultiplier
+		chunk.Radius = chunk.Radius * ScaleMultiplier
 		
 		for chunk2 in chunk:GetChunks(P3D.Identifiers.Collision_Vector) do
 			chunk2.Vector.X = chunk2.Vector.X * ScaleMultiplier

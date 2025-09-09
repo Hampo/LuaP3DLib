@@ -43,10 +43,10 @@ end
 
 if ScaleMultiplier > 1 and IsCar then
 	for chunk in P3DFile:GetChunks(P3D.Identifiers.Follow_Camera_Data) do
-		chunk.Distance = chunk.Distance * ScaleMultiplier
-		chunk.Look.X = chunk.Look.X * ScaleMultiplier
-		chunk.Look.Y = chunk.Look.Y * ScaleMultiplier
-		chunk.Look.Z = chunk.Look.Z * ScaleMultiplier
+		chunk.Magnitude = chunk.Magnitude * ScaleMultiplier
+		chunk.TargetOffset.X = chunk.TargetOffset.X * ScaleMultiplier
+		chunk.TargetOffset.Y = chunk.TargetOffset.Y * ScaleMultiplier
+		chunk.TargetOffset.Z = chunk.TargetOffset.Z * ScaleMultiplier
 	end
 end
 
