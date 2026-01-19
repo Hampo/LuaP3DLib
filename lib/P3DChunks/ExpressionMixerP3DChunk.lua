@@ -34,7 +34,7 @@ local function new(self, Version, Name, Type, TargetName, ExpressionGroupName)
 		Name = Name,
 		Type = Type,
 		TargetName = TargetName,
-		ExpressionGroupName
+		ExpressionGroupName = ExpressionGroupName
 	}
 	
 	self.__index = self
