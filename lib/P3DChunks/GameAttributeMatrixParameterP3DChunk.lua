@@ -56,6 +56,6 @@ function P3D.GameAttributeMatrixParameterP3DChunk:__tostring()
 	
 	local ParameterName = P3D.MakeP3DString(self.ParameterName)
 	
-	local headerLen = 12 + #ParameterName + 1 + 36
+	local headerLen = 12 + #ParameterName + 1 + 64
 	return string_pack(self.Endian .. "IIIs1ffffffffffffffff", self.Identifier, headerLen, headerLen + #chunkData, ParameterName, self.Value.M11, self.Value.M12, self.Value.M13, self.Value.M14, self.Value.M21, self.Value.M22, self.Value.M23, self.Value.M24, self.Value.M31, self.Value.M32, self.Value.M33, self.Value.M34, self.Value.M41, self.Value.M42, self.Value.M43, self.Value.M44) .. chunkData
 end
