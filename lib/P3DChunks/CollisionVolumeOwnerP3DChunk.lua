@@ -23,6 +23,7 @@ local type = type
 
 local function new(self)
 	local Data = {
+		Endian = "<",
 		Chunks = {}
 	}
 	
