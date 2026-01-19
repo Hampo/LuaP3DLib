@@ -70,7 +70,7 @@ P3D.BreakableObjectP3DChunk.Indexes = {
 function P3D.BreakableObjectP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Index, chunk.MaxInstances = string_unpack(Endian .. "II", chunk.ValueStr)
+	chunk.Index, chunk.MaxInstances = string_unpack(Endian .. "iI", chunk.ValueStr)
 	
 	return chunk
 end
@@ -83,5 +83,5 @@ function P3D.BreakableObjectP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MaxInstances) .. chunkData
+	return string_pack(self.Endian .. "IIIiI", self.Identifier, headerLen, headerLen + #chunkData, self.Index, self.MaxInstances) .. chunkData
 end

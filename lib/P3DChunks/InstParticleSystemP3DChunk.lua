@@ -40,7 +40,7 @@ P3D.InstParticleSystemP3DChunk.new = new
 function P3D.InstParticleSystemP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.ParticleType, chunk.MaxInstances = string_unpack(Endian .. "II", chunk.ValueStr)
+	chunk.ParticleType, chunk.MaxInstances = string_unpack(Endian .. "iI", chunk.ValueStr)
 	
 	return chunk
 end
@@ -53,5 +53,5 @@ function P3D.InstParticleSystemP3DChunk:__tostring()
 	local chunkData = table_concat(chunks)
 	
 	local headerLen = 12 + 4 + 4
-	return string_pack(self.Endian .. "IIIII", self.Identifier, headerLen, headerLen + #chunkData, self.ParticleType, self.MaxInstances) .. chunkData
+	return string_pack(self.Endian .. "IIIiI", self.Identifier, headerLen, headerLen + #chunkData, self.ParticleType, self.MaxInstances) .. chunkData
 end
