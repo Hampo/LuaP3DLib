@@ -25,8 +25,8 @@ local function new(self, Indices, Positions, Normals)
 	assert(type(Indices) == "table", "Arg #1 (Indices) must be a table")
 	assert(type(Positions) == "table", "Arg #2 (Positions) must be a table")
 	assert(type(Normals) == "table", "Arg #3 (Normals) must be a table")
-	assert(#Indices == #Positions, "Arg #1 (Indices) and Arg #2 (Positions) must have the same length")
-	assert(#Indices == #Normals, "Arg #1 (Indices) and Arg #3 (Normals) must have the same length")
+	assert(#Indices % 3 == 0, "Arg #1 (Indices) must have a length divisble by 3")
+	assert(#Indices / 3 == #Normals, "The number of triables (Arg #1 (Indices) / 3) and Arg #3 (Normals) must have the same length")
 	
 	local Data = {
 		Endian = "<",

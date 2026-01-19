@@ -21,7 +21,7 @@ local tostring = tostring
 local type = type
 
 local function new(self, Version)
-	assert(type(Version) == "string", "Arg #1 (Version) must be a string")
+	assert(type(Version) == "number", "Arg #1 (Version) must be a number")
 	
 	local Data = {
 		Endian = "<",

@@ -22,7 +22,7 @@ local tostring = tostring
 local type = type
 
 local function new(self, SurfaceType)
-	assert(type(SurfaceType) == "string", "Arg #1 (SurfaceType) must be a string")
+	assert(type(SurfaceType) == "number", "Arg #1 (SurfaceType) must be a number")
 	
 	local Data = {
 		Endian = "<",

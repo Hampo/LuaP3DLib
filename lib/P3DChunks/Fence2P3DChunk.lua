@@ -22,9 +22,9 @@ local tostring = tostring
 local type = type
 
 local function new(self, Start, End, Normal)
-	assert(type("Start") == "table", "Arg #1 (Start) must be a table")
-	assert(type("End") == "table", "Arg #2 (End) must be a table")
-	assert(type("Normal") == "table", "Arg #3 (Normal) must be a table")
+	assert(type(Start) == "table", "Arg #1 (Start) must be a table")
+	assert(type(End) == "table", "Arg #2 (End) must be a table")
+	assert(type(Normal) == "table", "Arg #3 (Normal) must be a table")
 	
 	local Data = {
 		Endian = "<",

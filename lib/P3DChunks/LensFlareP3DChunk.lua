@@ -23,7 +23,7 @@ local type = type
 
 local function new(self, Name, Version)
 	assert(type(Name) == "string", "Arg #1 (Name) must be a string")
-	assert(type(Version) == "string", "Arg #1 (Version) must be a string")
+	assert(type(Version) == "number", "Arg #1 (Version) must be a number")
 	
 	local Data = {
 		Endian = "<",
