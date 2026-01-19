@@ -39,14 +39,17 @@ local function new(self, Name, Language, Modulo, Entries)
 	
 	for i=1,#Entries do
 		local entry = Entries[i]
-		local name = entry.Name
-		assert(type(name) == "string", "Entry.Name must be a string")
+		
+		local hash = entry.Hash
+		if type(hash) ~= "number" then
+			local name = entry.Name
+			assert(type(name) == "string", "Either Entry.Hash must be a number or Entry.Name must be a string")
+			hash = self:GetNameHash(name, Modulo, "<")
+		end
 		local value = entry.Value
 		assert(type(value) == "string", "Entry.Value must be a string")
 		
 		Offsets[i] = BufferN
-		
-		local hash = self:GetNameHash(name, Modulo, "<")
 		Hashes[i] = hash
 		
 		local ucs2 = {}
