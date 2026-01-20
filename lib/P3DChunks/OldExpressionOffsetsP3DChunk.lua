@@ -49,7 +49,7 @@ end
 function P3D.OldExpressionOffsetsP3DChunk:GetNumOffsetLists()
 	local n = 0
 	for i=1,#self.Chunks do
-		if self.Chunks[i].Identifier == P3D.Identifiers.Old_Offset_list then
+		if self.Chunks[i].Identifier == P3D.Identifiers.Old_Offset_List then
 			n = n + 1
 		end
 	end
