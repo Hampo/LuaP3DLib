@@ -49,7 +49,7 @@ P3D.ShaderP3DChunk.new = new
 function P3D.ShaderP3DChunk:parse(Endian, Contents, Pos, DataLength)
 	local chunk = self.parentClass.parse(self, Endian, Contents, Pos, DataLength, self.Identifier)
 	
-	chunk.Name, chunk.Version, chunk.PddiShaderName, chunk.HasTranslucency, chunk.VertexNeeds, chunk.VertexMask = string_unpack(Endian .. "s1Is1iiI", chunk.ValueStr)
+	chunk.Name, chunk.Version, chunk.PddiShaderName, chunk.HasTranslucency, chunk.VertexNeeds, chunk.VertexMask = string_unpack(Endian .. "s1Is1Iii", chunk.ValueStr)
 	chunk.Name = P3D.CleanP3DString(chunk.Name)
 	chunk.PddiShaderName = P3D.CleanP3DString(chunk.PddiShaderName)
 
