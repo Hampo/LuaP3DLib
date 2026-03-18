@@ -984,6 +984,7 @@ local function FindFirst(self, Filters, Backwards)
 end
 
 local skip = {
+	["Endian"] = true,
 	["Chunks"] = true,
 	["Identifier"] = true,
 	["ValueStr"] = true,
