@@ -1070,6 +1070,7 @@ local function P3DChunk_new(self, ...)
 		assert(type(ValueStr) == "string", "Arg #2 (ValueStr) must be a string")
 		
 		local Data = {
+			Endian = "<",
 			Chunks = {},
 			Identifier = Identifier,
 			ValueStr = ValueStr,
